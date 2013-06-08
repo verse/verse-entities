@@ -21,10 +21,13 @@ This module implements object model of data shared at Verse server. it
 provides classes for Node, TagGroup, Tag and Layer.
 """
 
-from verse_session import VerseSession
-from verse_node import VerseNode
-from verse_tag_group import VerseTagGroup
-from verse_tag import VerseTag
-from verse_layer import VerseLayer
+from . import verse_session, verse_node, verse_tag_group, verse_tag, verse_layer
+
+# Copy classes to this namespace
+VerseSession = verse_session.VerseSession
+VerseNode = verse_node.VerseNode
+VerseTagGroup = verse_tag_group.VerseTagGroup
+VerseTag = verse_tag.VerseTag
+VerseLayer = verse_layer.VerseLayer
 
 __all__ = ['VerseSession', 'VerseNode', 'VerseTagGroup', 'VerseTag', 'VerseLayer']

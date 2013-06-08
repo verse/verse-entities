@@ -18,6 +18,7 @@
 
 
 import verse as vrs
+from . import verse_node, verse_tag_group, verse_tag, verse_layer
 
 
 class VerseSession(vrs.Session):
@@ -103,7 +104,7 @@ class VerseSession(vrs.Session):
         self.user_id = user_id
         self.avatar_id = avatar_id
         # "Subscribe" to root node
-        self.root_node = VerseNode(session=self, node_id=0, parent=None, user_id=100, custom_type=0)
+        self.root_node = verse_node.VerseNode(session=self, node_id=0, parent=None, user_id=100, custom_type=0)
         self.state = 'CONNECTED'
 
 
@@ -116,7 +117,7 @@ class VerseSession(vrs.Session):
         if self.debug_print is True:
             super(VerseSession, self)._receive_node_create(node_id, parent_id, user_id, custom_type)
         # Call calback method of model
-        node = VerseNode._receive_node_create(self, node_id, parent_id, user_id, custom_type)
+        node = verse_node.VerseNode._receive_node_create(self, node_id, parent_id, user_id, custom_type)
 
         return node
 
@@ -129,7 +130,7 @@ class VerseSession(vrs.Session):
         if self.debug_print is True:
             super(VerseSession, self)._receive_node_destroy(node_id)
         # Call callback method of model
-        node = VerseNode._receive_node_destroy(self, node_id)
+        node = verse_node.VerseNode._receive_node_destroy(self, node_id)
 
         return node
 
@@ -143,7 +144,7 @@ class VerseSession(vrs.Session):
         if self.debug_print is True:
             super(VerseSession, self)._receive_node_link(parent_node_id, child_node_id)
         # Call calback method of model
-        child_node = VerseNode._receive_node_link(self, parent_node_id, child_node_id)
+        child_node = verse_node.VerseNode._receive_node_link(self, parent_node_id, child_node_id)
 
         return child_node
 
@@ -157,8 +158,7 @@ class VerseSession(vrs.Session):
         if self.debug_print is True:
             super(VerseSession, self)._receive_taggroup_create(node_id, taggroup_id, custom_type)
         # Call calback method of model
-        tg = VerseTagGroup._receive_tg_create(self, node_id, taggroup_id, custom_type)
-
+        tg = verse_tag_group.VerseTagGroup._receive_tg_create(self, node_id, taggroup_id, custom_type)
         return tg
 
 
@@ -170,7 +170,7 @@ class VerseSession(vrs.Session):
         if self.debug_print is True:
             super(VerseSession, self)._receive_tag_create(node_id, taggroup_id, tag_id, data_type, count, custom_type)
         # Call calback method of model
-        tag = VerseTag._receive_tag_create(self, node_id, taggroup_id, tag_id, data_type, count, custom_type)
+        tag = verse_tag.VerseTag._receive_tag_create(self, node_id, taggroup_id, tag_id, data_type, count, custom_type)
 
         return tag
 
@@ -182,7 +182,7 @@ class VerseSession(vrs.Session):
         if self.debug_print is True:
             super(VerseSession, self)._receive_tag_set_value(node_id, taggroup_id, tag_id, value)
         # Call callback method of model
-        tag = VerseTag._receive_tag_set_value(self, node_id, taggroup_id, tag_id, value)
+        tag = verse_tag.VerseTag._receive_tag_set_value(self, node_id, taggroup_id, tag_id, value)
 
         return tag
 

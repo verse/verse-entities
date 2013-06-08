@@ -18,12 +18,12 @@
 
 
 import verse as vrs
-from verse_entity import VerseEntity
+from . import verse_entity
 
 
 # TODO: Finish implementation of this entity
 
-class VerseLayer(VerseEntity):
+class VerseLayer(verse_entity.VerseEntity):
     """
     Class representing Verse layer
     """

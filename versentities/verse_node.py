@@ -18,10 +18,10 @@
 
 
 import verse as vrs
-from verse_entity import VerseEntity
+from . import verse_entity
 
 
-class VerseNode(VerseEntity):
+class VerseNode(verse_entity.VerseEntity):
     """
     Class representing Verse node
     """
@@ -32,10 +32,6 @@ class VerseNode(VerseEntity):
         """
         super(VerseNode, self).__init__(custom_type=custom_type)
 
-        # Session has to be instance of class VerseSession or subclass of
-        # VerseSession
-        if issubclass(session.__class__, VerseSession) != True:
-            raise TypeError("Session is not subclass of model.VerseSession")
         self.session = session
 
         self.id = node_id

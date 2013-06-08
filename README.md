@@ -9,20 +9,23 @@ This project contains Python module that simplify implementation of Verse client
 * VerseTag
 * VerseLayer
 
-These classes could be used for implementation other subclasees.
+These classes could be used for implementation custom subclasees.
 
 If you want to share some data on Verse server, then simple Verse client could look like this:
 
 ```python
+
+import versentities as vrsent
+
 def main():
     """
     Function with main never ending verse loop
     """
-    session = verseSession()
+    session = vrsent.VerseSession()
 
-    node = VerseNode(session)
-    tg = VerseTagGroup(node)
-    tag = VerseTag(tg)
+    node = vrsent.VerseNode(session)
+    tg = vrsent.VerseTagGroup(node)
+    tag = vrsent.VerseTag(tg)
     tag.value = (10,)
 
     while(session.state != 'DISCONNECTED'):

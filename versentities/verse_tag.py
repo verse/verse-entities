@@ -18,10 +18,10 @@
 
 
 import verse as vrs
-from verse_entity import VerseEntity
+from . import verse_entity, verse_tag_group
 
 
-class VerseTag(VerseEntity):
+class VerseTag(verse_entity.VerseEntity):
     """
     Class representing Verse tag
     """
@@ -35,7 +35,7 @@ class VerseTag(VerseEntity):
         super(VerseTag, self).__init__(custom_type=custom_type)
 
         # Tag can't exist without tag group
-        if issubclass(tg.__class__, VerseTagGroup) != True:
+        if issubclass(tg.__class__, verse_tag_group.VerseTagGroup) != True:
             raise TypeError("Tag group is not subclass of model.VerseTagGroup")
         else:
             self.tg = tg
