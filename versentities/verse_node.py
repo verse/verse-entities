@@ -16,6 +16,9 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+"""
+This module includes class VerseNode representing verse node
+"""
 
 import verse as vrs
 from . import verse_entity
@@ -227,3 +230,22 @@ class VerseNode(verse_entity.VerseEntity):
 
         # Return reference at child node
         return child_node
+
+    @staticmethod
+    def _receive_node_subscribe(session, node_id, version, crc32):
+        """
+        Static method of class that should be called when
+        node subscribe command is received from Verse server
+        """
+        # TODO
+        pass
+
+
+    @staticmethod
+    def _receive_node_unsubscribe(session, node_id, version, crc32):
+        """
+        Static method of class that should be called when
+        node unsubscribe command is received from Verse server
+        """
+        # TODO
+        pass

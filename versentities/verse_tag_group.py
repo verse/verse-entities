@@ -16,6 +16,11 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+"""
+This module includes class VerseTagGroup representing verse tag group
+at verse client. This class could not be used for sharing any data.
+This class is used only for encapsulating verse tags.
+"""
 
 import verse as vrs
 from . import verse_entity, verse_node
@@ -58,12 +63,14 @@ class VerseTagGroup(verse_entity.VerseEntity):
             if tg is not None:
                 raise VerseCustomTypeError(custom_type)
 
+
     def _send_create(self):
         """
         Send tag group create command to Verse server
         """
         if self.node.session is not None and self.node.id is not None:
             self.node.session.send_taggroup_create(self.node.id, custom_type)
+
 
     def _send_destroy(self):
         """
@@ -72,6 +79,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
         if self.node.session is not None and self.id is not None:
             self.node.session.send_taggroup_destroy(self.node.prio, self.node.id, self.id)
 
+
     def _send_subscribe(self):
         """
         Send tag group subscribe command
@@ -79,6 +87,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
         if self.node.session is not None and self.id is not None and self.subscribed == False:
             self.node.session.send_taggroup_subscribe(self.node.prio, self.node.id, self.id, self.version, self.crc32)
             self.subscribed = True
+
 
     def _clean(self):
         """
@@ -92,12 +101,14 @@ class VerseTagGroup(verse_entity.VerseEntity):
         self.tags.clear()
         self.tag_queue.clear()
 
+
     def destroy(self):
         """
         Method for destroying tag group
         """
         # Change state and send destroy command to Verse server
         self._destroy()
+
 
     @staticmethod
     def _receive_tg_create(session, node_id, tg_id, custom_type):
@@ -126,6 +137,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
         # Return reference at tag group object
         return tg
 
+
     @staticmethod
     def _receive_tg_destroy(session, node_id, tg_id):
         """
@@ -146,3 +158,23 @@ class VerseTagGroup(verse_entity.VerseEntity):
         tg._receive_destroy()
         # Return reference at this object
         return tg
+
+
+    @staticmethod
+    def _receive_tg_subscribe(session, node_id, tg_id, version, crc32):
+        """
+        Static method of class that should be called when tag group
+        subscribe command is received from Verse server
+        """
+        # TODO
+        pass
+
+
+    @staticmethod
+    def _receive_tg_unsubscribe(session, node_id, tg_id, version, crc32):
+        """
+        Static method of class that should be called when tag group
+        unsubscribe command is received from Verse server
+        """
+        # TODO
+        pass

@@ -16,6 +16,12 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+"""
+This module includes class VerseEntitty that is used as parent class
+of other verse entities (node, tag group, tag and layer). This module
+also includes class VerseStateError that is raised, when verse entity
+wants to do unauthorized state switch.
+"""
 
 import verse as vrs
 

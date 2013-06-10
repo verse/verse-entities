@@ -16,6 +16,11 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+"""
+This module includes class VerseTag representing verse tag at verse
+client. This class could be used for sharing of scalar values or
+vector of values (2D, 3D or Quaternions).
+"""
 
 import verse as vrs
 from . import verse_entity, verse_tag_group

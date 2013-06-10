@@ -17,6 +17,12 @@
 # ##### END GPL LICENSE BLOCK #####
 
 
+"""
+This module includes class VerseSession representing verse session
+at verse client.
+"""
+
+
 import verse as vrs
 from . import verse_node, verse_tag_group, verse_tag, verse_layer
 
