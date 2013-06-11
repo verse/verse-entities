@@ -30,6 +30,7 @@ class VerseLayer(verse_entity.VerseEntity):
     Class representing Verse layer
     """
 
+
     def __init__(self, node, parent_layer=None, layer_id=None, data_type=None, count=1, custom_type=None):
         """
         Constructor of VerseLayer
@@ -41,16 +42,16 @@ class VerseLayer(verse_entity.VerseEntity):
         self.count = count
         self.child_layers = {}
         self.values = {}
+        self.parent_layer = parent_layer
 
         # Set bindings
         if layer_id is not None:
             self.node.layers[layer_id] = self
         else:
             self.node.layer_queue[custom_type] = self
-        if parent_layer is not None:
-            self.parent_layer = parent_layer
-            if layer_id is not None:
-                self.parent_layer.child_layers[layer_id] = self
+        if self.parent_layer is not None and layer_id is not None:
+            self.parent_layer.child_layers[layer_id] = self
+
 
     def destroy(self):
         """
@@ -60,6 +61,7 @@ class VerseLayer(verse_entity.VerseEntity):
         self.node.layers.pop(self.id)
         if self.parent_layer is not None:
             self.parent_layer.childs.pop(self.id)
+
 
     def _send_create(self):
         """
@@ -71,12 +73,14 @@ class VerseLayer(verse_entity.VerseEntity):
             else:
                 self.node.session.send_layer_create(self.node.prio, self.node.id, -1, self.data_type, self.count, self.custom_type)
 
+
     def _send_destroy(self):
         """
         Send layer destroy command to Verse server
         """
         if self.node.session is not None and self.id is not None:
             self.node.session.send_layer_destroy(self.node.prio, self.node.id, self.id)
+
 
     def _send_subscribe(self):
         """
@@ -85,12 +89,14 @@ class VerseLayer(verse_entity.VerseEntity):
         if self.node.session is not None and self.id is not None:
             self.node.session.send_layer_subscribe(self.node.prio. self.node.id, self.id, self.version, self.crc32)
 
+
     def _send_unsubscribe(self):
         """
         Send layer unsubscribe to Verse server
         """
         if self.node.session is not None and self.id is not None:
             self.node.session.send_layer_unsubscribe(self.node.prio, self.node.id, self.id, self.version, self.crc22)
+
 
     def _clean(self):
         """
@@ -103,9 +109,37 @@ class VerseLayer(verse_entity.VerseEntity):
             layer._clean()
         self.child_layers.clear()
 
+
     def destroy(self):
         """
         Change state of entity and send destroy command to Verse server
         """
         self._destroy()
-        
+
+    
+    @staticmethod
+    def _receive_layer_create(session, node_id, parent_layer_id, layer_id, data_type, count, custom_type):
+        """
+        Static method of class that add reference to the
+        the dictionary of layers and send pending layer set values
+        """
+
+        # Try to find node
+        node = None
+        try:
+            node = session.nodes[node_id]
+        except KeyError:
+            return
+
+        # Try to find/create parent layer
+        if parent_layer_id is not None:
+            try:
+                parent_layer = node.layers[parent_layer_id]
+            except KeyError:
+                # When new layer has parent layer, but this parent layer does not exist yet, then
+                # create this parent layer
+                parent_layer = VerseLayer(node=node, parent_layer=None, layer_id=parent_layer_id)
+        else:
+            parent_layer = None
+
+        # Try to find this layer in pending layers of node
