@@ -41,7 +41,7 @@ class VerseLayer(verse_entity.VerseEntity):
         self.data_type = data_type
         self.count = count
         self.child_layers = {}
-        self.values = {}
+        self._items = {}
         self.parent_layer = parent_layer
 
         # Set bindings
@@ -116,6 +116,34 @@ class VerseLayer(verse_entity.VerseEntity):
         """
         self._destroy()
 
+
+    @property
+    def item(self, item_id):
+        """
+        Item is property of layer
+        """
+        return self._items[item_id]
+
+
+    @item.setter
+    def item(self, item_id, val):
+        """
+        Setter of layer item
+        """
+        self._items[item_id] = val
+        if self.node.session is not None and self.id is not None:
+            self.node.session.send_layer_set_value(self.node.prio, self.node.id, self.id, item_id, val)
+
+
+    @item.deleter
+    def item(self, item_id):
+        """
+        Deleter of layer item
+        """
+        self._items.pop(item_id)
+        if self.node.session is not None and self.id is not None:
+            self.node.session.send_layer_unset_value(self.node.prio, self.node.id, self.id, item_id)
+
     
     @staticmethod
     def _receive_layer_create(session, node_id, parent_layer_id, layer_id, data_type, count, custom_type):
@@ -142,4 +170,104 @@ class VerseLayer(verse_entity.VerseEntity):
         else:
             parent_layer = None
 
-        # Try to find this layer in pending layers of node
+        # Try to find this layer in pending layers of node. otherwise create new layer
+        try:
+            layer = node.layer_queue[custom_type]
+            layer.id = layer_id
+        except KeyError:
+            layer = VerseLayer(node=node, parent_layer=parent_layer, layer_id=layer_id, data_type=data_type, count=count, custom_type=custom_type)
+
+        node.layers[layer_id] = layer
+
+        # When this layer has some pending values, then send them to Verse server
+        for item_id, value in layer._itemss.items():
+            session.send_layer_set_value(node.prio, node.id, layer.id, item_id, value)
+
+
+    @staticmethod
+    def _receive_layer_destroy(session, node_id, layer_id):
+        """
+        Static method of class that remove reference to this layer from
+        the dictionary of layers
+        """
+
+        # Try to find node
+        node = None
+        try:
+            node = session.nodes[node_id]
+        except KeyError:
+            return
+        # Try to find the layer
+        try:
+            layer = node.layers[layer_id]
+        except KeyError:
+            return
+        # Destroy layer and child layers
+        layer._receive_destroy()
+
+        return layer
+
+
+    @staticmethod
+    def _receive_layer_set_value(session, node_id, layer_id, item_id, value):
+        """
+        Static method of class that set value of item in layer
+        """
+
+        # Try to find node
+        node = None
+        try:
+            node = session.nodes[node_id]
+        except KeyError:
+            return
+        # Try to find the layer
+        try:
+            layer = node.layers[layer_id]
+        except KeyError:
+            return
+        # Set item value
+        layer._items[item_id] = value
+
+
+    @staticmethod
+    def _receive_layer_unset_value(session, node_id, layer_id, item_id):
+        """
+        Static method of class that set value of item in layer
+        """
+
+        # Try to find node
+        node = None
+        try:
+            node = session.nodes[node_id]
+        except KeyError:
+            return
+        # Try to find the layer
+        try:
+            layer = node.layers[layer_id]
+        except KeyError:
+            return
+        # UnSet item value
+        try:
+            layer._items.pop(item_id)
+        except KeyError:
+            return
+
+
+    @staticmethod
+    def _receive_layer_subscribe(session, node_id, layer_id, version, crc32):
+        """
+        Static method of class that should be called when layer
+        subscribe command is received from Verse server
+        """
+        # TODO
+        pass
+
+
+    @staticmethod
+    def _receive_layer_unsubscribe(session, node_id, layer_id, version, crc32):
+        """
+        Static method of class that should be called when layer
+        unsubscribe command is received from Verse server
+        """
+        # TODO
+        pass

@@ -168,28 +168,52 @@ class VerseSession(vrs.Session):
         return tg
 
 
+    def _receive_taggroup_destroy(self, node_id, taggroup_id):
+        """
+        Custom callback method that is called, when client received command
+        tag group destroy
+        """
+        # Call parent method to print debug information
+        if self.debug_print is True:
+            super(VerseSession, self)._receive_taggroup_destroy(node_id, taggroup_id)
+        # Call calback method of model
+        tg = verse_tag_group.VerseTagGroup._receive_tg_destroy(self, node_id, taggroup_id)
+        return tg
+
+
     def _receive_tag_create(self, node_id, taggroup_id, tag_id, data_type, count, custom_type):
         """
-        Custom callback method that is called, when client receive command tag create
+        Custom callback method that is called, when client received command tag create
         """
         # Call parent method to print debug information
         if self.debug_print is True:
             super(VerseSession, self)._receive_tag_create(node_id, taggroup_id, tag_id, data_type, count, custom_type)
         # Call calback method of model
         tag = verse_tag.VerseTag._receive_tag_create(self, node_id, taggroup_id, tag_id, data_type, count, custom_type)
-
         return tag
+
+
+    def _receive_tag_destroy(self, node_id, taggroup_id, tag_id):
+        """
+        Custom callback method that is called, when client received command tag destroy
+        """
+        # Call parent method to print debug information
+        if self.debug_print is True:
+            super(VerseSession, self)._receive_tag_destroy(node_id, taggroup_id, tag_id)
+        # Call calback method of model
+        tag = verse_tag.VerseTag._receive_tag_create(self, node_id, taggroup_id, tag_id)
+        return tag
+
 
     def _receive_tag_set_value(self, node_id, taggroup_id, tag_id, value):
         """
-        Custom callback method that is called, when client reveive command tag set value
+        Custom callback method that is called, when client reveived command tag set value
         """
         # Call method of parent class
         if self.debug_print is True:
             super(VerseSession, self)._receive_tag_set_value(node_id, taggroup_id, tag_id, value)
         # Call callback method of model
         tag = verse_tag.VerseTag._receive_tag_set_value(self, node_id, taggroup_id, tag_id, value)
-
         return tag
 
 
