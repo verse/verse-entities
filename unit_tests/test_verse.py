@@ -333,8 +333,9 @@ class TestSession(vrsent.VerseSession):
         self.test_node = None
         self.test_tg = None
         self.test_tag = None
-        self.test_destroy_node = None
+        self.test_layer = None
         self.test_scene_node = None
+        self.test_destroy_node = None
         # Scene node
         self.scene_node = None
         self.state = 'CONNECTED'
@@ -398,6 +399,16 @@ class TestSession(vrsent.VerseSession):
                 data_type=vrs.VALUE_TYPE_UINT8, \
                 custom_type=64,
                 value=(123,))
+
+            # Create test layer
+            self.test_node.test_layer = vrsent.VerseLayer(node=self.test_node, \
+                parent_layer=None, \
+                data_type=vrs.VALUE_TYPE_UINT8, \
+                count=1,
+                custom_type=128)
+            # TODO: Fill layer with test values
+            #for item_id in range(10):
+            #    self.test_node.test_layer.item[item_id] = item_id
 
             # Test new Node
             suite = unittest.TestLoader().loadTestsFromTestCase(TestNewNodeCase)
