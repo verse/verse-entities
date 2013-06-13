@@ -63,7 +63,7 @@ class VerseNode(verse_entity.VerseEntity):
                 node_queue = self.session.my_node_queues[custom_type]
             except KeyError:
                 node_queue = []
-                self.session.my_node_queues[custom_type] = node_queue
+                self.session.my_node_queues[self.custom_type] = node_queue
             # Add this object to the queue
             node_queue.insert(0, self)
         else:
@@ -113,7 +113,7 @@ class VerseNode(verse_entity.VerseEntity):
         """
         This method send node create command to Verse server
         """
-        if self.session is not None and self.id is None:
+        if self.session is not None and self.session.state == 'CONNECTED' and self.id is None:
             self.session.send_node_create(self.prio, self.custom_type)
 
 
@@ -121,7 +121,7 @@ class VerseNode(verse_entity.VerseEntity):
         """
         This method send destroy command to Verse server
         """
-        if self.session is not None and self.id is not None:
+        if self.session is not None and self.session.state == 'CONNECTED' and self.id is not None:
             self.session.send_node_destroy(self.prio, self.id)
 
 
@@ -129,7 +129,7 @@ class VerseNode(verse_entity.VerseEntity):
         """
         This method send subscribe command to Verse server
         """
-        if self.session is not None and self.id is not None:
+        if self.session is not None and self.session.state == 'CONNECTED' and self.id is not None:
             self.session.send_node_subscribe(self.prio, self.id, self.version, self.crc32)
             self.subscribed = True
 
@@ -161,7 +161,7 @@ class VerseNode(verse_entity.VerseEntity):
         else:
             node = VerseNode(session, node_id, parent_node, user_id, custom_type)
 
-        # Chnage state of node
+        # Change state of node
         node._receive_create()
 
         # Send tag group create for pending tag groups

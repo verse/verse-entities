@@ -48,7 +48,7 @@ class VerseLayer(verse_entity.VerseEntity):
         if layer_id is not None:
             self.node.layers[layer_id] = self
         else:
-            self.node.layer_queue[custom_type] = self
+            self.node.layer_queue[self.custom_type] = self
         if self.parent_layer is not None and layer_id is not None:
             self.parent_layer.child_layers[layer_id] = self
 

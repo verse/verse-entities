@@ -72,6 +72,7 @@ class VerseEntity(object):
         # class name as modulo 65535 of original cutom_type hash
         custom_type = kwargs.get('custom_type', 0)
         if custom_type is None:
+            # TODO: replace it with something more reliable
             self.custom_type = hash(self.__class__.__name__) % 65535
         else:
             if type(custom_type) == int:

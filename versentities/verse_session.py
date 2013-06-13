@@ -63,7 +63,7 @@ class VerseSession(vrs.Session):
         """
         # Call parent method to print debug information
         if self.debug_print is True:
-            super(VerseSession, self)._receive_user_authenticate(self, username, password)
+            super(VerseSession, self)._receive_user_authenticate(self, username, self.password)
         # Default method to get username and password
         if username=="":
             if self.username is None:
@@ -109,9 +109,13 @@ class VerseSession(vrs.Session):
         # Save important informations
         self.user_id = user_id
         self.avatar_id = avatar_id
+        self.state = 'CONNECTED'
         # "Subscribe" to root node
         self.root_node = verse_node.VerseNode(session=self, node_id=0, parent=None, user_id=100, custom_type=0)
-        self.state = 'CONNECTED'
+        # Send pending node create commands
+        for queue in self.my_node_queues.values():
+            for node in queue:
+                self.send_node_create(node.prio, node.custom_type)
 
 
     def _receive_node_create(self, node_id, parent_id, user_id, custom_type):
