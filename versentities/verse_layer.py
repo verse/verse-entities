@@ -25,7 +25,7 @@ import verse as vrs
 from . import verse_entity
 
 
-# TODO: implement all required 
+# TODO: implement all required methods
 class VerseLayerItems(dict):
     """
     Class representing items in verse layer. It is subclass of
@@ -224,7 +224,7 @@ class VerseLayer(verse_entity.VerseEntity):
 
         # When this layer has some pending values, then send them to Verse server
         for item_id, value in layer.items.items():
-            session.send_layer_set_value(node.prio, node.id, layer.id, item_id, value)
+            session.send_layer_set_value(node.prio, node.id, layer.id, item_id, layer.data_type, value)
 
 
     @staticmethod
