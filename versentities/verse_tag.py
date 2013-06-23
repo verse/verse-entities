@@ -77,16 +77,16 @@ class VerseTag(verse_entity.VerseEntity):
         # Set bindings between tag group and this tag
         if tag_id is not None:
             self.tg.tags[tag_id] = self
-            self.tg.tag_queue[custom_type] = self
+            self.tg.tag_queue[self.custom_type] = self
         else:
             tag = None
             try:
-                tag = self.tg.tag_queue[custom_type]
+                tag = self.tg.tag_queue[self.custom_type]
             except KeyError:
-                self.tg.tag_queue[custom_type] = self
+                self.tg.tag_queue[self.custom_type] = self
             # Check uniqueness of custom_type inside the tag group
             if tag is not None:
-                raise VerseCustomTypeError(custom_type)
+                raise VerseCustomTypeError(self.custom_type)
 
 
     def destroy(self):

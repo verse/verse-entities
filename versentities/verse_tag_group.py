@@ -53,15 +53,15 @@ class VerseTagGroup(verse_entity.VerseEntity):
         # Set bindings
         if tg_id is not None:
             self.node.taggroups[tg_id] = self
-            self.node.tg_queue[custom_type] = self
+            self.node.tg_queue[self.custom_type] = self
         else:
             tg = None
             try:
-                tg = self.node.tg_queue[custom_type]
+                tg = self.node.tg_queue[self.custom_type]
             except KeyError:
-                self.node.tg_queue[custom_type] = self
+                self.node.tg_queue[self.custom_type] = self
             if tg is not None:
-                raise VerseCustomTypeError(custom_type)
+                raise VerseCustomTypeError(self.custom_type)
 
 
     def _send_create(self):

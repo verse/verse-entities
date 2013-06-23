@@ -16,12 +16,14 @@ If you want to share some data on Verse server, then simple Verse client could l
 ```python
 
 import versentities as vrsent
+import time
 
 def main():
     """
     Function with main never ending verse loop
     """
     session = vrsent.VerseSession()
+    session.debug_print = True
 
     node = vrsent.VerseNode(session)
     tg = vrsent.VerseTagGroup(node)
