@@ -406,9 +406,9 @@ class TestSession(vrsent.VerseSession):
                 data_type=vrs.VALUE_TYPE_UINT8, \
                 count=1,
                 custom_type=128)
-            # TODO: Fill layer with test values
-            #for item_id in range(10):
-            #    self.test_node.test_layer.item[item_id] = item_id
+            # Fill layer with test values
+            for item_id in range(10):
+                self.test_node.test_layer.items[item_id] = (item_id,)
 
             # Test new Node
             suite = unittest.TestLoader().loadTestsFromTestCase(TestNewNodeCase)

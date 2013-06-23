@@ -180,7 +180,15 @@ class VerseNode(verse_entity.VerseEntity):
             # because it is possible to do now (node id is known)
             node.parent.child_nodes[node.id] = node
 
-        # TODO: send layer_create
+        # Send layer_create for layers without parent layer
+        for layer in node.layer_queue.values():
+            if layer.parent_layer is None:
+                session.send_layer_create(node.prio, \
+                    node.id, \
+                    -1, \
+                    layer.data_type, \
+                    layer.count, \
+                    layer.custom_type)
 
         # Return reference at node
         return node

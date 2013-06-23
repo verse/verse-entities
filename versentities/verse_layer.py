@@ -25,9 +25,65 @@ import verse as vrs
 from . import verse_entity
 
 
+# TODO: implement all required 
+class VerseLayerItems(dict):
+    """
+    Class representing items in verse layer. It is subclass of
+    Python dictionary. When client set item in dictionary, then
+    changed value is sent to the Verse server.
+    """
+
+    def __init__(self, layer):
+        """
+        Constructor of VerseLayerItems
+        """
+        self.layer = layer
+
+
+    def __setitem__(self, key, value):
+        """
+        Setter of item that tries to send new value to Verse server
+        """
+        if self.layer.node.session is not None and self.layer.id is not None:
+            self.layer.node.session.send_layer_set_value(self.layer.node.prio, \
+                self.layer.node.id, \
+                self.layer.id, \
+                key, \
+                value)
+        return super(VerseLayerItems, self).__setitem__(key, value)
+
+
+    def pop(self, key):
+        """
+        Pop item from dict that tries to unset value at Verse server
+        """
+        if self.layer.node.session is not None and self.layer.id is not None:
+            self.layer.node.session.send_layer_unset_value(self.layer.node.prio, \
+                self.layer.node.id, \
+                self.layer.id, \
+                key)
+        return super(VerseLayerItems, self).pop(key)
+
+
+    def popitem(self):
+        """
+        Pop some item from dictionary and tries to unset this value at Verse server
+        """
+        key, value = super(VerseLayerItems, self).popitem()
+        if self.layer.node.session is not None and self.layer.id is not None:
+            self.layer.node.session.send_layer_unset_value(self.layer.node.prio, \
+                self.layer.node.id, \
+                self.layer.id, \
+                key)
+        return (key, value)
+
+
+
+
 class VerseLayer(verse_entity.VerseEntity):
     """
-    Class representing Verse layer
+    Class representing Verse layer. Verse layer is entity that could share
+    dictionary like data structures.
     """
 
 
@@ -41,7 +97,7 @@ class VerseLayer(verse_entity.VerseEntity):
         self.data_type = data_type
         self.count = count
         self.child_layers = {}
-        self._items = {}
+        self.items = VerseLayerItems(self)
         self.parent_layer = parent_layer
 
         # Set bindings
@@ -69,9 +125,19 @@ class VerseLayer(verse_entity.VerseEntity):
         """
         if self.node.session is not None and self.id is not None:
             if self.parent_layer is not None:
-                self.node.session.send_layer_create(self.node.prio, self.node.id, self.parent_layer.id, self.data_type, self.count, self.custom_type)
+                self.node.session.send_layer_create(self.node.prio, \
+                    self.node.id, \
+                    self.parent_layer.id, \
+                    self.data_type, \
+                    self.count, \
+                    self.custom_type)
             else:
-                self.node.session.send_layer_create(self.node.prio, self.node.id, -1, self.data_type, self.count, self.custom_type)
+                self.node.session.send_layer_create(self.node.prio, \
+                    self.node.id, \
+                    -1, \
+                    self.data_type, \
+                    self.count, \
+                    self.custom_type)
 
 
     def _send_destroy(self):
@@ -116,34 +182,6 @@ class VerseLayer(verse_entity.VerseEntity):
         """
         self._destroy()
 
-
-    @property
-    def item(self, item_id):
-        """
-        Item is property of layer
-        """
-        return self._items[item_id]
-
-
-    @item.setter
-    def item(self, item_id, val):
-        """
-        Setter of layer item
-        """
-        self._items[item_id] = val
-        if self.node.session is not None and self.id is not None:
-            self.node.session.send_layer_set_value(self.node.prio, self.node.id, self.id, item_id, val)
-
-
-    @item.deleter
-    def item(self, item_id):
-        """
-        Deleter of layer item
-        """
-        self._items.pop(item_id)
-        if self.node.session is not None and self.id is not None:
-            self.node.session.send_layer_unset_value(self.node.prio, self.node.id, self.id, item_id)
-
     
     @staticmethod
     def _receive_layer_create(session, node_id, parent_layer_id, layer_id, data_type, count, custom_type):
@@ -175,12 +213,17 @@ class VerseLayer(verse_entity.VerseEntity):
             layer = node.layer_queue[custom_type]
             layer.id = layer_id
         except KeyError:
-            layer = VerseLayer(node=node, parent_layer=parent_layer, layer_id=layer_id, data_type=data_type, count=count, custom_type=custom_type)
+            layer = VerseLayer(node=node, \
+                parent_layer=parent_layer, \
+                layer_id=layer_id, \
+                data_type=data_type, \
+                count=count, \
+                custom_type=custom_type)
 
         node.layers[layer_id] = layer
 
         # When this layer has some pending values, then send them to Verse server
-        for item_id, value in layer._itemss.items():
+        for item_id, value in layer.items.items():
             session.send_layer_set_value(node.prio, node.id, layer.id, item_id, value)
 
 
@@ -226,7 +269,7 @@ class VerseLayer(verse_entity.VerseEntity):
         except KeyError:
             return
         # Set item value
-        layer._items[item_id] = value
+        layer.items[item_id] = value
 
 
     @staticmethod
@@ -248,7 +291,7 @@ class VerseLayer(verse_entity.VerseEntity):
             return
         # UnSet item value
         try:
-            layer._items.pop(item_id)
+            layer.items.pop(item_id)
         except KeyError:
             return
 

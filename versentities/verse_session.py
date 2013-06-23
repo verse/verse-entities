@@ -217,6 +217,41 @@ class VerseSession(vrs.Session):
         return tag
 
 
+    def _receive_layer_create(self, node_id, parent_layer_id, layer_id, data_type, count, custom_type):
+        """
+        Custom callback method that is called, when client received command layer create
+        """
+        # Call method of parent class
+        if self.debug_print is True:
+            super(VerseSession, self)._receive_layer_create(node_id, \
+                parent_layer_id, \
+                layer_id, \
+                data_type, \
+                count, \
+                custom_type)
+        # Call callback method of model
+        layer = verse_layer.VerseLayer._receive_layer_create(self, \
+            node_id, \
+            parent_layer_id, \
+            layer_id, \
+            data_type, \
+            count, \
+            custom_type)
+        return layer
+
+
+    def _receive_layer_destroy(self, node_id, layer_id):
+        """
+        Custom callback method that is called, when client received command layer destroy
+        """
+        # Call method of parent class
+        if self.debug_print is True:
+            super(VerseSession, self)._receive_layer_destroy(node_id, layer_id)
+        # Call callback method of model
+        layer = verse_layer.VerseLayer._receive_layer_destroy(self, node_id, layer_id)
+        return layer
+
+
     def _receive_connect_terminate(self, error):
         """
         Custom callback method for fake connect terminate command
