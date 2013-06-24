@@ -24,7 +24,7 @@ import unittest
 import versentities as vrsent
 import verse as vrs
 import time
-import test_node, test_tg, test_tag
+import test_node, test_tg, test_tag, test_layer
 
 
 class TestSession(vrsent.VerseSession):
@@ -105,6 +105,12 @@ class TestSession(vrsent.VerseSession):
                 tg_id=None, \
                 custom_type=32)
 
+            # Create new test tag group for testing of tag group destroying 
+            self.test_node.test_destroy_tg = vrsent.VerseTagGroup(node=self.test_node, \
+                tg_id=None, \
+                custom_type=33)
+            self.test_node.test_destroy_tg.destroy()
+
             # Create new test tag and set it's value
             self.test_node.test_tg.test_tag = vrsent.VerseTag(tg=self.test_node.test_tg, \
                 tag_id=None, \
@@ -112,7 +118,7 @@ class TestSession(vrsent.VerseSession):
                 custom_type=64,
                 value=(123,))
 
-            # Create new tag for testing destroying of tag
+            # Create new tag for testing of tag destroying
             self.test_node.test_tg.test_destroy_tag = vrsent.VerseTag(tg=self.test_node.test_tg, \
                 tag_id=None, \
                 data_type=vrs.VALUE_TYPE_UINT8, \
@@ -131,6 +137,14 @@ class TestSession(vrsent.VerseSession):
             for item_id in range(10):
                 self.test_node.test_layer.items[item_id] = (item_id,)
 
+            # Create test layer for testing of layer destroying
+            self.test_node.test_destroy_layer = vrsent.VerseLayer(node=self.test_node, \
+                parent_layer=None, \
+                data_type=vrs.VALUE_TYPE_UINT8, \
+                count=1,
+                custom_type=129)
+            self.test_node.test_destroy_layer.destroy()
+
             # Test new Node
             suite = unittest.TestLoader().loadTestsFromTestCase(test_node.TestNewNodeCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
@@ -139,8 +153,12 @@ class TestSession(vrsent.VerseSession):
             suite = unittest.TestLoader().loadTestsFromTestCase(test_tg.TestNewTagGroupCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
-            # Test new tag
+            # Test new Tag
             suite = unittest.TestLoader().loadTestsFromTestCase(test_tag.TestNewTagCase)
+            unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
+
+            # Test new Layer
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_layer.TestNewLayerCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
         # Start unit testing of created node
@@ -198,6 +216,21 @@ class TestSession(vrsent.VerseSession):
         if tg == self.test_node.test_tg:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_tg.TestCreatedTagGroupCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
+        elif tg == sel.test_node.test_destroy_tg:
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_tg.TestDestroyingTagGroupCase)
+            unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
+
+
+    def _receive_taggroup_destroy(self, node_id, taggroup_id):
+        """
+        Custom callback method that is called, when client received command
+        tag group destroy
+        """
+        tg = super(TestSession, self)._receive_taggroup_destroy(node_id, taggroup_id)
+        # Start unit testing of destroyed tag group
+        if tg == self.test_node.test_destroy_tg:
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_tg.TestDestroyedTagGroupCase)
+            unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
 
     def _receive_tag_create(self, node_id, taggroup_id, tag_id, data_type, count, custom_type):
@@ -235,6 +268,27 @@ class TestSession(vrsent.VerseSession):
         if tag == self.test_node.test_tg.test_tag:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_tag.TestChangedTagCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
+
+
+    def _receive_layer_create(self, node_id, parent_layer_id, layer_id, data_type, count, custom_type):
+        """
+        Custom callback method that is called, when client receive command layer create
+        """
+        layer = super(TestSession, self)._receive_layer_create(node_id, \
+            parent_layer_id, \
+            layer_id, \
+            data_type, \
+            count, \
+            custom_type)
+        if layer == self.test_node.test_layer:
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_tag.TestCreatedLayerCase)
+            unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
+
+    def _receive_layer_destroy(self, node_id, layer_id):
+        """
+        Custom callback method that is called, when client receive command layer create
+        """
+        layer = super(TestSession, self)._receive_layer_destroy(node_id, layer_id)
 
 
     def _receive_connect_terminate(self, error):

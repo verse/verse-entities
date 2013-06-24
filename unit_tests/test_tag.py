@@ -27,7 +27,7 @@ import versentities as vrsent
 
 class TestChangedTagCase(unittest.TestCase):
     """
-    Test case of created VerseTag
+    Test case of VerseTag values
     """
 
     node = None
@@ -45,7 +45,7 @@ class TestChangedTagCase(unittest.TestCase):
 
     def test_tag_value(self):
         """
-        Test of state of created tag
+        Test of tag value
         """      
         self.assertEqual(__class__.tag.value, (123,))
 
@@ -59,7 +59,7 @@ class TestChangedTagCase(unittest.TestCase):
 
 class TestDestroyingTagCase(unittest.TestCase):
     """
-    Test case of created VerseTag
+    Test case of destroying VerseTag
     """
 
     node = None
@@ -75,16 +75,16 @@ class TestDestroyingTagCase(unittest.TestCase):
         __class__.tg = vrsent.session.test_node.test_tg
         __class__.tag = vrsent.session.test_node.test_tg.test_destroy_tag
 
-    def test_tag_created(self):
+    def test_tag_destroying(self):
         """
-        Test of state of created tag
+        Test of state of destroying tag
         """      
         self.assertEqual(__class__.tag.state, vrsent.verse_entity.ENTITY_DESTROYING)
 
 
 class TestDestroyedTagCase(unittest.TestCase):
     """
-    Test case of created VerseTag
+    Test case of destroyed VerseTag
     """
 
     node = None
@@ -100,9 +100,9 @@ class TestDestroyedTagCase(unittest.TestCase):
         __class__.tg = vrsent.session.test_node.test_tg
         __class__.tag = vrsent.session.test_node.test_tg.test_destroy_tag
 
-    def test_tag_created(self):
+    def test_tag_destroyed(self):
         """
-        Test of state of created tag
+        Test of state of destroyed tag
         """      
         self.assertEqual(__class__.tag.state, vrsent.verse_entity.ENTITY_DESTROYED)
 

@@ -102,6 +102,9 @@ class VerseLayer(verse_entity.VerseEntity):
         self.parent_layer = parent_layer
         self.send_cmds = True
 
+        # Change state and send commands
+        self._create()
+
         # Set bindings
         if layer_id is not None:
             self.node.layers[layer_id] = self
@@ -109,16 +112,6 @@ class VerseLayer(verse_entity.VerseEntity):
             self.node.layer_queue[self.custom_type] = self
         if self.parent_layer is not None and layer_id is not None:
             self.parent_layer.child_layers[layer_id] = self
-
-
-    def destroy(self):
-        """
-        Destructor of VerseLayer
-        """
-        # Clear bindings
-        self.node.layers.pop(self.id)
-        if self.parent_layer is not None:
-            self.parent_layer.childs.pop(self.id)
 
 
     def _send_create(self):
@@ -176,6 +169,7 @@ class VerseLayer(verse_entity.VerseEntity):
             layer.parent_layer = None
             layer._clean()
         self.child_layers.clear()
+        self.node.layers.pop(self.id)
 
 
     def destroy(self):
@@ -205,8 +199,9 @@ class VerseLayer(verse_entity.VerseEntity):
                 parent_layer = node.layers[parent_layer_id]
             except KeyError:
                 # When new layer has parent layer, but this parent layer does not exist yet, then
-                # create this parent layer
-                parent_layer = VerseLayer(node=node, parent_layer=None, layer_id=parent_layer_id)
+                # create this parent layer ... TODO: this is fishy
+                #parent_layer = VerseLayer(node=node, parent_layer=None, layer_id=parent_layer_id)
+                parent_layer = None
         else:
             parent_layer = None
 

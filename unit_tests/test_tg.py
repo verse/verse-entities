@@ -23,6 +23,54 @@ Module for testing class VerseTagGroup from module versentities
 import unittest
 import versentities as vrsent
 
+
+class TestDestroyingTagCase(unittest.TestCase):
+    """
+    Test case of destroying VerseTag
+    """
+
+    node = None
+    tg = None
+    tag = None
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        This method is called before any test is performed
+        """
+        __class__.node = vrsent.session.test_node
+        __class__.tg = vrsent.session.test_node.test_destroy_tg
+
+    def test_tag_destroying(self):
+        """
+        Test of state of destroying tag
+        """      
+        self.assertEqual(__class__.tg.state, vrsent.verse_entity.ENTITY_DESTROYING)
+
+
+class TestDestroyedTagGroupCase(unittest.TestCase):
+    """
+    Test case of destroyed VerseTagGroup
+    """
+
+    node = None
+    tg = None
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        This method is called before any test is performed
+        """
+        __class__.node = vrsent.session.test_node
+        __class__.tg = vrsent.session.test_node.test_destroy_tg
+
+    def test_tag_destroyed(self):
+        """
+        Test of state of destroyed tag group
+        """      
+        self.assertEqual(__class__.tg.state, vrsent.verse_entity.ENTITY_DESTROYED)
+
+
 class TestCreatedTagGroupCase(unittest.TestCase):
     """
     Test case of VerseTagGroup
