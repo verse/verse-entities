@@ -172,6 +172,27 @@ class TestNewTagGroupCase(unittest.TestCase):
         self.assertEqual(__class__.tg.subscribed, False)
 
 
+class TestOwnerPermNodeCase(unittest.TestCase):
+    """
+    Test case of VerseNode with access permissions
+    """
+
+    node = None
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        This method is called before any test is performed
+        """
+        __class__.node = vrsent.session.test_node
+
+    def test_node_owner_perm(self):
+        """
+        Testing permissions for owner of node
+        """
+        self.assertEqual(__class__.node.perm[vrsent.session.user_id], 3) # TODO: implement constant to API
+
+
 class TestLinkNodeCase(unittest.TestCase):
     """
     Test case of VerseNode with changed link to parent node
@@ -441,6 +462,18 @@ class TestSession(vrsent.VerseSession):
         # Start unit testing of destroyed node
         if node == self.test_destroy_node:
             suite = unittest.TestLoader().loadTestsFromTestCase(TestDestroyedNodeCase)
+            unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
+
+
+    def _receive_node_perm(self, node_id, user_id, perm):
+        """
+        Custom callback method for testing node permission
+        """
+        node = super(TestSession, self)._receive_node_perm(node_id, user_id, perm)
+
+        # Start unit testing of node with permission
+        if node == self.test_node and user_id == self.user_id:
+            suite = unittest.TestLoader().loadTestsFromTestCase(TestOwnerPermNodeCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
 
