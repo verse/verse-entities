@@ -111,7 +111,7 @@ class VerseTag(verse_entity.VerseEntity):
         self._value = val
         # Send value to Verse server
         if self.tg.node.session is not None and self.id is not None:
-            self.tg.node.session.send_tag_set_value(self.tg.node.prio, \
+            self.tg.node.session.send_tag_set_values(self.tg.node.prio, \
                 self.tg.node.id, \
                 self.tg.id, \
                 self.id, \
@@ -191,7 +191,7 @@ class VerseTag(verse_entity.VerseEntity):
         return tag
 
     @staticmethod
-    def _receive_tag_set_value(session, node_id, tg_id, tag_id, value):
+    def _receive_tag_set_values(session, node_id, tg_id, tag_id, value):
         """
         Static method of class that should be called when
         coresponding callback function is called

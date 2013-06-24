@@ -127,9 +127,7 @@ class VerseSession(vrs.Session):
         if self.debug_print is True:
             super(VerseSession, self)._receive_node_create(node_id, parent_id, user_id, custom_type)
         # Call calback method of model
-        node = verse_node.VerseNode._receive_node_create(self, node_id, parent_id, user_id, custom_type)
-
-        return node
+        return verse_node.VerseNode._receive_node_create(self, node_id, parent_id, user_id, custom_type)
 
 
     def _receive_node_destroy(self, node_id):
@@ -140,9 +138,18 @@ class VerseSession(vrs.Session):
         if self.debug_print is True:
             super(VerseSession, self)._receive_node_destroy(node_id)
         # Call callback method of model
-        node = verse_node.VerseNode._receive_node_destroy(self, node_id)
+        return verse_node.VerseNode._receive_node_destroy(self, node_id)
 
-        return node
+
+    def _receive_node_perm(self, node_id, user_id, perm):
+        """
+        Custom callback method for command node perm
+        """
+        # Call parent method to print debug information
+        if self.debug_print is True:
+            super(VerseSession, self)._receive_node_perm(node_id, user_id, perm)
+        # Call callback method of model
+        return verse_node.VerseNode._receive_node_perm(self, node_id, user_id, perm)
 
 
     def _receive_node_link(self, parent_node_id, child_node_id):
@@ -153,10 +160,8 @@ class VerseSession(vrs.Session):
         # Call parent method to print debug information
         if self.debug_print is True:
             super(VerseSession, self)._receive_node_link(parent_node_id, child_node_id)
-        # Call calback method of model
-        child_node = verse_node.VerseNode._receive_node_link(self, parent_node_id, child_node_id)
-
-        return child_node
+        # Call calback method of model and return child node
+        return verse_node.VerseNode._receive_node_link(self, parent_node_id, child_node_id)
 
 
     def _receive_taggroup_create(self, node_id, taggroup_id, custom_type):
@@ -168,8 +173,7 @@ class VerseSession(vrs.Session):
         if self.debug_print is True:
             super(VerseSession, self)._receive_taggroup_create(node_id, taggroup_id, custom_type)
         # Call calback method of model
-        tg = verse_tag_group.VerseTagGroup._receive_tg_create(self, node_id, taggroup_id, custom_type)
-        return tg
+        return verse_tag_group.VerseTagGroup._receive_tg_create(self, node_id, taggroup_id, custom_type)
 
 
     def _receive_taggroup_destroy(self, node_id, taggroup_id):
@@ -181,8 +185,7 @@ class VerseSession(vrs.Session):
         if self.debug_print is True:
             super(VerseSession, self)._receive_taggroup_destroy(node_id, taggroup_id)
         # Call calback method of model
-        tg = verse_tag_group.VerseTagGroup._receive_tg_destroy(self, node_id, taggroup_id)
-        return tg
+        return verse_tag_group.VerseTagGroup._receive_tg_destroy(self, node_id, taggroup_id)
 
 
     def _receive_tag_create(self, node_id, taggroup_id, tag_id, data_type, count, custom_type):
@@ -193,8 +196,7 @@ class VerseSession(vrs.Session):
         if self.debug_print is True:
             super(VerseSession, self)._receive_tag_create(node_id, taggroup_id, tag_id, data_type, count, custom_type)
         # Call calback method of model
-        tag = verse_tag.VerseTag._receive_tag_create(self, node_id, taggroup_id, tag_id, data_type, count, custom_type)
-        return tag
+        return verse_tag.VerseTag._receive_tag_create(self, node_id, taggroup_id, tag_id, data_type, count, custom_type)
 
 
     def _receive_tag_destroy(self, node_id, taggroup_id, tag_id):
@@ -205,20 +207,18 @@ class VerseSession(vrs.Session):
         if self.debug_print is True:
             super(VerseSession, self)._receive_tag_destroy(node_id, taggroup_id, tag_id)
         # Call calback method of model
-        tag = verse_tag.VerseTag._receive_tag_create(self, node_id, taggroup_id, tag_id)
-        return tag
+        return verse_tag.VerseTag._receive_tag_create(self, node_id, taggroup_id, tag_id)
 
 
-    def _receive_tag_set_value(self, node_id, taggroup_id, tag_id, value):
+    def _receive_tag_set_values(self, node_id, taggroup_id, tag_id, value):
         """
         Custom callback method that is called, when client reveived command tag set value
         """
         # Call method of parent class
         if self.debug_print is True:
-            super(VerseSession, self)._receive_tag_set_value(node_id, taggroup_id, tag_id, value)
+            super(VerseSession, self)._receive_tag_set_values(node_id, taggroup_id, tag_id, value)
         # Call callback method of model
-        tag = verse_tag.VerseTag._receive_tag_set_value(self, node_id, taggroup_id, tag_id, value)
-        return tag
+        return verse_tag.VerseTag._receive_tag_set_values(self, node_id, taggroup_id, tag_id, value)
 
 
     def _receive_layer_create(self, node_id, parent_layer_id, layer_id, data_type, count, custom_type):
@@ -234,14 +234,13 @@ class VerseSession(vrs.Session):
                 count, \
                 custom_type)
         # Call callback method of model
-        layer = verse_layer.VerseLayer._receive_layer_create(self, \
+        return verse_layer.VerseLayer._receive_layer_create(self, \
             node_id, \
             parent_layer_id, \
             layer_id, \
             data_type, \
             count, \
             custom_type)
-        return layer
 
 
     def _receive_layer_destroy(self, node_id, layer_id):
@@ -252,8 +251,29 @@ class VerseSession(vrs.Session):
         if self.debug_print is True:
             super(VerseSession, self)._receive_layer_destroy(node_id, layer_id)
         # Call callback method of model
-        layer = verse_layer.VerseLayer._receive_layer_destroy(self, node_id, layer_id)
-        return layer
+        return verse_layer.VerseLayer._receive_layer_destroy(self, node_id, layer_id)
+
+
+    def _receive_layer_set_value(self, node_id, layer_id, item_id, value):
+        """
+        Custom callback method that is called, when client received command layer set value
+        """
+        # Call method of parent class
+        if self.debug_print is True:
+            super(VerseSession, self)._receive_layer_set_value(node_id, layer_id, item_id, value)
+        # Call callback method of model
+        return verse_layer.VerseLayer._receive_layer_set_value(self, node_id, layer_id, item_id, value)
+
+
+    def _receive_layer_unset_value(self, node_id, layer_id, item_id):
+        """
+        Custom callback method that is called, when client received command layer unset value
+        """
+        # Call method of parent class
+        if self.debug_print is True:
+            super(VerseSession, self)._receive_layer_unset_value(node_id, layer_id, item_id)
+        # Call callback method of model
+        return verse_layer.VerseLayer._receive_layer_unset_value(self, node_id, layer_id, item_id)
 
 
     def _receive_connect_terminate(self, error):

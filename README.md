@@ -1,7 +1,11 @@
 Verse Entities
 ==============
 
-This project contains Python module that simplify implementation of Verse client. It contains several class of basic Verse entities:
+This project contains Python module that simplify implementation of Verse client. This module requires compiled verse module that could be found at github:
+
+https://github.com/verse/verse
+
+Versentities module contains several class of basic Verse entities:
 
 * VerseSession
 * VerseNode

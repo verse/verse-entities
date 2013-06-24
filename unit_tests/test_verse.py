@@ -481,11 +481,11 @@ class TestSession(vrsent.VerseSession):
             suite = unittest.TestLoader().loadTestsFromTestCase(TestCreatedTagCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
-    def _receive_tag_set_value(self, node_id, taggroup_id, tag_id, value):
+    def _receive_tag_set_values(self, node_id, taggroup_id, tag_id, value):
         """
         Custom callback method that is called, when client reveive command tag set value
         """
-        tag = super(TestSession, self)._receive_tag_set_value(node_id, taggroup_id, tag_id, value)
+        tag = super(TestSession, self)._receive_tag_set_values(node_id, taggroup_id, tag_id, value)
 
         # Start unit testing of tag with changed value
         if tag == self.test_node.test_tg.test_tag:

@@ -44,7 +44,8 @@ class VerseLayerItems(dict):
         """
         Setter of item that tries to send new value to Verse server
         """
-        if self.layer.node.session is not None and self.layer.id is not None:
+        # TODO: simplify following condition
+        if self.layer.node.session is not None and self.layer.id is not None and self.layer.send_cmds == True:
             self.layer.node.session.send_layer_set_value(self.layer.node.prio, \
                 self.layer.node.id, \
                 self.layer.id, \
@@ -99,6 +100,7 @@ class VerseLayer(verse_entity.VerseEntity):
         self.child_layers = {}
         self.items = VerseLayerItems(self)
         self.parent_layer = parent_layer
+        self.send_cmds = True
 
         # Set bindings
         if layer_id is not None:
@@ -268,8 +270,12 @@ class VerseLayer(verse_entity.VerseEntity):
             layer = node.layers[layer_id]
         except KeyError:
             return
-        # Set item value
+        # Set item value, but do not send command to verse server
+        layer.send_cmds = False
         layer.items[item_id] = value
+        layer.send_cmds = True
+
+        return layer
 
 
     @staticmethod
@@ -294,6 +300,8 @@ class VerseLayer(verse_entity.VerseEntity):
             layer.items.pop(item_id)
         except KeyError:
             return
+
+        return layer
 
 
     @staticmethod

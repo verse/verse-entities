@@ -52,6 +52,7 @@ class VerseNode(verse_entity.VerseEntity):
         self.layers = {}
         self.layer_queue = {}
         self.prio = vrs.DEFAULT_PRIORITY
+        self.perms = {}
 
         # Change state and send commands
         self._create()
@@ -207,6 +208,22 @@ class VerseNode(verse_entity.VerseEntity):
             return
         # Set entity state and clean data in this node
         node._receive_destroy()
+        # Return reference at this node
+        return node
+
+
+    @staticmethod
+    def _receive_node_perm(session, node_id, user_id, perm):
+        """
+        Static method of class that is called, when client received infomration
+        about permission for specific user
+        """
+        try:
+            node = session.nodes[node_id]
+        except KeyError:
+            return
+        # Store information about this permissions
+        node.perms[user_id] = perm
         # Return reference at this node
         return node
 
