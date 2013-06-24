@@ -24,317 +24,7 @@ import unittest
 import versentities as vrsent
 import verse as vrs
 import time
-
-
-class TestChangedTagCase(unittest.TestCase):
-    """
-    Test case of created VerseTag
-    """
-
-    node = None
-    tg = None
-    tag = None
-
-    @classmethod
-    def setUpClass(cls):
-        """
-        This method is called before any test is performed
-        """
-        __class__.node = vrsent.session.test_node
-        __class__.tg = vrsent.session.test_node.test_tg
-        __class__.tag = vrsent.session.test_node.test_tg.test_tag
-
-    def test_tag_value(self):
-        """
-        Test of state of created tag
-        """      
-        self.assertEqual(__class__.tag.value, (123,))
-
-    @classmethod
-    def tearDownClass(cls):
-        """
-        This method is called, when all method has been performed
-        """
-        vrsent.session.send_connect_terminate()
-
-
-class TestCreatedTagCase(unittest.TestCase):
-    """
-    Test case of created VerseTag
-    """
-
-    node = None
-    tg = None
-    tag = None
-
-    @classmethod
-    def setUpClass(cls):
-        """
-        This method is called before any test is performed
-        """
-        __class__.node = vrsent.session.test_node
-        __class__.tg = vrsent.session.test_node.test_tg
-        __class__.tag = vrsent.session.test_node.test_tg.test_tag
-
-    def test_tag_created(self):
-        """
-        Test of state of created tag
-        """      
-        self.assertEqual(__class__.tag.state, vrsent.verse_entity.ENTITY_CREATED)
-
-
-class TestNewTagCase(unittest.TestCase):
-    """
-    Test case of new VerseTag
-    """
-
-    node = None
-    tg = None
-    tag = None
-
-    @classmethod
-    def setUpClass(cls):
-        """
-        This method is called before any test is performed
-        """
-        __class__.node = vrsent.session.test_node
-        __class__.tg = vrsent.session.test_node.test_tg
-        __class__.tag = vrsent.session.test_node.test_tg.test_tag
-
-    def test_tag_not_created(self):
-        """
-        Test of state of created tag
-        """      
-        self.assertEqual(__class__.tag.state, vrsent.verse_entity.ENTITY_CREATING)
-
-
-class TestCreatedTagGroupCase(unittest.TestCase):
-    """
-    Test case of VerseTagGroup
-    """
-
-    node = None
-    tg = None
-
-    @classmethod
-    def setUpClass(cls):
-        """
-        This method is called before any test is performed
-        """
-        __class__.node = vrsent.session.test_node
-        __class__.tg = vrsent.session.test_node.test_tg
-
-    def test_tg_created(self):
-        """
-        Test of state of created tag group
-        """      
-        self.assertEqual(__class__.tg.state, vrsent.verse_entity.ENTITY_CREATED)
-
-    def test_tg_id(self):
-        """
-        Test of tag group ID
-        """      
-        self.assertIsNotNone(__class__.tg.id)
-
-    def test_tg_subscribed(self):
-        """
-        Test of subscription of created tag group
-        """      
-        self.assertEqual(__class__.tg.subscribed, True)
-
-
-class TestNewTagGroupCase(unittest.TestCase):
-    """
-    Test case of VerseTagGroup
-    """
-
-    node = None
-    tg = None
-
-    @classmethod
-    def setUpClass(cls):
-        """
-        This method is called before any test is performed
-        """
-        __class__.node = vrsent.session.test_node
-        __class__.tg = vrsent.session.test_node.test_tg
-
-    def test_tg_not_created(self):
-        """
-        Test of creating new tag group
-        """      
-        self.assertEqual(__class__.tg.state, vrsent.verse_entity.ENTITY_CREATING)
-
-    def test_tg_not_subscribed(self):
-        """
-        Test of subscription of new tag group
-        """      
-        self.assertEqual(__class__.tg.subscribed, False)
-
-
-class TestOwnerPermNodeCase(unittest.TestCase):
-    """
-    Test case of VerseNode with access permissions
-    """
-
-    node = None
-
-    @classmethod
-    def setUpClass(cls):
-        """
-        This method is called before any test is performed
-        """
-        __class__.node = vrsent.session.test_node
-
-    def test_node_owner_perm(self):
-        """
-        Testing permissions for owner of node
-        """
-        self.assertEqual(__class__.node.perm[vrsent.session.user_id], 3) # TODO: implement constant to API
-
-
-class TestLinkNodeCase(unittest.TestCase):
-    """
-    Test case of VerseNode with changed link to parent node
-    """
-
-    child_node = None
-    parent_node = None
-
-    @classmethod
-    def setUpClass(cls):
-        """
-        This method is called before any test is performed
-        """
-        __class__.child_node = vrsent.session.test_node
-        __class__.parent_node = vrsent.session.test_scene_node
-        __class__.avatar_node = vrsent.session.avatar_node
-
-    def test_child_node_link(self):
-        """
-        Test of node with changed link to parent node
-        """      
-        self.assertEqual(__class__.child_node.parent, __class__.parent_node)
-
-    def test_parent_node_link(self):
-        """
-        Test that new parent node includes child node in
-        dictionary of child nodes
-        """
-        self.assertEqual(__class__.parent_node.child_nodes[__class__.child_node.id], __class__.child_node)
-
-    def test_avatar_child_nodes(self):
-        """
-        Test that original parent node (avatar node) does not include
-        reference at node anymore
-        """
-        try:
-            node = __class__.avatar_node.child_nodes[__class__.child_node.id]
-        except KeyError:
-            node = None
-        self.assertIsNone(node)
-
-
-class TestDestroyedNodeCase(unittest.TestCase):
-    """
-    Test case of destroying of VerseNode
-    """
-
-    node = None
-
-    @classmethod
-    def setUpClass(cls):
-        """
-        This method is called before any test is performed
-        """
-        __class__.node = vrsent.session.test_destroy_node
-
-    def test_node_destroying(self):
-        """
-        Test of creating new node
-        """      
-        self.assertEqual(__class__.node.state, vrsent.verse_entity.ENTITY_DESTROYED)
-
-
-class TestDestroyNodeCase(unittest.TestCase):
-    """
-    Test case of destroying of VerseNode
-    """
-
-    node = None
-
-    @classmethod
-    def setUpClass(cls):
-        """
-        This method is called before any test is performed
-        """
-        __class__.node = vrsent.session.test_destroy_node
-
-    def test_node_destroying(self):
-        """
-        Test of creating new node
-        """      
-        self.assertEqual(__class__.node.state, vrsent.verse_entity.ENTITY_DESTROYING)
-
-
-class TestCreatedNodeCase(unittest.TestCase):
-    """
-    Test case of created VerseNode
-    """
-
-    node = None
-
-    @classmethod
-    def setUpClass(cls):
-        """
-        This method is called before any test is performed
-        """
-        __class__.node = vrsent.session.test_node
-
-    def test_node_created(self):
-        """
-        Test of creating new node
-        """      
-        self.assertEqual(__class__.node.state, vrsent.verse_entity.ENTITY_CREATED)
-
-    def test_node_id(self):
-        """
-        Test of node ID
-        """      
-        self.assertIsNotNone(__class__.node.id)
-
-    def test_node_subscribed(self):
-        """
-        Test of node subscribtion
-        """      
-        self.assertEqual(__class__.node.subscribed, True)
-
-
-class TestNewNodeCase(unittest.TestCase):
-    """
-    Test case of new VerseNode
-    """
-
-    node = None
-
-    @classmethod
-    def setUpClass(cls):
-        """
-        This method is called before any test is performed
-        """
-        __class__.node = vrsent.session.test_node
-
-    def test_node_not_created(self):
-        """
-        Test of creating new node
-        """      
-        self.assertEqual(__class__.node.state, vrsent.verse_entity.ENTITY_CREATING)
-
-    def test_node_not_subscribed(self):
-        """
-        Test of creating new node
-        """      
-        self.assertEqual(__class__.node.subscribed, False)
+import test_node, test_tg, test_tag
 
 
 class TestSession(vrsent.VerseSession):
@@ -363,6 +53,7 @@ class TestSession(vrsent.VerseSession):
         self.verbosity = 1
         self.debug_print = False
 
+
     def _receive_node_create(self, node_id, parent_id, user_id, custom_type):
         """
         Custom callback method that is called, when client received
@@ -370,13 +61,13 @@ class TestSession(vrsent.VerseSession):
         """
         node = super(TestSession, self)._receive_node_create(node_id, parent_id, user_id, custom_type)
 
-        # Start unit testing of new node, tag group and tag, when avatar node is created
+        # Start all unit tests, when avatar node is created
         if node_id == self.avatar_id:
 
             # Save reference at avatar node
             self.avatar_node = node
 
-            # Try to find node representing parent node of scene nodes
+            # Try to find node that is parent node of all scene nodes
             try:
                 self.scene_node = self.nodes[3]
             except KeyError:
@@ -421,6 +112,15 @@ class TestSession(vrsent.VerseSession):
                 custom_type=64,
                 value=(123,))
 
+            # Create new tag for testing destroying of tag
+            self.test_node.test_tg.test_destroy_tag = vrsent.VerseTag(tg=self.test_node.test_tg, \
+                tag_id=None, \
+                data_type=vrs.VALUE_TYPE_UINT8, \
+                custom_type=65,
+                value=(124,))
+            # Destroy tag immediately
+            self.test_node.test_tg.test_destroy_tag.destroy()
+
             # Create test layer
             self.test_node.test_layer = vrsent.VerseLayer(node=self.test_node, \
                 parent_layer=None, \
@@ -432,36 +132,36 @@ class TestSession(vrsent.VerseSession):
                 self.test_node.test_layer.items[item_id] = (item_id,)
 
             # Test new Node
-            suite = unittest.TestLoader().loadTestsFromTestCase(TestNewNodeCase)
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_node.TestNewNodeCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
             # Test new TagGroup
-            suite = unittest.TestLoader().loadTestsFromTestCase(TestNewTagGroupCase)
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_tg.TestNewTagGroupCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
             # Test new tag
-            suite = unittest.TestLoader().loadTestsFromTestCase(TestNewTagCase)
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_tag.TestNewTagCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
         # Start unit testing of created node
         if node == self.test_node:
-            suite = unittest.TestLoader().loadTestsFromTestCase(TestCreatedNodeCase)
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_node.TestCreatedNodeCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
         # Start unit testing of destroying node
         if node == self.test_destroy_node:
-            suite = unittest.TestLoader().loadTestsFromTestCase(TestDestroyNodeCase)
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_node.TestDestroyNodeCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
+
 
     def _receive_node_destroy(self, node_id):
         """
         Custom callback method for command node destroy
         """
         node = super(TestSession, self)._receive_node_destroy(node_id)
-
         # Start unit testing of destroyed node
         if node == self.test_destroy_node:
-            suite = unittest.TestLoader().loadTestsFromTestCase(TestDestroyedNodeCase)
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_node.TestDestroyedNodeCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
 
@@ -470,10 +170,9 @@ class TestSession(vrsent.VerseSession):
         Custom callback method for testing node permission
         """
         node = super(TestSession, self)._receive_node_perm(node_id, user_id, perm)
-
         # Start unit testing of node with permission
         if node == self.test_node and user_id == self.user_id:
-            suite = unittest.TestLoader().loadTestsFromTestCase(TestOwnerPermNodeCase)
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_node.TestOwnerPermNodeCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
 
@@ -483,10 +182,9 @@ class TestSession(vrsent.VerseSession):
         link between nodes
         """
         child_node = super(TestSession, self)._receive_node_link(parent_node_id, child_node_id)
-
         # Start unit testing of node with changed parent
         if child_node == self.test_node:
-            suite = unittest.TestLoader().loadTestsFromTestCase(TestLinkNodeCase)
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_node.TestLinkNodeCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
 
@@ -496,10 +194,9 @@ class TestSession(vrsent.VerseSession):
         tag group create
         """
         tg = super(TestSession, self)._receive_taggroup_create(node_id, taggroup_id, custom_type)
-
         # Start unit testing of created tag group
         if tg == self.test_node.test_tg:
-            suite = unittest.TestLoader().loadTestsFromTestCase(TestCreatedTagGroupCase)
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_tg.TestCreatedTagGroupCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
 
@@ -508,21 +205,35 @@ class TestSession(vrsent.VerseSession):
         Custom callback method that is called, when client receive command tag create
         """
         tag = super(TestSession, self)._receive_tag_create(node_id, taggroup_id, tag_id, data_type, count, custom_type)
-
         # Start unit testing of created tag
         if tag == self.test_node.test_tg.test_tag:
-            suite = unittest.TestLoader().loadTestsFromTestCase(TestCreatedTagCase)
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_tag.TestCreatedTagCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
+        # Start unit testing of tag in destroyed state
+        elif tag == self.test_node.test_tg.test_destroy_tag:
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_tag.TestDestroyingTagCase)
+            unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
+
+
+    def _receive_tag_destroy(self, node_id, taggroup_id, tag_id):
+        """
+        Custom callback used for destroying of tag
+        """
+        tag = super(TestSession, self)._receive_tag_destroy(node_id, taggroup_id, tag_id)
+        # Start unit testing of destroyed tag
+        if tag == self.test_node.test_tg.test_destroy_tag:
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_tag.TestDestroyedTagCase)
+            unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
+
 
     def _receive_tag_set_values(self, node_id, taggroup_id, tag_id, value):
         """
         Custom callback method that is called, when client reveive command tag set value
         """
         tag = super(TestSession, self)._receive_tag_set_values(node_id, taggroup_id, tag_id, value)
-
         # Start unit testing of tag with changed value
         if tag == self.test_node.test_tg.test_tag:
-            suite = unittest.TestLoader().loadTestsFromTestCase(TestChangedTagCase)
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_tag.TestChangedTagCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
 
@@ -531,6 +242,7 @@ class TestSession(vrsent.VerseSession):
         Custom callback method for fake connect terminate command
         """
         self.state = 'DISCONNECTED'
+
 
 def main(hostname, username, password):
     """
@@ -543,6 +255,7 @@ def main(hostname, username, password):
     while(vrsent.session.state != 'DISCONNECTED'):
         vrsent.session.callback_update()
         time.sleep(0.05)
+
 
 if __name__ == '__main__':
     import argparse

@@ -143,7 +143,7 @@ class VerseTag(verse_entity.VerseEntity):
         Send tag destroy command to Verse server
         """
         if self.tg.node.session is not None and self.id is not None:
-            self.tg.node.session.send_tag_destroy(self.node.prio, \
+            self.tg.node.session.send_tag_destroy(self.tg.node.prio, \
                 self.tg.node.id, \
                 self.tg.id, \
                 self.id)
@@ -234,7 +234,7 @@ class VerseTag(verse_entity.VerseEntity):
             return
         # Try to find tag
         try:
-            tag = tg.tag_queue[custom_type]
+            tag = tg.tags[tag_id]
         except KeyError:
             return
         # Change state and call clen method

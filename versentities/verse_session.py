@@ -207,7 +207,7 @@ class VerseSession(vrs.Session):
         if self.debug_print is True:
             super(VerseSession, self)._receive_tag_destroy(node_id, taggroup_id, tag_id)
         # Call calback method of model
-        return verse_tag.VerseTag._receive_tag_create(self, node_id, taggroup_id, tag_id)
+        return verse_tag.VerseTag._receive_tag_destroy(self, node_id, taggroup_id, tag_id)
 
 
     def _receive_tag_set_values(self, node_id, taggroup_id, tag_id, value):
