@@ -35,6 +35,7 @@ class VerseNode(verse_entity.VerseEntity):
         """
         super(VerseNode, self).__init__(custom_type=custom_type)
 
+        # TODO: Check if session is instance of VerseSession or subclass
         self.session = session
 
         self.id = node_id
@@ -114,7 +115,7 @@ class VerseNode(verse_entity.VerseEntity):
         """
         This method send node create command to Verse server
         """
-        if self.session is not None and self.session.state == 'CONNECTED' and self.id is None:
+        if self.session.state == 'CONNECTED' and self.id is None:
             self.session.send_node_create(self.prio, self.custom_type)
 
 
@@ -122,7 +123,7 @@ class VerseNode(verse_entity.VerseEntity):
         """
         This method send destroy command to Verse server
         """
-        if self.session is not None and self.session.state == 'CONNECTED' and self.id is not None:
+        if self.session.state == 'CONNECTED' and self.id is not None:
             self.session.send_node_destroy(self.prio, self.id)
 
 
@@ -130,7 +131,7 @@ class VerseNode(verse_entity.VerseEntity):
         """
         This method send subscribe command to Verse server
         """
-        if self.session is not None and self.session.state == 'CONNECTED' and self.id is not None:
+        if self.session.state == 'CONNECTED' and self.id is not None:
             self.session.send_node_subscribe(self.prio, self.id, self.version, self.crc32)
             self.subscribed = True
 

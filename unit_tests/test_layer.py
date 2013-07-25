@@ -24,6 +24,30 @@ import unittest
 import versentities as vrsent
 
 
+class TestLayerSetValueCase(unittest.TestCase):
+    """
+    Test case of set value of layer
+    """
+
+    node = None
+    layer = None
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        This method is called before any test is performed
+        """
+        __class__.node = vrsent.session.test_node
+        __class__.layer = vrsent.session.test_node.test_destroy_layer
+
+    def test_layer_set_value(self):
+        """
+        Test of destroyed layer
+        """
+        for key, value in layer.values.items():
+            self.assertEqual(key, value)
+
+
 class TestDestroyedLayerCase(unittest.TestCase):
     """
     Test case of destroyed VerseLayer
@@ -40,7 +64,7 @@ class TestDestroyedLayerCase(unittest.TestCase):
         __class__.node = vrsent.session.test_node
         __class__.layer = vrsent.session.test_node.test_destroy_layer
 
-    def test_layer_layer_destroyed(self):
+    def test_layer_destroyed(self):
         """
         Test of destroyed layer
         """      
@@ -63,7 +87,7 @@ class TestDestroyingLayerCase(unittest.TestCase):
         __class__.node = vrsent.session.test_node
         __class__.layer = vrsent.session.test_node.test_destroy_layer
 
-    def test_layer_layer_destroying(self):
+    def test_layer_destroying(self):
         """
         Test of destroying layer
         """      

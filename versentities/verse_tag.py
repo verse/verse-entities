@@ -110,7 +110,7 @@ class VerseTag(verse_entity.VerseEntity):
         """
         self._value = val
         # Send value to Verse server
-        if self.tg.node.session is not None and self.id is not None:
+        if self.id is not None:
             self.tg.node.session.send_tag_set_values(self.tg.node.prio, \
                 self.tg.node.id, \
                 self.tg.id, \
@@ -130,7 +130,7 @@ class VerseTag(verse_entity.VerseEntity):
         """
         Send tag create command to Verse server
         """
-        if self.tg.node.session is not None and self.tg.id is not None:
+        if self.tg.id is not None:
             self.tg.node.session.send_tag_create(self.tg.node.prio, \
                 self.tg.node.id, \
                 self.tg.id, \
@@ -142,7 +142,7 @@ class VerseTag(verse_entity.VerseEntity):
         """
         Send tag destroy command to Verse server
         """
-        if self.tg.node.session is not None and self.id is not None:
+        if self.id is not None:
             self.tg.node.session.send_tag_destroy(self.tg.node.prio, \
                 self.tg.node.id, \
                 self.tg.id, \

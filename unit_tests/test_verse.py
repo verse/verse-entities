@@ -301,10 +301,10 @@ class TestSession(vrsent.VerseSession):
             count, \
             custom_type)
         if layer == self.test_node.test_layer:
-            suite = unittest.TestLoader().loadTestsFromTestCase(test_tag.TestCreatedLayerCase)
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_layer.TestCreatedLayerCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
         elif layer == self.test_node.test_destroy_layer:
-            suite = unittest.TestLoader().loadTestsFromTestCase(test_tag.TestDestroyingLayerCase)
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_layer.TestDestroyingLayerCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
 
@@ -314,7 +314,7 @@ class TestSession(vrsent.VerseSession):
         """
         layer = super(TestSession, self)._receive_layer_destroy(node_id, layer_id)
         if layer == self.test_node.test_destroy_layer:
-            suite = unittest.TestLoader().loadTestsFromTestCase(test_tag.TestDestroyedLayerCase)
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_layer.TestDestroyedLayerCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
 
@@ -323,7 +323,9 @@ class TestSession(vrsent.VerseSession):
         Custom callback method that is called, when client receive command layer set value of item
         """
         layer = super(TestSession, self)._receive_layer_set_value(node_id, layer_id, item_id, value)
-        # TODO: add test
+        if layer == self.test_node.test_layer:
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_layer.TestLayerSetValueCase)
+            unittest.TextTestRunner(verbosity=self.verbosity).run(suite)        
 
 
     def _receive_layer_unset_value(self, node_id, layer_id, item_id):
@@ -349,9 +351,16 @@ def main(hostname, username, password):
     vrsent.session.username = username
     vrsent.session.password = password
 
+    DELAY = 0.05
+    counter = 0
+
     while(vrsent.session.state != 'DISCONNECTED'):
         vrsent.session.callback_update()
-        time.sleep(0.05)
+        time.sleep(DELAY)
+        counter += 1
+        # Send connect termintate after 5 seconds
+        if(counter == 100):
+            vrsent.session.send_connect_terminate()
 
 
 if __name__ == '__main__':
@@ -361,4 +370,5 @@ if __name__ == '__main__':
     parser.add_argument('--username', nargs='?', default=None, help='Username')
     parser.add_argument('--password', nargs='?', default=None, help='Password')
     args = parser.parse_args()
+    #vrs.set_debug_level(vrs.PRINT_DEBUG_MSG)
     main(args.hostname, args.username, args.password)
