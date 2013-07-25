@@ -13,11 +13,5 @@ If you want to perform test_verse.py, then you have to start verse server
 first. Then you can perform test with following command:
 
 ```bash
-python3 test_model.py
-```
-
-and
-
-```bash
 python3 test_verse.py
 ```
