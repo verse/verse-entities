@@ -44,8 +44,7 @@ class VerseLayerItems(dict):
         """
         Setter of item that tries to send new value to Verse server
         """
-        # TODO: simplify following condition
-        if self.layer.node.session is not None and self.layer.id is not None and self.layer.send_cmds == True:
+        if self.layer.id is not None and self.layer.send_cmds == True:
             self.layer.node.session.send_layer_set_value(self.layer.node.prio, \
                 self.layer.node.id, \
                 self.layer.id, \
@@ -58,7 +57,7 @@ class VerseLayerItems(dict):
         """
         Pop item from dict that tries to unset value at Verse server
         """
-        if self.layer.node.session is not None and self.layer.id is not None:
+        if self.layer.id is not None:
             self.layer.node.session.send_layer_unset_value(self.layer.node.prio, \
                 self.layer.node.id, \
                 self.layer.id, \
@@ -71,7 +70,7 @@ class VerseLayerItems(dict):
         Pop some item from dictionary and tries to unset this value at Verse server
         """
         key, value = super(VerseLayerItems, self).popitem()
-        if self.layer.node.session is not None and self.layer.id is not None:
+        if self.layer.id is not None:
             self.layer.node.session.send_layer_unset_value(self.layer.node.prio, \
                 self.layer.node.id, \
                 self.layer.id, \
@@ -118,7 +117,7 @@ class VerseLayer(verse_entity.VerseEntity):
         """
         Send layer create to Verse server
         """
-        if self.node.session is not None and self.id is not None:
+        if self.id is not None:
             if self.parent_layer is not None:
                 self.node.session.send_layer_create(self.node.prio, \
                     self.node.id, \
@@ -139,7 +138,7 @@ class VerseLayer(verse_entity.VerseEntity):
         """
         Send layer destroy command to Verse server
         """
-        if self.node.session is not None and self.id is not None:
+        if self.id is not None:
             self.node.session.send_layer_destroy(self.node.prio, self.node.id, self.id)
 
 
@@ -147,7 +146,7 @@ class VerseLayer(verse_entity.VerseEntity):
         """
         Send layer subscribe command to Verse server
         """
-        if self.node.session is not None and self.id is not None:
+        if self.id is not None:
             self.node.session.send_layer_subscribe(self.node.prio. self.node.id, self.id, self.version, self.crc32)
 
 
@@ -155,7 +154,7 @@ class VerseLayer(verse_entity.VerseEntity):
         """
         Send layer unsubscribe to Verse server
         """
-        if self.node.session is not None and self.id is not None:
+        if self.id is not None:
             self.node.session.send_layer_unsubscribe(self.node.prio, self.node.id, self.id, self.version, self.crc22)
 
 

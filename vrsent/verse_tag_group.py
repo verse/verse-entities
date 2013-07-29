@@ -68,7 +68,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
         """
         Send tag group create command to Verse server
         """
-        if self.node.session is not None and self.node.id is not None:
+        if self.node.id is not None:
             self.node.session.send_taggroup_create(self.node.id, custom_type)
 
 
@@ -76,7 +76,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
         """
         Send tag group destroy command to Verse server
         """
-        if self.node.session is not None and self.id is not None:
+        if self.id is not None:
             self.node.session.send_taggroup_destroy(self.node.prio, self.node.id, self.id)
 
 
@@ -84,7 +84,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
         """
         Send tag group subscribe command
         """
-        if self.node.session is not None and self.id is not None and self.subscribed == False:
+        if self.id is not None and self.subscribed == False:
             self.node.session.send_taggroup_subscribe(self.node.prio, self.node.id, self.id, self.version, self.crc32)
             self.subscribed = True
 

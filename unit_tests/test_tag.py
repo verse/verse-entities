@@ -49,13 +49,6 @@ class TestChangedTagCase(unittest.TestCase):
         """      
         self.assertEqual(__class__.tag.value, (123,))
 
-    @classmethod
-    def tearDownClass(cls):
-        """
-        This method is called, when all method has been performed
-        """
-        vrsent.session.send_connect_terminate()
-
 
 class TestDestroyingTagCase(unittest.TestCase):
     """

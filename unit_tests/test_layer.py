@@ -24,6 +24,76 @@ import unittest
 import vrsent
 
 
+class TestLayerSetValueCase(unittest.TestCase):
+    """
+    Test case of set value of layer
+    """
+
+    node = None
+    layer = None
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        This method is called before any test is performed
+        """
+        __class__.node = vrsent.session.test_node
+        __class__.layer = vrsent.session.test_node.test_destroy_layer
+
+    def test_layer_set_value(self):
+        """
+        Test of destroyed layer
+        """
+        for key, value in layer.values.items():
+            self.assertEqual(key, value)
+
+
+class TestDestroyedLayerCase(unittest.TestCase):
+    """
+    Test case of destroyed VerseLayer
+    """
+
+    node = None
+    layer = None
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        This method is called before any test is performed
+        """
+        __class__.node = vrsent.session.test_node
+        __class__.layer = vrsent.session.test_node.test_destroy_layer
+
+    def test_layer_destroyed(self):
+        """
+        Test of destroyed layer
+        """      
+        self.assertEqual(__class__.layer.state, vrsent.verse_entity.ENTITY_DESTROYED)
+
+
+class TestDestroyingLayerCase(unittest.TestCase):
+    """
+    Test case of destroying VerseLayer
+    """
+
+    node = None
+    layer = None
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        This method is called before any test is performed
+        """
+        __class__.node = vrsent.session.test_node
+        __class__.layer = vrsent.session.test_node.test_destroy_layer
+
+    def test_layer_destroying(self):
+        """
+        Test of destroying layer
+        """      
+        self.assertEqual(__class__.layer.state, vrsent.verse_entity.ENTITY_DESTROYING)
+
+
 class TestNewLayerCase(unittest.TestCase):
     """
     Test case of VerseLayer
@@ -42,13 +112,13 @@ class TestNewLayerCase(unittest.TestCase):
 
     def test_layer_not_created(self):
         """
-        Test of creating new tag group
+        Test of creating new layer
         """      
         self.assertEqual(__class__.layer.state, vrsent.verse_entity.ENTITY_CREATING)
 
     def test_layer_not_subscribed(self):
         """
-        Test of subscription of new tag group
+        Test of subscription of new layer
         """      
         self.assertEqual(__class__.layer.subscribed, False)
 

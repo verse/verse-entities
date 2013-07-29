@@ -54,6 +54,7 @@ class TestSession(vrsent.VerseSession):
         self.debug_print = False
 
 
+    # Node
     def _receive_node_create(self, node_id, parent_id, user_id, custom_type):
         """
         Custom callback method that is called, when client received
@@ -136,13 +137,29 @@ class TestSession(vrsent.VerseSession):
             # Fill layer with test values
             for item_id in range(10):
                 self.test_node.test_layer.items[item_id] = (item_id,)
+            # Create child layer of destroy layer
+            self.test_node.test_child_layer = vrsent.VerseLayer(node=self.test_node, \
+                parent_layer=self.test_node.test_layer, \
+                data_type=vrs.VALUE_TYPE_UINT8, \
+                count=1,
+                custom_type=129)
+            # Fill child layer with test values too
+            for item_id in range(10):
+                self.test_node.test_child_layer.items[item_id] = (item_id,)
 
             # Create test layer for testing of layer destroying
             self.test_node.test_destroy_layer = vrsent.VerseLayer(node=self.test_node, \
                 parent_layer=None, \
                 data_type=vrs.VALUE_TYPE_UINT8, \
                 count=1,
-                custom_type=129)
+                custom_type=130)
+            # Create child layer of destroy layer
+            self.test_node.test_destroy_child_layer = vrsent.VerseLayer(node=self.test_node, \
+                parent_layer=self.test_node.test_destroy_layer, \
+                data_type=vrs.VALUE_TYPE_UINT8, \
+                count=1,
+                custom_type=131)
+            # Destroy layer immediately
             self.test_node.test_destroy_layer.destroy()
 
             # Test new Node
@@ -206,6 +223,7 @@ class TestSession(vrsent.VerseSession):
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
 
+    # TagGroups
     def _receive_taggroup_create(self, node_id, taggroup_id, custom_type):
         """
         Custom callback method that is called, when client received command
@@ -233,6 +251,7 @@ class TestSession(vrsent.VerseSession):
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
 
+    # Tags
     def _receive_tag_create(self, node_id, taggroup_id, tag_id, data_type, count, custom_type):
         """
         Custom callback method that is called, when client receive command tag create
@@ -270,6 +289,7 @@ class TestSession(vrsent.VerseSession):
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
 
+    # Layers
     def _receive_layer_create(self, node_id, parent_layer_id, layer_id, data_type, count, custom_type):
         """
         Custom callback method that is called, when client receive command layer create
@@ -281,14 +301,39 @@ class TestSession(vrsent.VerseSession):
             count, \
             custom_type)
         if layer == self.test_node.test_layer:
-            suite = unittest.TestLoader().loadTestsFromTestCase(test_tag.TestCreatedLayerCase)
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_layer.TestCreatedLayerCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
+        elif layer == self.test_node.test_destroy_layer:
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_layer.TestDestroyingLayerCase)
+            unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
+
 
     def _receive_layer_destroy(self, node_id, layer_id):
         """
-        Custom callback method that is called, when client receive command layer create
+        Custom callback method that is called, when client receive command layer destroy
         """
         layer = super(TestSession, self)._receive_layer_destroy(node_id, layer_id)
+        if layer == self.test_node.test_destroy_layer:
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_layer.TestDestroyedLayerCase)
+            unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
+
+
+    def _receive_layer_set_value(self, node_id, layer_id, item_id, value):
+        """
+        Custom callback method that is called, when client receive command layer set value of item
+        """
+        layer = super(TestSession, self)._receive_layer_set_value(node_id, layer_id, item_id, value)
+        if layer == self.test_node.test_layer:
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_layer.TestLayerSetValueCase)
+            unittest.TextTestRunner(verbosity=self.verbosity).run(suite)        
+
+
+    def _receive_layer_unset_value(self, node_id, layer_id, item_id):
+        """
+        Custom callback method that is called, when client receive command layer unset value of item
+        """
+        layer = super(TestSession, self)._receive_layer_unset_value(node_id, layer_id, item_id)
+        # TODO: add test
 
 
     def _receive_connect_terminate(self, error):
@@ -306,9 +351,16 @@ def main(hostname, username, password):
     vrsent.session.username = username
     vrsent.session.password = password
 
+    DELAY = 0.05
+    counter = 0
+
     while(vrsent.session.state != 'DISCONNECTED'):
         vrsent.session.callback_update()
-        time.sleep(0.05)
+        time.sleep(DELAY)
+        counter += 1
+        # Send connect termintate after 5 seconds
+        if(counter == 100):
+            vrsent.session.send_connect_terminate()
 
 
 if __name__ == '__main__':
@@ -318,4 +370,5 @@ if __name__ == '__main__':
     parser.add_argument('--username', nargs='?', default=None, help='Username')
     parser.add_argument('--password', nargs='?', default=None, help='Password')
     args = parser.parse_args()
+    #vrs.set_debug_level(vrs.PRINT_DEBUG_MSG)
     main(args.hostname, args.username, args.password)
