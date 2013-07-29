@@ -19,7 +19,7 @@ If you want to share some data on Verse server, then simple Verse client could l
 
 ```python
 
-import versentities as vrsent
+import vrsent
 import time
 
 def main():

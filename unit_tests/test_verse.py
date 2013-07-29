@@ -21,7 +21,7 @@ Module for testing verse module and versentities module
 """
 
 import unittest
-import versentities as vrsent
+import vrsent
 import verse as vrs
 import time
 import test_node, test_tg, test_tag, test_layer

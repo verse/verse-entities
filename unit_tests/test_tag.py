@@ -22,7 +22,7 @@ Module for testing class VerseTag from module versentities
 
 
 import unittest
-import versentities as vrsent
+import vrsent
 
 
 class TestChangedTagCase(unittest.TestCase):

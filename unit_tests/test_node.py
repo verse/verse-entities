@@ -22,7 +22,7 @@ Module for testing class VerseNode from module versentities
 
 
 import unittest
-import versentities as vrsent
+import vrsent
 
 
 class TestOwnerPermNodeCase(unittest.TestCase):

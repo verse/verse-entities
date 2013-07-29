@@ -21,7 +21,7 @@ Module for testing class VerseTagGroup from module versentities
 """
 
 import unittest
-import versentities as vrsent
+import vrsent
 
 
 class TestNewLayerCase(unittest.TestCase):
