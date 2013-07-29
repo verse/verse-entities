@@ -178,11 +178,12 @@ class VerseTag(verse_entity.VerseEntity):
         # Was this tag created by this client?
         try:
             tag = tg.tag_queue[custom_type]
+        except KeyError:
+            tag = VerseTag(node, tg, tag_id, data_type, count, custom_type)
+        else:
             # Add reference to dictionary of tags to tag group
             tg.tags[tag_id] = tag
             tag.id = tag_id
-        except KeyError:
-            tag = VerseTag(node, tg, tag_id, data_type, count, custom_type)
         # Update state
         tag._receive_create()
         # Send tag value

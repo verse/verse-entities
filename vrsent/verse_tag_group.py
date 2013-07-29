@@ -125,10 +125,11 @@ class VerseTagGroup(verse_entity.VerseEntity):
         # Is it tag group created by this client?
         try:
             tg = node.tg_queue[custom_type]
-            tg.id = tg_id
         except KeyError:
             tg = VerseTagGroup(node, tg_id, custom_type)
-        node.taggroups[tg_id] = tg
+        else:
+            tg.id = tg_id
+            node.taggroups[tg_id] = tg
         # Update state and subscribe command
         tg._receive_create()
         # Send tag_create commands for pending tags

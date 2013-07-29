@@ -204,10 +204,9 @@ class VerseLayer(verse_entity.VerseEntity):
         else:
             parent_layer = None
 
-        # Try to find this layer in pending layers of node. otherwise create new layer
+        # Try to find this layer in pending layers of node. Otherwise create new layer
         try:
             layer = node.layer_queue[custom_type]
-            layer.id = layer_id
         except KeyError:
             layer = VerseLayer(node=node, \
                 parent_layer=parent_layer, \
@@ -215,8 +214,9 @@ class VerseLayer(verse_entity.VerseEntity):
                 data_type=data_type, \
                 count=count, \
                 custom_type=custom_type)
-
-        node.layers[layer_id] = layer
+        else:
+            layer.id = layer_id
+            node.layers[layer_id] = layer
 
         # When this layer has some pending values, then send them to Verse server
         for item_id, value in layer.items.items():

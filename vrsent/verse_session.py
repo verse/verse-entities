@@ -284,3 +284,11 @@ class VerseSession(vrs.Session):
         if self.debug_print is True:
             super(VerseSession, self)._receive_connect_terminate(error)
         self.state = 'DISCONNECTED'
+
+
+    def send_connect_terminate(self):
+        """
+        send_connect_terminate() -> None
+        """
+        self.state = 'DISCONNECTING'
+        super(VerseSession, self).send_connect_terminate()
