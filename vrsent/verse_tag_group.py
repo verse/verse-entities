@@ -69,7 +69,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
         Send tag group create command to Verse server
         """
         if self.node.id is not None:
-            self.node.session.send_taggroup_create(self.node.id, custom_type)
+            self.node.session.send_taggroup_create(self.node.id, self.custom_type)
 
 
     def _send_destroy(self):
