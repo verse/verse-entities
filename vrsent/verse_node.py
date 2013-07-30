@@ -161,7 +161,12 @@ class VerseNode(verse_entity.VerseEntity):
             if node.parent is None:
                 node.parent = parent_node
         else:
-            node = VerseNode(session, node_id, parent_node, user_id, custom_type)
+            # Was this node already created?
+            # e.g.: avatar node, user node, parent of scene node, etc.
+            try:
+                node = session.nodes[node_id]
+            except KeyError:
+                node = VerseNode(session, node_id, parent_node, user_id, custom_type)
 
         # Change state of node
         node._receive_create()

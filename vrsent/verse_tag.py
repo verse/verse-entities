@@ -31,7 +31,7 @@ class VerseTag(verse_entity.VerseEntity):
     Class representing Verse tag
     """
     
-    def __init__(self, tg, tag_id=None, data_type=None, custom_type=None, value=(0,)):
+    def __init__(self, tg, tag_id=None, data_type=None, count=None, custom_type=None, value=None):
         """
         Constructor of VerseTag
         """
@@ -69,7 +69,10 @@ class VerseTag(verse_entity.VerseEntity):
 
         # No need to do check of values and count of tuple items, because Verse module do this
         self._value = value
-        self.count = len(value)
+        if count is not None:
+            self.count = count
+        elif value is not None:
+            self.count = len(value)
 
         # Change state and send command, when it is possible
         self._create()
@@ -179,15 +182,20 @@ class VerseTag(verse_entity.VerseEntity):
         try:
             tag = tg.tag_queue[custom_type]
         except KeyError:
-            tag = VerseTag(node, tg, tag_id, data_type, count, custom_type)
+            # When this tag was created by other client, then create new tag object for this tag
+            tag = VerseTag(tg=tg, tag_id=tag_id, data_type=data_type, count=count, custom_type=custom_type)
         else:
             # Add reference to dictionary of tags to tag group
             tg.tags[tag_id] = tag
             tag.id = tag_id
         # Update state
         tag._receive_create()
-        # Send tag value
-        tag.value = tag._value
+        # Send tag value, when it is tag created by this client
+        # When this tag was created by some other Verse client,
+        # then Verse server will send value, when received command
+        # is acked to Verse server
+        if tag._value is not None:
+            tag.value = tag._value
         # Return reference at tag object
         return tag
 
