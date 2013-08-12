@@ -38,6 +38,9 @@ class VerseSession(vrs.Session):
     # The dictionary of nodes that belongs to this session
     nodes = {}
 
+    # The dictionary of users
+    users = {}
+
     # The dictionary of nodes that were created by this client and Verse
     # server has not sent confirmation about creating of these nodes.
     # Each custom_type of node has its own queue

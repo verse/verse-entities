@@ -22,6 +22,7 @@ This module includes class VerseNode representing verse node
 
 import verse as vrs
 from . import verse_entity
+from . import verse_user
 
 
 class VerseNode(verse_entity.VerseEntity):
@@ -178,6 +179,11 @@ class VerseNode(verse_entity.VerseEntity):
         # When node priority is different from default node priority
         if node.prio != vrs.DEFAULT_PRIORITY:
             session.send_node_prio(node.prio, node.id, node.prio)
+
+        # Is it user node
+        if parent_id == 3:
+            verse_user = VerseUser(node)
+            session.users[user_id] = verse_user
 
         # When parent node is different then current parent, then send node_link
         # command to Verse server
