@@ -181,7 +181,8 @@ class VerseNode(verse_entity.VerseEntity):
             session.send_node_prio(node.prio, node.id, node.prio)
 
         # Is it user node
-        if parent_id == 3:
+        if parent_id == 2:
+            print('### Verse User Node ###')
             verse_user = VerseUser(node)
             session.users[user_id] = verse_user
 

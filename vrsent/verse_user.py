@@ -32,6 +32,8 @@ class VerseUser(object):
         self._tg_info = None
         self._tag_name = None
         self._name = ""
+        # Add this user to the dictionary of users
+        self._node.session.users[self._node.id] = self
 
     @property
     def name(self):
