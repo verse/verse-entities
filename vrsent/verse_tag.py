@@ -192,12 +192,12 @@ class VerseTag(verse_entity.VerseEntity):
         tag._receive_create()
         # Is this node user node, then try to add reference to this tag
         try:
-            verse_user = session.users[node_id]
+            vrs_user = session.users[node_id]
         except KeyError:
             pass
         else:
-            if verse_user._tg_info == tg and custom_type == 0:
-                verse_user._tag_name = tag
+            if vrs_user._tg_info == tg and custom_type == 0:
+                vrs_user._tag_name = tag
         # Send tag value, when it is tag created by this client
         # When this tag was created by some other Verse client,
         # then Verse server will send value, when received command
@@ -232,13 +232,13 @@ class VerseTag(verse_entity.VerseEntity):
         tag._value = value
         # Is it node of user node
         try:
-            verse_user = session.users[node_id]
+            vrs_user = session.users[node_id]
         except KeyError:
             pass
         else:
             # Is it tag with real user name
-            if verse_user._tg_info == tg and verse_user._tag_name == tag and type(valye) == str:
-                verse_user._name = value
+            if vrs_user._tg_info == tg and vrs_user._tag_name == tag and type(valye) == str:
+                vrs_user._name = value
         # Return reference at this tag
         return tag
 

@@ -35,17 +35,6 @@ class VerseSession(vrs.Session):
     # The list of session instances
     __sessions = {}
 
-    # The dictionary of nodes that belongs to this session
-    nodes = {}
-
-    # The dictionary of users
-    users = {}
-
-    # The dictionary of nodes that were created by this client and Verse
-    # server has not sent confirmation about creating of these nodes.
-    # Each custom_type of node has its own queue
-    my_node_queues = {}
-
     def __init__(self, hostname="localhost", service="12345", flags=vrs.DGRAM_SEC_DTLS):
         """
         Constructor of VerseSession
@@ -57,7 +46,25 @@ class VerseSession(vrs.Session):
         self.password = None
         self.debug_print = False
         self.state = 'CONNECTING'
+        # Add this session from list of sessions
         self.__class__.__sessions[hostname+':'+service] = self
+        # The dictionary of nodes that belongs to this session
+        self.nodes = {}
+        # The dictionary of users that belongs to this session
+        self.users = {}
+        # The dictionary of avatars/client that belongs to this session
+        self.avatars = {}
+        # The dictionary of nodes that were created by this client and Verse
+        # server has not sent confirmation about creating of these nodes.
+        # Each custom_type of node has its own queue
+        self.my_node_queues = {}
+
+
+    def __del__(self):
+        """
+        Destructor of VerseSession
+        """
+        pass
 
 
     def _receive_user_authenticate(self, username, methods):
@@ -287,6 +294,8 @@ class VerseSession(vrs.Session):
         if self.debug_print is True:
             super(VerseSession, self)._receive_connect_terminate(error)
         self.state = 'DISCONNECTED'
+        # Remove this instance from the list of sessions
+        self.__class__.__sessions.pop(self.hostname+':'+self.service)
 
 
     def send_connect_terminate(self):

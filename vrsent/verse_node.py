@@ -16,13 +16,16 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+
 """
 This module includes class VerseNode representing verse node
 """
 
+
 import verse as vrs
 from . import verse_entity
 from . import verse_user
+from . import verse_avatar
 
 
 class VerseNode(verse_entity.VerseEntity):
@@ -152,7 +155,7 @@ class VerseNode(verse_entity.VerseEntity):
             parent_node = None
 
         # Is it node created by this client?
-        if parent_id == session.avatar_id:
+        if parent_id == session.avatar_id and user_id == session.user_id:
             node_queue = session.my_node_queues[custom_type]
             # If this is node created by this client, then add it to
             # dictionary of nodes
@@ -172,19 +175,10 @@ class VerseNode(verse_entity.VerseEntity):
         # Change state of node
         node._receive_create()
 
-        # Send tag group create for pending tag groups
-        for custom_type in node.tg_queue.keys():
-            session.send_taggroup_create(node.prio, node.id, custom_type)
-
         # When node priority is different from default node priority
         if node.prio != vrs.DEFAULT_PRIORITY:
             session.send_node_prio(node.prio, node.id, node.prio)
 
-        # Is it user node
-        if parent_id == 2:
-            print('### Verse User Node ###')
-            verse_user = VerseUser(node)
-            session.users[user_id] = verse_user
 
         # When parent node is different then current parent, then send node_link
         # command to Verse server
@@ -194,7 +188,14 @@ class VerseNode(verse_entity.VerseEntity):
             # because it is possible to do now (node id is known)
             node.parent.child_nodes[node.id] = node
 
-        # Send layer_create for layers without parent layer
+        # Send tag_group_create command for pending tag groups
+        for custom_type in node.tg_queue.keys():
+            session.send_taggroup_create(node.prio, node.id, custom_type)
+
+        # Send layer_create command for pending layers without parent layer
+        # This module will send automaticaly layer_create command for layers
+        # with parent layers, when layer_create command of their parent layers
+        # will be received
         for layer in node.layer_queue.values():
             if layer.parent_layer is None:
                 session.send_layer_create(node.prio, \
@@ -203,6 +204,16 @@ class VerseNode(verse_entity.VerseEntity):
                     layer.data_type, \
                     layer.count, \
                     layer.custom_type)
+
+        # Is it avatar node?
+        if parent_id == 1:
+            print('### Verse Avatar Node' ,node_id, '###')
+            session.avatars[node_id] = VerseAvatar(node)
+
+        # Is it user node?
+        if parent_id == 2:
+            print('### Verse User Node' ,node_id, '###')
+            session.users[node_id] = VerseUser(node)
 
         # Return reference at node
         return node

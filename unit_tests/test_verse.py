@@ -32,6 +32,13 @@ class TestSession(vrsent.VerseSession):
     Class with session used in this client
     """
 
+    def __init__(self, *args, **kwargs):
+        """
+        Constructor of TestSession
+        """
+        super(TestSession, self).__init__(*args, **kwargs)
+
+
     def _receive_connect_accept(self, user_id, avatar_id):
         """
         Custom callback method for connect accept
@@ -51,7 +58,7 @@ class TestSession(vrsent.VerseSession):
         self.scene_node = None
         self.state = 'CONNECTED'
         self.verbosity = 1
-        self.debug_print = False
+        self.debug_print = True
 
 
     # Node
@@ -257,12 +264,20 @@ class TestSession(vrsent.VerseSession):
         Custom callback method that is called, when client receive command tag create
         """
         tag = super(TestSession, self)._receive_tag_create(node_id, taggroup_id, tag_id, data_type, count, custom_type)
+        try:
+            test_tag = self.test_node.test_tg.test_tag
+        except AttributeError:
+            test_tag = None
+        try:
+            test_destroy_tag = self.test_node.test_tg.test_destroy_tag
+        except AttributeError:
+            test_destroy_tag = None
         # Start unit testing of created tag
-        if tag == self.test_node.test_tg.test_tag:
+        if tag == test_tag:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_tag.TestCreatedTagCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
         # Start unit testing of tag in destroyed state
-        elif tag == self.test_node.test_tg.test_destroy_tag:
+        elif tag == test_destroy_tag:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_tag.TestDestroyingTagCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
@@ -272,8 +287,12 @@ class TestSession(vrsent.VerseSession):
         Custom callback used for destroying of tag
         """
         tag = super(TestSession, self)._receive_tag_destroy(node_id, taggroup_id, tag_id)
+        try:
+            test_destroy_tag = self.test_node.test_tg.test_destroy_tag
+        except AttributeError:
+            test_destroy_tag = None
         # Start unit testing of destroyed tag
-        if tag == self.test_node.test_tg.test_destroy_tag:
+        if tag == test_destroy_tag:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_tag.TestDestroyedTagCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
@@ -283,8 +302,12 @@ class TestSession(vrsent.VerseSession):
         Custom callback method that is called, when client reveive command tag set value
         """
         tag = super(TestSession, self)._receive_tag_set_values(node_id, taggroup_id, tag_id, value)
+        try:
+            test_tag = self.test_node.test_tg.test_tag
+        except AttributeError:
+            test_tag = None
         # Start unit testing of tag with changed value
-        if tag == self.test_node.test_tg.test_tag:
+        if tag == test_tag:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_tag.TestChangedTagCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 

@@ -17,19 +17,21 @@
 # ##### END GPL LICENSE BLOCK #####
 
 """
-This module implements object model of data shared at Verse server. It
-provides classes for Node, TagGroup, Tag, Layer, User and Avatar.
+This module include class VerseAvatar representing verse avatar/client
 """
 
-from . import verse_session, verse_node, verse_tag_group, verse_tag, verse_layer, verse_user, verse_avatar
+class VerseAvatar(object):
+	"""
+	Class representing Verse avatar/client
+	"""
 
-# Copy classes to this namespace
-VerseSession = verse_session.VerseSession
-VerseNode = verse_node.VerseNode
-VerseTagGroup = verse_tag_group.VerseTagGroup
-VerseTag = verse_tag.VerseTag
-VerseLayer = verse_layer.VerseLayer
-VerseUser = verse_user.VerseUser
-VerseAvatar = verse_avatar.VerseAvatar
-
-__all__ = ['VerseSession', 'VerseNode', 'VerseTagGroup', 'VerseTag', 'VerseLayer', 'VerseUser']
+	def __init__(self, node):
+		"""
+		Constructor of class
+		"""
+		self._node = node
+		self.user = None
+		self.hostname = None
+		self.time = None
+		self.client_name = None
+		self.client_version = None

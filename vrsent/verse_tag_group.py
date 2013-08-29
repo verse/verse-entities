@@ -133,12 +133,12 @@ class VerseTagGroup(verse_entity.VerseEntity):
         tg._receive_create()
         # If this is node of user, then add reference to this tag group
         try:
-            verse_user = session.users[node_id]
+            vrs_user = session.users[node_id]
         except KeyError:
             pass
         else:
             if custom_type == 0:
-                verse_user._tg_info = tg
+                vrs_user._tg_info = tg
         # Send tag_create commands for pending tags
         for custom_type, tag in tg.tag_queue.items():
             session.send_tag_create(node.prio, node.id, tg.id, tag.data_type, tag.count, custom_type)

@@ -22,7 +22,9 @@ This module includes class VerseUser representing verse user
 """
 
 class VerseUser(object):
-    """A VerseUser is class representing user"""
+    """
+    A VerseUser is class representing user
+    """
 
     def __init__(self, user_node):
         """
