@@ -207,13 +207,11 @@ class VerseNode(verse_entity.VerseEntity):
 
         # Is it avatar node?
         if parent_id == 1:
-            print('### Verse Avatar Node' ,node_id, '###')
-            session.avatars[node_id] = VerseAvatar(node)
+            session.avatars[node_id] = verse_avatar.VerseAvatar(node)
 
         # Is it user node?
         if parent_id == 2:
-            print('### Verse User Node' ,node_id, '###')
-            session.users[node_id] = VerseUser(node)
+            session.users[node_id] = verse_user.VerseUser(node)
 
         # Return reference at node
         return node
