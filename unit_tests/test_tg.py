@@ -24,9 +24,9 @@ import unittest
 import vrsent
 
 
-class TestDestroyingTagCase(unittest.TestCase):
+class TestDestroyingTagGroupCase(unittest.TestCase):
     """
-    Test case of destroying VerseTag
+    Test case of destroying VerseTagGroup
     """
 
     node = None
@@ -41,7 +41,7 @@ class TestDestroyingTagCase(unittest.TestCase):
         __class__.node = vrsent.session.test_node
         __class__.tg = vrsent.session.test_node.test_destroy_tg
 
-    def test_tag_destroying(self):
+    def test_tg_destroying(self):
         """
         Test of state of destroying tag
         """      
@@ -64,7 +64,7 @@ class TestDestroyedTagGroupCase(unittest.TestCase):
         __class__.node = vrsent.session.test_node
         __class__.tg = vrsent.session.test_node.test_destroy_tg
 
-    def test_tag_destroyed(self):
+    def test_tgp_destroyed(self):
         """
         Test of state of destroyed tag group
         """      

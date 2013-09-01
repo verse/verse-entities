@@ -241,7 +241,7 @@ class TestSession(vrsent.VerseSession):
         if tg == self.test_node.test_tg:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_tg.TestCreatedTagGroupCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
-        elif tg == sel.test_node.test_destroy_tg:
+        elif tg == self.test_node.test_destroy_tg:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_tg.TestDestroyingTagGroupCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
@@ -265,15 +265,15 @@ class TestSession(vrsent.VerseSession):
         """
         tag = super(TestSession, self)._receive_tag_create(node_id, taggroup_id, tag_id, data_type, count, custom_type)
         try:
-            test_tag = self.test_node.test_tg.test_tag
+            test_new_tag = self.test_node.test_tg.test_tag
         except AttributeError:
-            test_tag = None
+            test_new_tag = None
         try:
             test_destroy_tag = self.test_node.test_tg.test_destroy_tag
         except AttributeError:
             test_destroy_tag = None
         # Start unit testing of created tag
-        if tag == test_tag:
+        if tag == test_new_tag:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_tag.TestCreatedTagCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
         # Start unit testing of tag in destroyed state
@@ -394,4 +394,5 @@ if __name__ == '__main__':
     parser.add_argument('--password', nargs='?', default=None, help='Password')
     args = parser.parse_args()
     #vrs.set_debug_level(vrs.PRINT_DEBUG_MSG)
+    vrs.set_client_info("Python UnitTest Verse Client", "0.1")
     main(args.hostname, args.username, args.password)

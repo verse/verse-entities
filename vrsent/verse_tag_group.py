@@ -117,10 +117,12 @@ class VerseTagGroup(verse_entity.VerseEntity):
         the dictionary of tag groups and send pending tag_create
         commands
         """
+
         try:
             node = session.nodes[node_id]
         except KeyError:
             return
+
         # Is it tag group created by this client?
         try:
             tg = node.tg_queue[custom_type]
@@ -129,8 +131,10 @@ class VerseTagGroup(verse_entity.VerseEntity):
         else:
             tg.id = tg_id
             node.taggroups[tg_id] = tg
+
         # Update state and subscribe command
         tg._receive_create()
+
         # If this is node of user, then add reference to this tag group
         try:
             vrs_user = session.users[node_id]
@@ -139,6 +143,17 @@ class VerseTagGroup(verse_entity.VerseEntity):
         else:
             if custom_type == 0:
                 vrs_user._tg_info = tg
+
+        # If this is node of avatar info, then add to this tag group
+        try:
+            avatar_info_node = session._avatar_info_nodes[node_id]
+        except KeyError:
+            pass
+        else:
+            if custom_type == 0:
+                avatar = session.avatars[avatar_info_node.parent.id]
+                avatar._tg_info = tg
+
         # Send tag_create commands for pending tags
         for custom_type, tag in tg.tag_queue.items():
             session.send_tag_create(node.prio, node.id, tg.id, tag.data_type, tag.count, custom_type)

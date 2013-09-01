@@ -198,6 +198,21 @@ class VerseTag(verse_entity.VerseEntity):
         else:
             if vrs_user._tg_info == tg and custom_type == 0:
                 vrs_user._tag_name = tag
+                # If this is node of avatar info, then add to this tag group
+        try:
+            avatar_info_node = session._avatar_info_nodes[node_id]
+        except KeyError:
+            pass
+        else:
+            avatar = session.avatars[avatar_info_node.parent.id]
+            if custom_type == 0:
+                avatar._tag_hostname = tag
+            elif custom_type == 1:
+                avatar._tag_login_time = tag
+            elif custom_type == 2:
+                avatar._tag_client_name = tag
+            elif custom_type == 3:
+                avatar._tag_client_version = tag
         # Send tag value, when it is tag created by this client
         # When this tag was created by some other Verse client,
         # then Verse server will send value, when received command
@@ -230,15 +245,6 @@ class VerseTag(verse_entity.VerseEntity):
             return
         # Set value, but don't send set_value command
         tag._value = value
-        # Is it node of user node
-        try:
-            vrs_user = session.users[node_id]
-        except KeyError:
-            pass
-        else:
-            # Is it tag with real user name
-            if vrs_user._tg_info == tg and vrs_user._tag_name == tag and type(valye) == str:
-                vrs_user._name = value
         # Return reference at this tag
         return tag
 

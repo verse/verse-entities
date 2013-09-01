@@ -54,6 +54,8 @@ class VerseSession(vrs.Session):
         self.users = {}
         # The dictionary of avatars/client that belongs to this session
         self.avatars = {}
+        # The dictionary of avatar info nodes
+        self._avatar_info_nodes = {}
         # The dictionary of nodes that were created by this client and Verse
         # server has not sent confirmation about creating of these nodes.
         # Each custom_type of node has its own queue

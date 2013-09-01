@@ -213,6 +213,16 @@ class VerseNode(verse_entity.VerseEntity):
         if parent_id == 2:
             session.users[node_id] = verse_user.VerseUser(node)
 
+        # Is it info node about avatar?
+        try:
+            avatar = session.avatars[parent_id]
+        except KeyError:
+            pass
+        else:
+            if user_id == 100:
+                avatar._info_node = node
+                session._avatar_info_nodes[node_id] = node
+
         # Return reference at node
         return node
 
@@ -230,6 +240,13 @@ class VerseNode(verse_entity.VerseEntity):
             return
         # Set entity state and clean data in this node
         node._receive_destroy()
+        # When this is avatar node, then remove avatar from dictionary of
+        # avatars
+        if node_id in session.avatars:
+            del session.avatars[node_id]
+        # When this is user node, then remove user from dictionary of users
+        if node_id in session.users:
+            del session.users[node_id]
         # Return reference at this node
         return node
 
@@ -246,8 +263,13 @@ class VerseNode(verse_entity.VerseEntity):
             return
         # Store information about this permissions
         node.perms[user_id] = perm
+        # Is it node of avatar
+        if node_id in session.avatars and user_id != 100 and user_id != 65535:
+            avatar = session.avatars[node_id]
+            avatar._user_id = user_id
         # Return reference at this node
         return node
+
 
     @staticmethod
     def _receive_node_link(session, parent_node_id, child_node_id):

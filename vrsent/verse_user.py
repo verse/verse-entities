@@ -33,13 +33,26 @@ class VerseUser(object):
         self._node = user_node
         self._tg_info = None
         self._tag_name = None
-        self._name = ""
         # Add this user to the dictionary of users
         self._node.session.users[self._node.id] = self
+
+    def __str__(self):
+        """
+        Print method of this class
+        """
+        return 'User (' + \
+                str(self._node.id) + \
+                '): ' + \
+                self.name
 
     @property
     def name(self):
         """
         The name is property of VerseUser
         """
-        return self._name
+        try:
+            name = self._tag_name.value
+        except AttributeError:
+            return ""
+        else:
+            return name[0]
