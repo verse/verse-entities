@@ -145,7 +145,7 @@ class VerseNode(verse_entity.VerseEntity):
         """
         Static method of class that should be called, when coresponding callback
         method of class is called. This method moves node from queue to
-        the dictionary of nodes and send pending commands
+        the dictionary of nodes and send pending commands.
         """
 
         # Try to find parent node
@@ -178,7 +178,6 @@ class VerseNode(verse_entity.VerseEntity):
         # When node priority is different from default node priority
         if node.prio != vrs.DEFAULT_PRIORITY:
             session.send_node_prio(node.prio, node.id, node.prio)
-
 
         # When parent node is different then current parent, then send node_link
         # command to Verse server
