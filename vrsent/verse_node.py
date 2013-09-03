@@ -32,6 +32,34 @@ class VerseNode(verse_entity.VerseEntity):
     """
     Class representing Verse node
     """
+
+    # The dictionary of subclasses
+    _subclasses = {}
+
+    @staticmethod
+    def __new__(cls, *args, **kwargs):
+        """
+        Pre-constructor of VerseNode. It can 
+        """
+        if len(cls.__subclasses__()) > 0:
+            #return super(cls.__subclasses__()[0], cls.__subclasses__()[0]).__new__(cls.__subclasses__()[0], *args, **kwargs)
+            try:
+                custom_type = kwargs['custom_type']
+            except KeyError:
+                return super(VerseNode, cls).__new__(cls)
+            else:
+                _cls = cls
+                if custom_type in cls._subclasses:
+                    _cls = cls._subclasses[custom_type]
+                else:
+                    for sub_cls in cls.__subclasses__():
+                        sub_cls_type = getattr(sub_cls, 'custom_type', None)
+                        if sub_cls_type is not None and sub_cls_type == custom_type:
+                            _cls = cls._subclasses[custom_type] = sub_cls
+                return super(VerseNode, _cls).__new__(_cls)
+        else:
+            return super(VerseNode, cls).__new__(cls)
+
     
     def __init__(self, session, node_id=None, parent=None, user_id=None, custom_type=None):
         """
