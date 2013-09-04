@@ -178,8 +178,8 @@ class VerseLayer(verse_entity.VerseEntity):
         self._destroy()
 
     
-    @staticmethod
-    def _receive_layer_create(session, node_id, parent_layer_id, layer_id, data_type, count, custom_type):
+    @classmethod
+    def _receive_layer_create(cls, session, node_id, parent_layer_id, layer_id, data_type, count, custom_type):
         """
         Static method of class that add reference to the
         the dictionary of layers and send pending layer set values
@@ -223,8 +223,8 @@ class VerseLayer(verse_entity.VerseEntity):
             session.send_layer_set_value(node.prio, node.id, layer.id, item_id, layer.data_type, value)
 
 
-    @staticmethod
-    def _receive_layer_destroy(session, node_id, layer_id):
+    @classmethod
+    def _receive_layer_destroy(cls, session, node_id, layer_id):
         """
         Static method of class that remove reference to this layer from
         the dictionary of layers
@@ -247,8 +247,8 @@ class VerseLayer(verse_entity.VerseEntity):
         return layer
 
 
-    @staticmethod
-    def _receive_layer_set_value(session, node_id, layer_id, item_id, value):
+    @classmethod
+    def _receive_layer_set_value(cls, session, node_id, layer_id, item_id, value):
         """
         Static method of class that set value of item in layer
         """
@@ -272,8 +272,8 @@ class VerseLayer(verse_entity.VerseEntity):
         return layer
 
 
-    @staticmethod
-    def _receive_layer_unset_value(session, node_id, layer_id, item_id):
+    @classmethod
+    def _receive_layer_unset_value(cls, session, node_id, layer_id, item_id):
         """
         Static method of class that set value of item in layer
         """
@@ -298,8 +298,8 @@ class VerseLayer(verse_entity.VerseEntity):
         return layer
 
 
-    @staticmethod
-    def _receive_layer_subscribe(session, node_id, layer_id, version, crc32):
+    @classmethod
+    def _receive_layer_subscribe(cls, session, node_id, layer_id, version, crc32):
         """
         Static method of class that should be called when layer
         subscribe command is received from Verse server
@@ -308,8 +308,8 @@ class VerseLayer(verse_entity.VerseEntity):
         pass
 
 
-    @staticmethod
-    def _receive_layer_unsubscribe(session, node_id, layer_id, version, crc32):
+    @classmethod
+    def _receive_layer_unsubscribe(cls, session, node_id, layer_id, version, crc32):
         """
         Static method of class that should be called when layer
         unsubscribe command is received from Verse server

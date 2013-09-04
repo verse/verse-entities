@@ -23,7 +23,7 @@ vector of values (2D, 3D or Quaternions).
 """
 
 import verse as vrs
-from . import verse_entity, verse_tag_group
+from . import verse_entity
 
 
 class VerseTag(verse_entity.VerseEntity):
@@ -39,11 +39,7 @@ class VerseTag(verse_entity.VerseEntity):
         # Call method of parent to initialize basic values
         super(VerseTag, self).__init__(custom_type=custom_type)
 
-        # Tag can't exist without tag group
-        if issubclass(tg.__class__, verse_tag_group.VerseTagGroup) != True:
-            raise TypeError("Tag group is not subclass of model.VerseTagGroup")
-        else:
-            self.tg = tg
+        self.tg = tg
 
         # Delete useless things
         del self.version
@@ -162,8 +158,8 @@ class VerseTag(verse_entity.VerseEntity):
         # Remove value
         del self._value
 
-    @staticmethod
-    def _receive_tag_create(session, node_id, tg_id, tag_id, data_type, count, custom_type):
+    @classmethod
+    def _receive_tag_create(cls, session, node_id, tg_id, tag_id, data_type, count, custom_type):
         """
         Static method of class that should be called when
         coresponding callback function is called
@@ -190,29 +186,6 @@ class VerseTag(verse_entity.VerseEntity):
             tag.id = tag_id
         # Update state
         tag._receive_create()
-        # Is this node user node, then try to add reference to this tag
-        try:
-            vrs_user = session.users[node_id]
-        except KeyError:
-            pass
-        else:
-            if vrs_user._tg_info == tg and custom_type == 0:
-                vrs_user._tag_name = tag
-                # If this is node of avatar info, then add to this tag group
-        try:
-            avatar_info_node = session._avatar_info_nodes[node_id]
-        except KeyError:
-            pass
-        else:
-            avatar = session.avatars[avatar_info_node.parent.id]
-            if custom_type == 0:
-                avatar._tag_hostname = tag
-            elif custom_type == 1:
-                avatar._tag_login_time = tag
-            elif custom_type == 2:
-                avatar._tag_client_name = tag
-            elif custom_type == 3:
-                avatar._tag_client_version = tag
         # Send tag value, when it is tag created by this client
         # When this tag was created by some other Verse client,
         # then Verse server will send value, when received command
@@ -222,8 +195,8 @@ class VerseTag(verse_entity.VerseEntity):
         # Return reference at tag object
         return tag
 
-    @staticmethod
-    def _receive_tag_set_values(session, node_id, tg_id, tag_id, value):
+    @classmethod
+    def _receive_tag_set_values(cls, session, node_id, tg_id, tag_id, value):
         """
         Static method of class that should be called when
         coresponding callback function is called
@@ -248,8 +221,8 @@ class VerseTag(verse_entity.VerseEntity):
         # Return reference at this tag
         return tag
 
-    @staticmethod
-    def _receive_tag_destroy(session, node_id, tg_id, tag_id):
+    @classmethod
+    def _receive_tag_destroy(cls, session, node_id, tg_id, tag_id):
         """
         Static method of class that should be called when
         destroy callback session method is called

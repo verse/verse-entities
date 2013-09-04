@@ -23,7 +23,7 @@ This class is used only for encapsulating verse tags.
 """
 
 import verse as vrs
-from . import verse_entity, verse_node
+from . import verse_entity
 
 
 class VerseTagGroup(verse_entity.VerseEntity):
@@ -37,11 +37,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
         """
         super(VerseTagGroup, self).__init__(custom_type=custom_type)
 
-        # Tag group can't exist without node
-        if issubclass(node.__class__, verse_node.VerseNode) != True:
-            raise TypeError("Node is not subclass of model.VerseNode")
-        else:
-            self.node = node
+        self.node = node
 
         self.id = tg_id
 
@@ -110,8 +106,8 @@ class VerseTagGroup(verse_entity.VerseEntity):
         self._destroy()
 
 
-    @staticmethod
-    def _receive_tg_create(session, node_id, tg_id, custom_type):
+    @classmethod
+    def _receive_tg_create(cls, session, node_id, tg_id, custom_type):
         """
         Static method of class that add reference to the
         the dictionary of tag groups and send pending tag_create
@@ -135,25 +131,6 @@ class VerseTagGroup(verse_entity.VerseEntity):
         # Update state and subscribe command
         tg._receive_create()
 
-        # If this is node of user, then add reference to this tag group
-        try:
-            vrs_user = session.users[node_id]
-        except KeyError:
-            pass
-        else:
-            if custom_type == 0:
-                vrs_user._tg_info = tg
-
-        # If this is node of avatar info, then add to this tag group
-        try:
-            avatar_info_node = session._avatar_info_nodes[node_id]
-        except KeyError:
-            pass
-        else:
-            if custom_type == 0:
-                avatar = session.avatars[avatar_info_node.parent.id]
-                avatar._tg_info = tg
-
         # Send tag_create commands for pending tags
         for custom_type, tag in tg.tag_queue.items():
             session.send_tag_create(node.prio, node.id, tg.id, tag.data_type, tag.count, custom_type)
@@ -161,8 +138,8 @@ class VerseTagGroup(verse_entity.VerseEntity):
         return tg
 
 
-    @staticmethod
-    def _receive_tg_destroy(session, node_id, tg_id):
+    @classmethod
+    def _receive_tg_destroy(cls, session, node_id, tg_id):
         """
         Static method of class that should be called when
         destroy callback session method is called
@@ -183,8 +160,8 @@ class VerseTagGroup(verse_entity.VerseEntity):
         return tg
 
 
-    @staticmethod
-    def _receive_tg_subscribe(session, node_id, tg_id, version, crc32):
+    @classmethod
+    def _receive_tg_subscribe(cls, session, node_id, tg_id, version, crc32):
         """
         Static method of class that should be called when tag group
         subscribe command is received from Verse server
@@ -193,8 +170,8 @@ class VerseTagGroup(verse_entity.VerseEntity):
         pass
 
 
-    @staticmethod
-    def _receive_tg_unsubscribe(session, node_id, tg_id, version, crc32):
+    @classmethod
+    def _receive_tg_unsubscribe(cls, session, node_id, tg_id, version, crc32):
         """
         Static method of class that should be called when tag group
         unsubscribe command is received from Verse server

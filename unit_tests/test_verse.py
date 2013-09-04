@@ -98,6 +98,7 @@ class TestSession(vrsent.VerseSession):
                 parent=self.test_scene_node, \
                 user_id=None, \
                 custom_type=17)
+            print('>>> self.test_node:', self.test_node, '<<<')
 
             # Create new nodes for testing of destroying nodes
             self.test_destroy_node = vrsent.VerseNode(session=self, \
@@ -383,6 +384,9 @@ def main(hostname, username, password):
         counter += 1
         # Send connect termintate after 5 seconds
         if(counter == 100):
+            print('Users:')
+            for user in vrsent.session.users.values():
+                print(user)
             vrsent.session.send_connect_terminate()
 
 

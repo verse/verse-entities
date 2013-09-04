@@ -21,27 +21,44 @@
 This module includes class VerseUser representing verse user
 """
 
-class VerseUser(object):
+import verse as vrs
+from . import verse_node, verse_tag_group, verse_tag
+
+
+# TODO: this should be in verse module too
+TG_INFO_CT = 0
+TAG_USERNAME_CT = 0
+
+
+class VerseUser(verse_node.VerseNode):
     """
     A VerseUser is class representing user
     """
 
-    def __init__(self, user_node):
+    custom_type = 6 # TODO: replace with constant
+
+    def __init__(self, *args, **kwargs):
         """
         Constructor of VerseUser
         """
-        self._node = user_node
-        self._tg_info = None
-        self._tag_name = None
-        # Add this user to the dictionary of users
-        self._node.session.users[self._node.id] = self
+        print('>>> VerseUser <<<')
+
+        # Call parent init method
+        super(VerseUser, self).__init__(*args, **kwargs)
+
+        # Create tag group and tag due to specification
+        self._tg_info = verse_tag_group.VerseTagGroup(node=self, custom_type=TG_INFO_CT)
+        self._tg_info._tag_name = verse_tag.VerseTag(tg=self._tg_info, data_type=vrs.VALUE_TYPE_STRING8, count=1, custom_type=TAG_USERNAME_CT)
+
+        # Add this verse user to the dictionary of users
+        self.session.users[self.id] = self
 
     def __str__(self):
         """
         Print method of this class
         """
         return 'User (' + \
-                str(self._node.id) + \
+                str(self.id) + \
                 '): ' + \
                 self.name
 
@@ -51,8 +68,19 @@ class VerseUser(object):
         The name is property of VerseUser
         """
         try:
-            name = self._tag_name.value
+            name = self._tg_info._tag_name.value
         except AttributeError:
             return ""
         else:
             return name[0]
+
+    @classmethod
+    def _receive_node_destroy(cls, session, node_id):
+        """
+        Static method that is called, when node with user is destroyed and
+        this user is no longer valid user.
+        """
+        # Remove verse user from the dictionary of users
+        if node_id in session.users:
+            del session.users[node_id]
+        return super(VerseUser, cls)._receive_node_destroy(cls, session, node_id)

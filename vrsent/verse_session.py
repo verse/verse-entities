@@ -129,7 +129,6 @@ class VerseSession(vrs.Session):
             for node in queue:
                 self.send_node_create(node.prio, node.custom_type)
 
-
     def _receive_node_create(self, node_id, parent_id, user_id, custom_type):
         """
         Custom callback method that is called, when client received
@@ -139,7 +138,8 @@ class VerseSession(vrs.Session):
         if self.debug_print is True:
             super(VerseSession, self)._receive_node_create(node_id, parent_id, user_id, custom_type)
         # Call calback method of model
-        return verse_node.VerseNode._receive_node_create(self, node_id, parent_id, user_id, custom_type)
+        cls = verse_node.custom_type_subclass(custom_type)
+        return cls._receive_node_create(self, node_id, parent_id, user_id, custom_type)
 
 
     def _receive_node_destroy(self, node_id):
@@ -150,7 +150,8 @@ class VerseSession(vrs.Session):
         if self.debug_print is True:
             super(VerseSession, self)._receive_node_destroy(node_id)
         # Call callback method of model
-        return verse_node.VerseNode._receive_node_destroy(self, node_id)
+        cls = verse_node.custom_type_subclass(self.nodes[node_id].custom_type)
+        return cls._receive_node_destroy(self, node_id)
 
 
     def _receive_node_perm(self, node_id, user_id, perm):
@@ -161,7 +162,8 @@ class VerseSession(vrs.Session):
         if self.debug_print is True:
             super(VerseSession, self)._receive_node_perm(node_id, user_id, perm)
         # Call callback method of model
-        return verse_node.VerseNode._receive_node_perm(self, node_id, user_id, perm)
+        cls = verse_node.custom_type_subclass(self.nodes[node_id].custom_type)
+        return cls._receive_node_perm(self, node_id, user_id, perm)
 
 
     def _receive_node_link(self, parent_node_id, child_node_id):
@@ -173,7 +175,8 @@ class VerseSession(vrs.Session):
         if self.debug_print is True:
             super(VerseSession, self)._receive_node_link(parent_node_id, child_node_id)
         # Call calback method of model and return child node
-        return verse_node.VerseNode._receive_node_link(self, parent_node_id, child_node_id)
+        cls = verse_node.custom_type_subclass(self.nodes[child_node_id].custom_type)
+        return cls._receive_node_link(self, parent_node_id, child_node_id)
 
 
     def _receive_taggroup_create(self, node_id, taggroup_id, custom_type):

@@ -24,8 +24,30 @@ This module includes class VerseNode representing verse node
 
 import verse as vrs
 from . import verse_entity
-from . import verse_user
-from . import verse_avatar
+
+
+def custom_type_subclass(custom_type):
+    """
+    This method tries to return VerseNode subclass with specified custom type.
+    Otherwise it returns VerseNode class.
+    """
+    try:
+        cls = VerseNode._subclasses[custom_type]
+    except KeyError:
+        cls = VerseNode
+    else:
+        cls = last_subclass(cls)
+    return cls
+
+
+def last_subclass(cls):
+    """
+    This method returns last subclass of VerseNode subclass
+    """
+    if len(cls.__subclasses__()) > 0 and cls.__subclasses__()[0].custom_type == cls.custom_type:
+        return last_subclass(cls.__subclasses__()[0])
+    else:
+        return cls
 
 
 class VerseNode(verse_entity.VerseEntity):
@@ -36,27 +58,28 @@ class VerseNode(verse_entity.VerseEntity):
     # The dictionary of subclasses
     _subclasses = {}
 
-    @staticmethod
     def __new__(cls, *args, **kwargs):
         """
         Pre-constructor of VerseNode. It can 
         """
         if len(cls.__subclasses__()) > 0:
-            #return super(cls.__subclasses__()[0], cls.__subclasses__()[0]).__new__(cls.__subclasses__()[0], *args, **kwargs)
             try:
                 custom_type = kwargs['custom_type']
             except KeyError:
                 return super(VerseNode, cls).__new__(cls)
             else:
-                _cls = cls
+                sub_cls = None
                 if custom_type in cls._subclasses:
-                    _cls = cls._subclasses[custom_type]
+                    sub_cls = cls._subclasses[custom_type]
                 else:
-                    for sub_cls in cls.__subclasses__():
-                        sub_cls_type = getattr(sub_cls, 'custom_type', None)
+                    for sub_cls_it in cls.__subclasses__():
+                        sub_cls_type = getattr(sub_cls_it, 'custom_type', None)
                         if sub_cls_type is not None and sub_cls_type == custom_type:
-                            _cls = cls._subclasses[custom_type] = sub_cls
-                return super(VerseNode, _cls).__new__(_cls)
+                            sub_cls = cls._subclasses[custom_type] = last_subclass(sub_cls_it)
+                if sub_cls is not None:
+                    return super(VerseNode, sub_cls).__new__(sub_cls)
+                else:
+                    return super(VerseNode, cls).__new__(cls)
         else:
             return super(VerseNode, cls).__new__(cls)
 
@@ -65,6 +88,16 @@ class VerseNode(verse_entity.VerseEntity):
         """
         Constructor of VerseNode
         """
+
+        # Check if this object is created with right custom_type
+        # and when custom_type is not specified, then set it
+        # according class definition
+        if hasattr(self.__class__, 'custom_type'):
+            if custom_type is not None:
+                assert self.__class__.custom_type == custom_type
+            else:
+                custom_type = self.__class__.custom_type
+
         super(VerseNode, self).__init__(custom_type=custom_type)
 
         # TODO: Check if session is instance of VerseSession or subclass
@@ -168,13 +201,14 @@ class VerseNode(verse_entity.VerseEntity):
             self.subscribed = True
 
 
-    @staticmethod
-    def _receive_node_create(session, node_id, parent_id, user_id, custom_type):
+    @classmethod
+    def _receive_node_create(cls, session, node_id, parent_id, user_id, custom_type):
         """
         Static method of class that should be called, when coresponding callback
         method of class is called. This method moves node from queue to
         the dictionary of nodes and send pending commands.
         """
+        send_pending_data = False
 
         # Try to find parent node
         try:
@@ -192,69 +226,58 @@ class VerseNode(verse_entity.VerseEntity):
             session.nodes[node_id] = node
             if node.parent is None:
                 node.parent = parent_node
+            send_pending_data = True
         else:
             # Was this node already created?
             # e.g.: avatar node, user node, parent of scene node, etc.
             try:
                 node = session.nodes[node_id]
             except KeyError:
-                node = VerseNode(session, node_id, parent_node, user_id, custom_type)
+                node = VerseNode(session=session, node_id=node_id, parent=parent_node, user_id=user_id, custom_type=custom_type)
+            else:
+                send_pending_data = True
 
         # Change state of node
         node._receive_create()
 
-        # When node priority is different from default node priority
-        if node.prio != vrs.DEFAULT_PRIORITY:
-            session.send_node_prio(node.prio, node.id, node.prio)
+        # When this node was created by this client, then it is neccessary to send
+        # create/set command for node priority, tag_groups and layers
+        if send_pending_data == True:
 
-        # When parent node is different then current parent, then send node_link
-        # command to Verse server
-        if node.parent is not None and parent_id != node.parent.id:
-            session.send_node_link(node.prio, node.parent.id, node.id)
-            # Add reference to list of child nodes to parent node now,
-            # because it is possible to do now (node id is known)
-            node.parent.child_nodes[node.id] = node
+            # When node priority is different from default node priority
+            if node.prio != vrs.DEFAULT_PRIORITY:
+                session.send_node_prio(node.prio, node.id, node.prio)
 
-        # Send tag_group_create command for pending tag groups
-        for custom_type in node.tg_queue.keys():
-            session.send_taggroup_create(node.prio, node.id, custom_type)
+            # When parent node is different then current parent, then send node_link
+            # command to Verse server
+            if node.parent is not None and parent_id != node.parent.id:
+                session.send_node_link(node.prio, node.parent.id, node.id)
+                # Add reference to list of child nodes to parent node now,
+                # because it is possible to do now (node id is known)
+                node.parent.child_nodes[node.id] = node
 
-        # Send layer_create command for pending layers without parent layer
-        # This module will send automaticaly layer_create command for layers
-        # with parent layers, when layer_create command of their parent layers
-        # will be received
-        for layer in node.layer_queue.values():
-            if layer.parent_layer is None:
-                session.send_layer_create(node.prio, \
-                    node.id, \
-                    -1, \
-                    layer.data_type, \
-                    layer.count, \
-                    layer.custom_type)
+            # Send tag_group_create command for pending tag groups
+            for custom_type in node.tg_queue.keys():
+                session.send_taggroup_create(node.prio, node.id, custom_type)
 
-        # Is it avatar node?
-        if parent_id == 1:
-            session.avatars[node_id] = verse_avatar.VerseAvatar(node)
-
-        # Is it user node?
-        if parent_id == 2:
-            session.users[node_id] = verse_user.VerseUser(node)
-
-        # Is it info node about avatar?
-        try:
-            avatar = session.avatars[parent_id]
-        except KeyError:
-            pass
-        else:
-            if user_id == 100:
-                avatar._info_node = node
-                session._avatar_info_nodes[node_id] = node
+            # Send layer_create command for pending layers without parent layer
+            # This module will send automaticaly layer_create command for layers
+            # with parent layers, when layer_create command of their parent layers
+            # will be received
+            for layer in node.layer_queue.values():
+                if layer.parent_layer is None:
+                    session.send_layer_create(node.prio, \
+                        node.id, \
+                        -1, \
+                        layer.data_type, \
+                        layer.count, \
+                        layer.custom_type)
 
         # Return reference at node
         return node
 
-    @staticmethod
-    def _receive_node_destroy(session, node_id):
+    @classmethod
+    def _receive_node_destroy(cls, session, node_id):
         """
         Static method of class that should be called, when destroy_node
         callback method of Session class is called. This method removes
@@ -267,19 +290,12 @@ class VerseNode(verse_entity.VerseEntity):
             return
         # Set entity state and clean data in this node
         node._receive_destroy()
-        # When this is avatar node, then remove avatar from dictionary of
-        # avatars
-        if node_id in session.avatars:
-            del session.avatars[node_id]
-        # When this is user node, then remove user from dictionary of users
-        if node_id in session.users:
-            del session.users[node_id]
         # Return reference at this node
         return node
 
 
-    @staticmethod
-    def _receive_node_perm(session, node_id, user_id, perm):
+    @classmethod
+    def _receive_node_perm(cls, session, node_id, user_id, perm):
         """
         Static method of class that is called, when client received infomration
         about permission for specific user
@@ -290,16 +306,12 @@ class VerseNode(verse_entity.VerseEntity):
             return
         # Store information about this permissions
         node.perms[user_id] = perm
-        # Is it node of avatar
-        if node_id in session.avatars and user_id != 100 and user_id != 65535:
-            avatar = session.avatars[node_id]
-            avatar._user_id = user_id
         # Return reference at this node
         return node
 
 
-    @staticmethod
-    def _receive_node_link(session, parent_node_id, child_node_id):
+    @classmethod
+    def _receive_node_link(cls, session, parent_node_id, child_node_id):
         """
         """
         # Try to find parent node
@@ -327,8 +339,8 @@ class VerseNode(verse_entity.VerseEntity):
         # Return reference at child node
         return child_node
 
-    @staticmethod
-    def _receive_node_subscribe(session, node_id, version, crc32):
+    @classmethod
+    def _receive_node_subscribe(cls, session, node_id, version, crc32):
         """
         Static method of class that should be called when
         node subscribe command is received from Verse server
@@ -337,8 +349,8 @@ class VerseNode(verse_entity.VerseEntity):
         pass
 
 
-    @staticmethod
-    def _receive_node_unsubscribe(session, node_id, version, crc32):
+    @classmethod
+    def _receive_node_unsubscribe(cls, session, node_id, version, crc32):
         """
         Static method of class that should be called when
         node unsubscribe command is received from Verse server
