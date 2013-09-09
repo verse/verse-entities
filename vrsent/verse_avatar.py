@@ -27,9 +27,9 @@ from . import verse_node, verse_tag_group, verse_tag
 # TODO: this should be in verse module too
 TG_INFO_CT = 0
 TAG_HOSTNAME_CT = 0
-TAG_LOGIN_TIME = 1
-TAG_CLIENT_NAME = 2
-TAG_CLIENT_VERSION = 3
+TAG_LOGIN_TIME_CT = 1
+TAG_CLIENT_NAME_CT = 2
+TAG_CLIENT_VERSION_CT = 3
 
 
 class VerseAvatarInfo(verse_node.VerseNode):
@@ -43,29 +43,27 @@ class VerseAvatarInfo(verse_node.VerseNode):
         """
         Constructor of class
         """
-
-        print('>>>VerseAvatarINFO<<<')
-        
+        # Debug print
+        print('>>>VerseAvatarINFO<<<')        
         # Call parent init method
-        super(VerseUser, self).__init__(*args, **kwargs)
-        self._tg_info = verse_tag_group.VerseTagGroup(node=self, custom_type=TG_INFO_CT)
-        self._tg_info._tag_hostname = verse_tag.VerseTag(tg=self._tg_info, custom_type=TAG_HOSTNAME_CT)
-        self._tg_info._tag_login_time = verse_tag.VerseTag(tg=self._tg_info, custom_type=TAG_LOGIN_TIME)
-        self._tg_info._tag_client_name = verse_tag.VerseTag(tg=self._tg_info, custom_type=TAG_CLIENT_NAME)
-        self._tg_info._tag_client_version = verse_tag.VerseTag(tg=self._tg_info, custom_type=TAG_CLIENT_VERSION)
-
-    @classmethod
-    def _receive_node_create(cls, session, node_id, parent_id, user_id, custom_type):
-        """
-        """
-        avatar_info_node = super(VerseAvatarInfo, cls)._receive_node_create(cls, session, node_id, parent_id, user_id, custom_type)
-        try:
-            avatar_node = session.nodes[parent_id]
-        except KeyError:
-            pass
+        super(VerseAvatarInfo, self).__init__(*args, **kwargs)
+        # Add reference to parent (avatar) node
+        if self.parent is not None:
+            print('>>>>Setting info node reference<<<<')
+            self.parent._info_node = self
         else:
-            avatar_node._info_node = avatar_info_node
-        return avatar_info_node
+            print('>>>>Parent: None<<<<')
+        print('Creating _tg_info ...')
+        self._tg_info = verse_tag_group.VerseTagGroup(node=self, custom_type=TG_INFO_CT)
+        print('Done')
+        print('Creating _tg_info._tag_hostname ...')
+        self._tg_info._tag_hostname = verse_tag.VerseTag(tg=self._tg_info, custom_type=TAG_HOSTNAME_CT)
+        print('Done')
+        print('Creating ...')
+        self._tg_info._tag_login_time = verse_tag.VerseTag(tg=self._tg_info, custom_type=TAG_LOGIN_TIME_CT)
+        self._tg_info._tag_client_name = verse_tag.VerseTag(tg=self._tg_info, custom_type=TAG_CLIENT_NAME_CT)
+        self._tg_info._tag_client_version = verse_tag.VerseTag(tg=self._tg_info, custom_type=TAG_CLIENT_VERSION_CT)
+        print('Done')
 
 
 class VerseAvatar(verse_node.VerseNode):
@@ -79,14 +77,13 @@ class VerseAvatar(verse_node.VerseNode):
         """
         Constructor of class
         """
-
-        print('>>>VerseAvatar<<<')
-        
         # Call parent init method
-        super(VerseUser, self).__init__(*args, **kwargs)
-
+        super(VerseAvatar, self).__init__(*args, **kwargs)
+        # Info node and user_id could not be known yet
         self._info_node = None
         self._user_id = None
+        # Add this avatar to the list of avatars
+        self.session.avatars[self.id] = self
 
     def __str__(self):
         """
@@ -158,7 +155,7 @@ class VerseAvatar(verse_node.VerseNode):
         user of this avatar
         """
         try:
-            user = self._node.session.users[self._user_id]
+            user = self.session.users[self._user_id]
         except KeyError:
             return ""
         else:

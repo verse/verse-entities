@@ -83,7 +83,7 @@ class TestSession(vrsent.VerseSession):
                     node_id=3, \
                     parent=self.root_node, \
                     user_id=100,
-                    custom_type=0)
+                    custom_type=3)
 
             # Create test scene node
             self.test_scene_node = vrsent.VerseNode(session=self, \
@@ -98,7 +98,6 @@ class TestSession(vrsent.VerseSession):
                 parent=self.test_scene_node, \
                 user_id=None, \
                 custom_type=17)
-            print('>>> self.test_node:', self.test_node, '<<<')
 
             # Create new nodes for testing of destroying nodes
             self.test_destroy_node = vrsent.VerseNode(session=self, \
@@ -238,11 +237,19 @@ class TestSession(vrsent.VerseSession):
         tag group create
         """
         tg = super(TestSession, self)._receive_taggroup_create(node_id, taggroup_id, custom_type)
+        try:
+            test_new_tg = self.test_node.test_tg
+        except AttributeError:
+            test_new_tg = None
+        try:
+            test_destroy_tg = self.test_node.test_destroy_tg
+        except AttributeError:
+            test_destroy_tg = None
         # Start unit testing of created tag group
-        if tg == self.test_node.test_tg:
+        if tg == test_new_tg:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_tg.TestCreatedTagGroupCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
-        elif tg == self.test_node.test_destroy_tg:
+        elif tg == test_destroy_tg:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_tg.TestDestroyingTagGroupCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
@@ -253,8 +260,12 @@ class TestSession(vrsent.VerseSession):
         tag group destroy
         """
         tg = super(TestSession, self)._receive_taggroup_destroy(node_id, taggroup_id)
+        try:
+            test_destroy_tg = self.test_node.test_destroy_tg
+        except AttributeError:
+            test_destroy_tg = None
         # Start unit testing of destroyed tag group
-        if tg == self.test_node.test_destroy_tg:
+        if tg == test_destroy_tg:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_tg.TestDestroyedTagGroupCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
@@ -304,11 +315,11 @@ class TestSession(vrsent.VerseSession):
         """
         tag = super(TestSession, self)._receive_tag_set_values(node_id, taggroup_id, tag_id, value)
         try:
-            test_tag = self.test_node.test_tg.test_tag
+            test_new_tag = self.test_node.test_tg.test_tag
         except AttributeError:
-            test_tag = None
+            test_new_tag = None
         # Start unit testing of tag with changed value
-        if tag == test_tag:
+        if tag == test_new_tag:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_tag.TestChangedTagCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
@@ -371,7 +382,7 @@ def main(hostname, username, password):
     """
     Function with main never ending verse loop
     """
-    vrsent.session = TestSession(hostname, "12345", vrs.DGRAM_SEC_DTLS)
+    vrsent.session = TestSession(hostname, "12344", vrs.DGRAM_SEC_DTLS)
     vrsent.session.username = username
     vrsent.session.password = password
 
@@ -387,6 +398,9 @@ def main(hostname, username, password):
             print('Users:')
             for user in vrsent.session.users.values():
                 print(user)
+            print('Avatars:')
+            for avatar in vrsent.session.avatars.values():
+                print(avatar)
             vrsent.session.send_connect_terminate()
 
 

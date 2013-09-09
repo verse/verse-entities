@@ -100,7 +100,6 @@ class VerseNode(verse_entity.VerseEntity):
 
         super(VerseNode, self).__init__(custom_type=custom_type)
 
-        # TODO: Check if session is instance of VerseSession or subclass
         self.session = session
 
         self.id = node_id

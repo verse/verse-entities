@@ -77,7 +77,7 @@ class VerseSession(vrs.Session):
         if self.debug_print is True:
             super(VerseSession, self)._receive_user_authenticate(self, username, self.password)
         # Default method to get username and password
-        if username=="":
+        if username == "":
             if self.username is None:
                 self.username = username = input('username: ')
             else:
@@ -128,6 +128,7 @@ class VerseSession(vrs.Session):
         for queue in self.my_node_queues.values():
             for node in queue:
                 self.send_node_create(node.prio, node.custom_type)
+
 
     def _receive_node_create(self, node_id, parent_id, user_id, custom_type):
         """

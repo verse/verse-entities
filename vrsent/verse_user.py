@@ -41,7 +41,6 @@ class VerseUser(verse_node.VerseNode):
         """
         Constructor of VerseUser
         """
-        print('>>> VerseUser <<<')
 
         # Call parent init method
         super(VerseUser, self).__init__(*args, **kwargs)

@@ -93,12 +93,12 @@ class VerseLayer(verse_entity.VerseEntity):
         """
         super(VerseLayer, self).__init__(custom_type=custom_type)
         self.node = node
+        self.parent_layer = parent_layer
         self.id = layer_id
         self.data_type = data_type
         self.count = count
         self.child_layers = {}
         self.items = VerseLayerItems(self)
-        self.parent_layer = parent_layer
         self.send_cmds = True
 
         # Change state and send commands
@@ -147,7 +147,7 @@ class VerseLayer(verse_entity.VerseEntity):
         Send layer subscribe command to Verse server
         """
         if self.id is not None:
-            self.node.session.send_layer_subscribe(self.node.prio. self.node.id, self.id, self.version, self.crc32)
+            self.node.session.send_layer_subscribe(self.node.prio, self.node.id, self.id, self.version, self.crc32)
 
 
     def _send_unsubscribe(self):
