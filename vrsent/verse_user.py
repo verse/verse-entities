@@ -47,7 +47,10 @@ class VerseUser(verse_node.VerseNode):
 
         # Create tag group and tag due to specification
         self._tg_info = verse_tag_group.VerseTagGroup(node=self, custom_type=TG_INFO_CT)
-        self._tg_info._tag_name = verse_tag.VerseTag(tg=self._tg_info, data_type=vrs.VALUE_TYPE_STRING8, count=1, custom_type=TAG_USERNAME_CT)
+        self._tg_info._tag_name = verse_tag.VerseTag(tg=self._tg_info, \
+            data_type=vrs.VALUE_TYPE_STRING8, \
+            count=1, \
+            custom_type=TAG_USERNAME_CT)
 
         # Add this verse user to the dictionary of users
         self.session.users[self.id] = self
@@ -71,7 +74,10 @@ class VerseUser(verse_node.VerseNode):
         except AttributeError:
             return ""
         else:
-            return name[0]
+            try:
+                return name[0]
+            except TypeError:
+                return ""
 
     @classmethod
     def _receive_node_destroy(cls, session, node_id):

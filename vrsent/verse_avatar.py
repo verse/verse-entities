@@ -43,27 +43,29 @@ class VerseAvatarInfo(verse_node.VerseNode):
         """
         Constructor of class
         """
-        # Debug print
-        print('>>>VerseAvatarINFO<<<')        
         # Call parent init method
         super(VerseAvatarInfo, self).__init__(*args, **kwargs)
         # Add reference to parent (avatar) node
-        if self.parent is not None:
-            print('>>>>Setting info node reference<<<<')
-            self.parent._info_node = self
-        else:
-            print('>>>>Parent: None<<<<')
-        print('Creating _tg_info ...')
+        self.parent._info_node = self
+        # Create tag group with info information due to specification
         self._tg_info = verse_tag_group.VerseTagGroup(node=self, custom_type=TG_INFO_CT)
-        print('Done')
-        print('Creating _tg_info._tag_hostname ...')
-        self._tg_info._tag_hostname = verse_tag.VerseTag(tg=self._tg_info, custom_type=TAG_HOSTNAME_CT)
-        print('Done')
-        print('Creating ...')
-        self._tg_info._tag_login_time = verse_tag.VerseTag(tg=self._tg_info, custom_type=TAG_LOGIN_TIME_CT)
-        self._tg_info._tag_client_name = verse_tag.VerseTag(tg=self._tg_info, custom_type=TAG_CLIENT_NAME_CT)
-        self._tg_info._tag_client_version = verse_tag.VerseTag(tg=self._tg_info, custom_type=TAG_CLIENT_VERSION_CT)
-        print('Done')
+        # Create tags due to specification
+        self._tg_info._tag_hostname = verse_tag.VerseTag(tg=self._tg_info, \
+            data_type=vrs.VALUE_TYPE_STRING8, \
+            count=1, \
+            custom_type=TAG_HOSTNAME_CT)
+        self._tg_info._tag_login_time = verse_tag.VerseTag(tg=self._tg_info, \
+            data_type=vrs.VALUE_TYPE_UINT64, \
+            count=1, \
+            custom_type=TAG_LOGIN_TIME_CT)
+        self._tg_info._tag_client_name = verse_tag.VerseTag(tg=self._tg_info, \
+            data_type=vrs.VALUE_TYPE_STRING8, \
+            count=1, \
+            custom_type=TAG_CLIENT_NAME_CT)
+        self._tg_info._tag_client_version = verse_tag.VerseTag(tg=self._tg_info, \
+            data_type=vrs.VALUE_TYPE_STRING8, \
+            count=1, \
+            custom_type=TAG_CLIENT_VERSION_CT)
 
 
 class VerseAvatar(verse_node.VerseNode):
@@ -93,11 +95,11 @@ class VerseAvatar(verse_node.VerseNode):
                 str(self.id) + \
                 '): ' + \
                 self.username + \
-                '@' + \
+                '@[' + \
                 self.hostname + \
-                ' (' + \
+                '] (' + \
                 self.client_name + \
-                ':' + \
+                ' ' + \
                 self.client_version + \
                 ')'
 
@@ -111,7 +113,10 @@ class VerseAvatar(verse_node.VerseNode):
         except AttributeError:
             return ""
         else:
-            return hostname[0]
+            try:
+                return hostname[0]
+            except TypeError:
+                return ""
 
     @property
     def login_time(self):
@@ -123,7 +128,10 @@ class VerseAvatar(verse_node.VerseNode):
         except AttributeError:
             return ""
         else:
-            return login_time[0]
+            try:
+                return login_time[0]
+            except TypeError:
+                return ""
 
     @property
     def client_name(self):
@@ -135,7 +143,10 @@ class VerseAvatar(verse_node.VerseNode):
         except AttributeError:
             return ""
         else:
-            return client_name[0]
+            try:
+                return client_name[0]
+            except TypeError:
+                return ""
 
     @property
     def client_version(self):
@@ -147,7 +158,10 @@ class VerseAvatar(verse_node.VerseNode):
         except AttributeError:
             return ""
         else:
-            return client_version[0]
+            try:
+                return client_version[0]
+            except TypeError:
+                return ""
 
     @property
     def username(self):

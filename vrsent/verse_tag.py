@@ -26,6 +26,12 @@ import verse as vrs
 from . import verse_entity
 
 
+# Dictionary used for estimation of Versetag data_type
+DATA_TYPE_DICT = { type(0): vrs.VALUE_TYPE_UINT64, \
+    type(0.0): vrs.VALUE_TYPE_REAL64, \
+    type('verse'): vrs.VALUE_TYPE_STRING8}
+
+
 class VerseTag(verse_entity.VerseEntity):
     """
     Class representing Verse tag
@@ -50,15 +56,17 @@ class VerseTag(verse_entity.VerseEntity):
 
         # If data type is not set, then try to estimate it. Only three
         # Python data types are supported for Verse tags
-        if data_type is None:
-            if type(value[0]) == int:
-                self.data_type = vrs.VALUE_TYPE_UINT64
-            elif type(value[0]) == float:
-                self.data_type = vrs.VALUE_TYPE_REAL64
-            elif type(value[0]) == str:
-                self.data_type = vrs.VALUE_TYPE_STRING
+        if data_type is None and value is None:
+            raise TypeError("VerseTag value and VerseTag data_type are None")
+        elif data_type is None:
+            if issubclass(value.__class__, tuple):
+                # Set data_type with max possible precision
+                try:
+                    self.data_type = DATA_TYPE_DICT[type(value[0])]
+                except KeyError:
+                    raise TypeError("Unsupported data_type of VerseTag value: ", type(value[0]))
             else:
-                raise TypeError("Unsupported data_type: ", type(value[0]))
+                raise TypeError("VerseTag value is not tuple: ", type(value))
         else:
             # No need to do check of data_type, because Verse module do this
             self.data_type = data_type

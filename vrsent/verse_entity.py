@@ -35,6 +35,20 @@ ENTITY_DESTROYING   = 5
 ENTITY_DESTROYED    = 6
 
 
+SUPPORTED_VALUE_TYPES = set((vrs.VALUE_TYPE_UINT8, \
+    vrs.VALUE_TYPE_UINT16, \
+    vrs.VALUE_TYPE_UINT32, \
+    vrs.VALUE_TYPE_UINT64, \
+    vrs.VALUE_TYPE_REAL16, \
+    vrs.VALUE_TYPE_REAL32, \
+    vrs.VALUE_TYPE_REAL64, \
+    vrs.VALUE_TYPE_STRING8))
+
+SUPPORTED_DATA_TYPES = set((type(int), \
+    type(float), \
+    type(str) ))
+
+
 class VerseStateError(Exception):
     """
     Exception for invalid state changes
