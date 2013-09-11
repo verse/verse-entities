@@ -118,6 +118,8 @@ class VerseNode(verse_entity.VerseEntity):
         self.layer_queue = {}
         self.prio = vrs.DEFAULT_PRIORITY
         self.perms = {}
+        self.locked = False
+        self.locker = None
 
         # Change state and send commands
         self._create()
@@ -294,22 +296,6 @@ class VerseNode(verse_entity.VerseEntity):
 
 
     @classmethod
-    def _receive_node_perm(cls, session, node_id, user_id, perm):
-        """
-        Static method of class that is called, when client received infomration
-        about permission for specific user
-        """
-        try:
-            node = session.nodes[node_id]
-        except KeyError:
-            return
-        # Store information about this permissions
-        node.perms[user_id] = perm
-        # Return reference at this node
-        return node
-
-
-    @classmethod
     def _receive_node_link(cls, session, parent_node_id, child_node_id):
         """
         """
@@ -337,6 +323,73 @@ class VerseNode(verse_entity.VerseEntity):
 
         # Return reference at child node
         return child_node
+
+
+    @classmethod
+    def _receive_node_lock(cls, session, node_id, avatar_id):
+        """
+        Static method of class that is called, when client received infomration
+        about locking of the node
+        """
+        try:
+            node = session.nodes[node_id]
+        except KeyError:
+            return
+        try:
+            avatar = session.avatars[avatar_id]
+        except KeyError:
+            node.locked = True
+        else:
+            node.locked = True
+            node.locker = avatar
+            return node
+
+
+    @classmethod
+    def _receive_node_unlock(cls, session, node_id, avatar_id):
+        """
+        Static method of class that is called, when client received infomration
+        about unlocking of the node
+        """
+        try:
+            node = session.nodes[node_id]
+        except KeyError:
+            return
+        node.locked = False
+        node.locker = None
+        return node
+
+
+    @classmethod
+    def _receive_node_owner(cls, session, node_id, user_id):
+        """
+        Static method of class that is called, when client received infomration
+        about new owner of the node
+        """
+        try:
+            node = session.nodes[node_id]
+        except KeyError:
+            return
+        else:
+            node.user_id = user_id
+            return none
+
+
+    @classmethod
+    def _receive_node_perm(cls, session, node_id, user_id, perm):
+        """
+        Static method of class that is called, when client received infomration
+        about permission for specific user
+        """
+        try:
+            node = session.nodes[node_id]
+        except KeyError:
+            return
+        # Store information about this permissions
+        node.perms[user_id] = perm
+        # Return reference at this node
+        return node
+
 
     @classmethod
     def _receive_node_subscribe(cls, session, node_id, version, crc32):

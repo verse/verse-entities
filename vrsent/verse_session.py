@@ -111,6 +111,7 @@ class VerseSession(vrs.Session):
         self.send_fps(val)
 
 
+    # Connection
     def _receive_connect_accept(self, user_id, avatar_id):
         """
         Custom callback method for connect accept
@@ -130,6 +131,27 @@ class VerseSession(vrs.Session):
                 self.send_node_create(node.prio, node.custom_type)
 
 
+    def _receive_connect_terminate(self, error):
+        """
+        Custom callback method for fake connect terminate command
+        """
+        # Call method of parent class
+        if self.debug_print is True:
+            super(VerseSession, self)._receive_connect_terminate(error)
+        self.state = 'DISCONNECTED'
+        # Remove this instance from the list of sessions
+        self.__class__.__sessions.pop(self.hostname+':'+self.service)
+
+
+    def send_connect_terminate(self):
+        """
+        send_connect_terminate() -> None
+        """
+        self.state = 'DISCONNECTING'
+        super(VerseSession, self).send_connect_terminate()
+
+
+    # Nodes
     def _receive_node_create(self, node_id, parent_id, user_id, custom_type):
         """
         Custom callback method that is called, when client received
@@ -155,18 +177,6 @@ class VerseSession(vrs.Session):
         return cls._receive_node_destroy(self, node_id)
 
 
-    def _receive_node_perm(self, node_id, user_id, perm):
-        """
-        Custom callback method for command node perm
-        """
-        # Call parent method to print debug information
-        if self.debug_print is True:
-            super(VerseSession, self)._receive_node_perm(node_id, user_id, perm)
-        # Call callback method of model
-        cls = verse_node.custom_type_subclass(self.nodes[node_id].custom_type)
-        return cls._receive_node_perm(self, node_id, user_id, perm)
-
-
     def _receive_node_link(self, parent_node_id, child_node_id):
         """
         Custom callback method that is called, when client receive command changing
@@ -180,6 +190,55 @@ class VerseSession(vrs.Session):
         return cls._receive_node_link(self, parent_node_id, child_node_id)
 
 
+    def _receive_node_lock(self, node_id, avatar_id):
+        """
+        Custom callback method for command node lock
+        """
+        # Call parent method to print debug information
+        if self.debug_print is True:
+            super(VerseSession, self)._receive_node_lock(node_id, avatar_id)
+        # Call callback method of coresponding class and return node
+        cls = verse_node.custom_type_subclass(self.nodes[node_id].custom_type)
+        return cls._receive_node_lock(self, node_id, avatar_id)
+
+
+    def _receive_node_unlock(self, node_id, avatar_id):
+        """
+        Custom callback method for command node unlock
+        """
+        # Call parent method to print debug information
+        if self.debug_print is True:
+            super(VerseSession, self)._receive_node_unlock(node_id, avatar_id)
+        # Call callback method of coresponding class and return node
+        cls = verse_node.custom_type_subclass(self.nodes[node_id].custom_type)
+        return cls._receive_node_unlock(self, node_id, avatar_id)
+
+
+    def _receive_node_perm(self, node_id, user_id, perm):
+        """
+        Custom callback method for command node perm
+        """
+        # Call parent method to print debug information
+        if self.debug_print is True:
+            super(VerseSession, self)._receive_node_perm(node_id, user_id, perm)
+        # Call callback method of model
+        cls = verse_node.custom_type_subclass(self.nodes[node_id].custom_type)
+        return cls._receive_node_perm(self, node_id, user_id, perm)
+
+
+    def _receive_node_owner(self, node_id, user_id):
+        """
+        Custom callback method for command node owner
+        """
+        # Call parent method to print debug information
+        if self.debug_print is True:
+            super(VerseSession, self)._receive_node_owner(node_id, user_id)
+        # Call callback method of coresponding class and return node
+        cls = verse_node.custom_type_subclass(self.nodes[node_id].custom_type)
+        return cls._receive_node_owner(self, node_id, user_id)
+
+
+    # TagGroups
     def _receive_taggroup_create(self, node_id, taggroup_id, custom_type):
         """
         Custom callback method that is called, when client received command
@@ -204,6 +263,7 @@ class VerseSession(vrs.Session):
         return verse_tag_group.VerseTagGroup._receive_tg_destroy(self, node_id, taggroup_id)
 
 
+    # Tags
     def _receive_tag_create(self, node_id, taggroup_id, tag_id, data_type, count, custom_type):
         """
         Custom callback method that is called, when client received command tag create
@@ -237,6 +297,7 @@ class VerseSession(vrs.Session):
         return verse_tag.VerseTag._receive_tag_set_values(self, node_id, taggroup_id, tag_id, value)
 
 
+    # Layer
     def _receive_layer_create(self, node_id, parent_layer_id, layer_id, data_type, count, custom_type):
         """
         Custom callback method that is called, when client received command layer create
@@ -290,23 +351,3 @@ class VerseSession(vrs.Session):
             super(VerseSession, self)._receive_layer_unset_value(node_id, layer_id, item_id)
         # Call callback method of model
         return verse_layer.VerseLayer._receive_layer_unset_value(self, node_id, layer_id, item_id)
-
-
-    def _receive_connect_terminate(self, error):
-        """
-        Custom callback method for fake connect terminate command
-        """
-        # Call method of parent class
-        if self.debug_print is True:
-            super(VerseSession, self)._receive_connect_terminate(error)
-        self.state = 'DISCONNECTED'
-        # Remove this instance from the list of sessions
-        self.__class__.__sessions.pop(self.hostname+':'+self.service)
-
-
-    def send_connect_terminate(self):
-        """
-        send_connect_terminate() -> None
-        """
-        self.state = 'DISCONNECTING'
-        super(VerseSession, self).send_connect_terminate()
