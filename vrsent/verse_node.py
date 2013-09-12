@@ -246,6 +246,34 @@ class VerseNode(verse_entity.VerseEntity):
             self.session.send_node_unlock(self.prio, self.id)
 
 
+    @property
+    def owner(self):
+        """
+        This getter of current owner of this node
+        """
+        try:
+            owner = self.session.users[self.user_id]
+        except KeyError:
+            return None
+        else:
+            return owner
+
+
+    @owner.setter
+    def owner(self, owner):
+        """
+        This is setter of current owner of this node. This setter
+        will have effect, when client is owner of this node. In
+        this situation corresponding verse command will be sent to
+        Verse server.
+        """
+        if self.user_id == self.session.user_id:
+            # Set new ID fo owner
+            self.user_id = owner.id
+            # Send command
+            self.session.send_node_owner(self.prio, self.id, self.user_id)
+
+
     @classmethod
     def _receive_node_create(cls, session, node_id, parent_id, user_id, custom_type):
         """

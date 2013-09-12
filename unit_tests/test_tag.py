@@ -33,6 +33,7 @@ class TestChangedTagCase(unittest.TestCase):
     node = None
     tg = None
     tag = None
+    tested = False
 
     @classmethod
     def setUpClass(cls):
@@ -42,6 +43,7 @@ class TestChangedTagCase(unittest.TestCase):
         __class__.node = vrsent.session.test_node
         __class__.tg = vrsent.session.test_node.test_tg
         __class__.tag = vrsent.session.test_node.test_tg.test_tag
+        __class__.tested = True
 
     def test_tag_value(self):
         """
@@ -58,6 +60,7 @@ class TestDestroyingTagCase(unittest.TestCase):
     node = None
     tg = None
     tag = None
+    tested = False
 
     @classmethod
     def setUpClass(cls):
@@ -67,6 +70,7 @@ class TestDestroyingTagCase(unittest.TestCase):
         __class__.node = vrsent.session.test_node
         __class__.tg = vrsent.session.test_node.test_tg
         __class__.tag = vrsent.session.test_node.test_tg.test_destroy_tag
+        __class__.tested = True
 
     def test_tag_destroying(self):
         """
@@ -83,6 +87,7 @@ class TestDestroyedTagCase(unittest.TestCase):
     node = None
     tg = None
     tag = None
+    tested = False
 
     @classmethod
     def setUpClass(cls):
@@ -92,6 +97,7 @@ class TestDestroyedTagCase(unittest.TestCase):
         __class__.node = vrsent.session.test_node
         __class__.tg = vrsent.session.test_node.test_tg
         __class__.tag = vrsent.session.test_node.test_tg.test_destroy_tag
+        __class__.tested = True
 
     def test_tag_destroyed(self):
         """
@@ -108,6 +114,7 @@ class TestCreatedTagCase(unittest.TestCase):
     node = None
     tg = None
     tag = None
+    tested = False
 
     @classmethod
     def setUpClass(cls):
@@ -117,6 +124,7 @@ class TestCreatedTagCase(unittest.TestCase):
         __class__.node = vrsent.session.test_node
         __class__.tg = vrsent.session.test_node.test_tg
         __class__.tag = vrsent.session.test_node.test_tg.test_tag
+        __class__.tested = True
 
     def test_tag_created(self):
         """
@@ -133,6 +141,7 @@ class TestNewTagCase(unittest.TestCase):
     node = None
     tg = None
     tag = None
+    tested = False
 
     @classmethod
     def setUpClass(cls):
@@ -142,6 +151,7 @@ class TestNewTagCase(unittest.TestCase):
         __class__.node = vrsent.session.test_node
         __class__.tg = vrsent.session.test_node.test_tg
         __class__.tag = vrsent.session.test_node.test_tg.test_tag
+        __class__.tested = True
 
     def test_tag_not_created(self):
         """

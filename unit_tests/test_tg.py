@@ -33,6 +33,8 @@ class TestDestroyingTagGroupCase(unittest.TestCase):
     tg = None
     tag = None
 
+    tested = False
+
     @classmethod
     def setUpClass(cls):
         """
@@ -40,6 +42,7 @@ class TestDestroyingTagGroupCase(unittest.TestCase):
         """
         __class__.node = vrsent.session.test_node
         __class__.tg = vrsent.session.test_node.test_destroy_tg
+        __class__.tested = True
 
     def test_tg_destroying(self):
         """
@@ -56,6 +59,8 @@ class TestDestroyedTagGroupCase(unittest.TestCase):
     node = None
     tg = None
 
+    tested = False
+
     @classmethod
     def setUpClass(cls):
         """
@@ -63,6 +68,7 @@ class TestDestroyedTagGroupCase(unittest.TestCase):
         """
         __class__.node = vrsent.session.test_node
         __class__.tg = vrsent.session.test_node.test_destroy_tg
+        __class__.tested = True
 
     def test_tgp_destroyed(self):
         """
@@ -79,6 +85,8 @@ class TestCreatedTagGroupCase(unittest.TestCase):
     node = None
     tg = None
 
+    tested = False
+
     @classmethod
     def setUpClass(cls):
         """
@@ -86,6 +94,7 @@ class TestCreatedTagGroupCase(unittest.TestCase):
         """
         __class__.node = vrsent.session.test_node
         __class__.tg = vrsent.session.test_node.test_tg
+        __class__.tested = True
 
     def test_tg_created(self):
         """
@@ -114,6 +123,8 @@ class TestNewTagGroupCase(unittest.TestCase):
     node = None
     tg = None
 
+    tested = False
+
     @classmethod
     def setUpClass(cls):
         """
@@ -121,6 +132,7 @@ class TestNewTagGroupCase(unittest.TestCase):
         """
         __class__.node = vrsent.session.test_node
         __class__.tg = vrsent.session.test_node.test_tg
+        __class__.tested = True
 
     def test_tg_not_created(self):
         """

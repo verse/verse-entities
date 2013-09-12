@@ -31,6 +31,7 @@ class TestLayerSetValueCase(unittest.TestCase):
 
     node = None
     layer = None
+    tested = False
 
     @classmethod
     def setUpClass(cls):
@@ -39,6 +40,7 @@ class TestLayerSetValueCase(unittest.TestCase):
         """
         __class__.node = vrsent.session.test_node
         __class__.layer = vrsent.session.test_node.test_destroy_layer
+        __class__.tested = True
 
     def test_layer_set_value(self):
         """
@@ -55,6 +57,7 @@ class TestDestroyedLayerCase(unittest.TestCase):
 
     node = None
     layer = None
+    tested = False
 
     @classmethod
     def setUpClass(cls):
@@ -63,6 +66,7 @@ class TestDestroyedLayerCase(unittest.TestCase):
         """
         __class__.node = vrsent.session.test_node
         __class__.layer = vrsent.session.test_node.test_destroy_layer
+        __class__.tested = True
 
     def test_layer_destroyed(self):
         """
@@ -78,6 +82,7 @@ class TestDestroyingLayerCase(unittest.TestCase):
 
     node = None
     layer = None
+    tested = False
 
     @classmethod
     def setUpClass(cls):
@@ -86,6 +91,7 @@ class TestDestroyingLayerCase(unittest.TestCase):
         """
         __class__.node = vrsent.session.test_node
         __class__.layer = vrsent.session.test_node.test_destroy_layer
+        __class__.tested = True
 
     def test_layer_destroying(self):
         """
@@ -101,6 +107,7 @@ class TestNewLayerCase(unittest.TestCase):
 
     node = None
     layer = None
+    tested = False
 
     @classmethod
     def setUpClass(cls):
@@ -109,6 +116,7 @@ class TestNewLayerCase(unittest.TestCase):
         """
         __class__.node = vrsent.session.test_node
         __class__.layer = vrsent.session.test_node.test_layer
+        __class__.tested = True
 
     def test_layer_not_created(self):
         """
@@ -130,6 +138,7 @@ class TestCreatedLayerCase(unittest.TestCase):
 
     node = None
     layer = None
+    tested = False
 
     @classmethod
     def setUpClass(cls):
@@ -138,6 +147,7 @@ class TestCreatedLayerCase(unittest.TestCase):
         """
         __class__.node = vrsent.session.test_node
         __class__.layer = vrsent.session.test_node.test_layer
+        __class__.tested = True
 
     def test_layer_created(self):
         """

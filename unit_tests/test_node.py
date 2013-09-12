@@ -31,6 +31,7 @@ class TestOwnerPermNodeCase(unittest.TestCase):
     """
 
     node = None
+    tested = False
 
     @classmethod
     def setUpClass(cls):
@@ -38,6 +39,7 @@ class TestOwnerPermNodeCase(unittest.TestCase):
         This method is called before any test is performed
         """
         __class__.node = vrsent.session.test_node
+        __class__.tested = True
 
     def test_node_owner_perm(self):
         """
@@ -53,6 +55,7 @@ class TestLinkNodeCase(unittest.TestCase):
 
     child_node = None
     parent_node = None
+    tested = False
 
     @classmethod
     def setUpClass(cls):
@@ -62,6 +65,7 @@ class TestLinkNodeCase(unittest.TestCase):
         __class__.child_node = vrsent.session.test_node
         __class__.parent_node = vrsent.session.test_scene_node
         __class__.avatar_node = vrsent.session.avatar_node
+        __class__.tested = True
 
     def test_child_node_link(self):
         """
@@ -94,6 +98,7 @@ class TestDestroyedNodeCase(unittest.TestCase):
     """
 
     node = None
+    tested = False
 
     @classmethod
     def setUpClass(cls):
@@ -101,6 +106,7 @@ class TestDestroyedNodeCase(unittest.TestCase):
         This method is called before any test is performed
         """
         __class__.node = vrsent.session.test_destroy_node
+        __class__.tested = True
 
     def test_node_destroying(self):
         """
@@ -115,6 +121,7 @@ class TestDestroyNodeCase(unittest.TestCase):
     """
 
     node = None
+    tested = False
 
     @classmethod
     def setUpClass(cls):
@@ -122,6 +129,7 @@ class TestDestroyNodeCase(unittest.TestCase):
         This method is called before any test is performed
         """
         __class__.node = vrsent.session.test_destroy_node
+        __class__.tested = True
 
     def test_node_destroying(self):
         """
@@ -136,6 +144,7 @@ class TestCreatedNodeCase(unittest.TestCase):
     """
 
     node = None
+    tested = False
 
     @classmethod
     def setUpClass(cls):
@@ -143,6 +152,7 @@ class TestCreatedNodeCase(unittest.TestCase):
         This method is called before any test is performed
         """
         __class__.node = vrsent.session.test_node
+        __class__.tested = True
 
     def test_node_created(self):
         """
@@ -169,6 +179,7 @@ class TestNewNodeCase(unittest.TestCase):
     """
 
     node = None
+    tested = False
 
     @classmethod
     def setUpClass(cls):
@@ -176,6 +187,7 @@ class TestNewNodeCase(unittest.TestCase):
         This method is called before any test is performed
         """
         __class__.node = vrsent.session.test_node
+        __class__.tested = True
 
     def test_node_not_created(self):
         """

@@ -395,6 +395,11 @@ def main(hostname, username, password):
         counter += 1
         # Send connect termintate after 5 seconds
         if(counter == 50):
+            print('Test Cases Summary:')
+            # Check if all test cases were performed
+            for test_case in unittest.TestCase.__subclasses__():
+                if hasattr(test_case, 'tested') == True and test_case.tested == False:
+                    print(test_case, 'were not performed')
             vrsent.session.send_connect_terminate()
 
 
