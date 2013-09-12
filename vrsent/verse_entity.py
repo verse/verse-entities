@@ -35,6 +35,7 @@ ENTITY_DESTROYING   = 5
 ENTITY_DESTROYED    = 6
 
 
+# Set of suppoered Verse value types
 SUPPORTED_VALUE_TYPES = set((vrs.VALUE_TYPE_UINT8, \
     vrs.VALUE_TYPE_UINT16, \
     vrs.VALUE_TYPE_UINT32, \
@@ -44,9 +45,15 @@ SUPPORTED_VALUE_TYPES = set((vrs.VALUE_TYPE_UINT8, \
     vrs.VALUE_TYPE_REAL64, \
     vrs.VALUE_TYPE_STRING8))
 
-SUPPORTED_DATA_TYPES = set((type(int), \
-    type(float), \
-    type(str) ))
+
+# Set of supported data types
+SUPPORTED_DATA_TYPES = set((int, float, str))
+
+
+# Dictionary used for estimation of VerseTag VerseLayer data_type
+DATA_TYPE_DICT = { int: vrs.VALUE_TYPE_UINT64, \
+    float: vrs.VALUE_TYPE_REAL64, \
+    str: vrs.VALUE_TYPE_STRING8}
 
 
 class VerseStateError(Exception):

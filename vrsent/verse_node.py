@@ -31,11 +31,20 @@ def custom_type_subclass(custom_type):
     This method tries to return VerseNode subclass with specified custom type.
     Otherwise it returns VerseNode class.
     """
+    # Default class is VerseNode and it is returnde, when there is not any
+    # subclass with this custom_type
+    cls = VerseNode
     try:
         cls = VerseNode._subclasses[custom_type]
     except KeyError:
-        cls = VerseNode
+        # When there is no subclass in dictionary of subclasses with
+        # specified custom_type, then try to find one
+        for sub_cls_it in VerseNode.__subclasses__():
+            sub_cls_type = getattr(sub_cls_it, 'custom_type', None)
+            if sub_cls_type is not None and sub_cls_type == custom_type:
+                cls = VerseNode._subclasses[custom_type] = last_subclass(sub_cls_it)
     else:
+        # Try to find last subclass with specified custom_type
         cls = last_subclass(cls)
     return cls
 
@@ -119,7 +128,7 @@ class VerseNode(verse_entity.VerseEntity):
         self.prio = vrs.DEFAULT_PRIORITY
         self.perms = {}
         self.locked = False
-        self.locker = None
+        self.locker_id = None
 
         # Change state and send commands
         self._create()
@@ -200,6 +209,41 @@ class VerseNode(verse_entity.VerseEntity):
         if self.session.state == 'CONNECTED' and self.id is not None:
             self.session.send_node_subscribe(self.prio, self.id, self.version, self.crc32)
             self.subscribed = True
+
+
+    @property
+    def locker(self):
+        """
+        This is getter of current locker of this node
+        """
+        if self.locker_id is None:
+            return None
+        else:
+            try:
+                locker = self.session.avatars[self.locker_id]
+            except KeyError:
+                # Verse node of this avatar hasn't been received yet
+                return None
+            else:
+                return locker
+
+
+    def lock(self):
+        """
+        This method tries to lock this node
+        """
+        if self.session.state == 'CONNECTED' and self.id is not None:
+            self.session.send_node_lock(self.prio, self.id)
+
+
+    def unlock(self):
+        """
+        This method tries to unlock this node
+        """
+        if self.session.state == 'CONNECTED' and \
+                self.id is not None and \
+                self.locker_id == self.session.avatar_id:
+            self.session.send_node_unlock(self.prio, self.id)
 
 
     @classmethod
@@ -335,14 +379,9 @@ class VerseNode(verse_entity.VerseEntity):
             node = session.nodes[node_id]
         except KeyError:
             return
-        try:
-            avatar = session.avatars[avatar_id]
-        except KeyError:
-            node.locked = True
-        else:
-            node.locked = True
-            node.locker = avatar
-            return node
+        node.locked = True
+        node.locker_id = avatar_id
+        return node
 
 
     @classmethod
@@ -356,7 +395,7 @@ class VerseNode(verse_entity.VerseEntity):
         except KeyError:
             return
         node.locked = False
-        node.locker = None
+        node.locker_id = None
         return node
 
 

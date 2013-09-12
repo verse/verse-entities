@@ -26,11 +26,6 @@ import verse as vrs
 from . import verse_entity
 
 
-# Dictionary used for estimation of Versetag data_type
-DATA_TYPE_DICT = { type(0): vrs.VALUE_TYPE_UINT64, \
-    type(0.0): vrs.VALUE_TYPE_REAL64, \
-    type('verse'): vrs.VALUE_TYPE_STRING8}
-
 
 class VerseTag(verse_entity.VerseEntity):
     """
@@ -62,7 +57,7 @@ class VerseTag(verse_entity.VerseEntity):
             if issubclass(value.__class__, tuple):
                 # Set data_type with max possible precision
                 try:
-                    self.data_type = DATA_TYPE_DICT[type(value[0])]
+                    self.data_type = verse_entity.DATA_TYPE_DICT[type(value[0])]
                 except KeyError:
                     raise TypeError("Unsupported data_type of VerseTag value: ", type(value[0]))
             else:

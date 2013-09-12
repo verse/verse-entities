@@ -394,13 +394,7 @@ def main(hostname, username, password):
         time.sleep(DELAY)
         counter += 1
         # Send connect termintate after 5 seconds
-        if(counter == 100):
-            print('Users:')
-            for user in vrsent.session.users.values():
-                print(user)
-            print('Avatars:')
-            for avatar in vrsent.session.avatars.values():
-                print(avatar)
+        if(counter == 50):
             vrsent.session.send_connect_terminate()
 
 
