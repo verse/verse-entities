@@ -117,7 +117,7 @@ class VerseNode(verse_entity.VerseEntity):
         if parent is not None:
             if issubclass(parent.__class__, VerseNode) != True:
                 raise TypeError("Node is not subclass of model.VerseNode")
-        self.parent = parent
+        self._parent_node = parent
         
         self.user_id = user_id
         self.child_nodes = {}
@@ -127,7 +127,7 @@ class VerseNode(verse_entity.VerseEntity):
         self.layer_queue = {}
         self.prio = vrs.DEFAULT_PRIORITY
         self.perms = {}
-        self.locked = False
+        self._lock_state = 'UNLOCKED'
         self.locker_id = None
 
         # Change state and send commands
@@ -145,8 +145,8 @@ class VerseNode(verse_entity.VerseEntity):
             node_queue.insert(0, self)
         else:
             self.session.nodes[node_id] = self
-            if self.parent is not None:
-                self.parent.child_nodes[node_id] = self
+            if self._parent_node is not None:
+                self._parent_node.child_nodes[node_id] = self
 
 
     def destroy(self, send_destroy_cmd=True):
@@ -172,12 +172,12 @@ class VerseNode(verse_entity.VerseEntity):
             # Remove this node from dictionary of nodes
             self.session.nodes.pop(self.id)
             # Remove this node from dictionar of child nodes
-            if self.parent is not None:
+            if self._parent_node is not None:
                 try:
-                    self.parent.child_nodes.pop(self.id)
+                    self._parent_node.child_nodes.pop(self.id)
                 except KeyError:
                     pass
-                self.parent = None
+                self._parent_node = None
         # Clear tag groups
         self.taggroups.clear()
         self.tg_queue.clear()
@@ -212,6 +212,24 @@ class VerseNode(verse_entity.VerseEntity):
 
 
     @property
+    def parent(self):
+        """
+        This is getter of parent node
+        """
+        return self._parent_node
+
+
+    @parent.setter
+    def parent(self, parent):
+        """
+        This is setter of parent node
+        """
+        self._parent_node = parent
+        if self.session.state == 'CONNECTED' and self.id is not None:
+            self.session.send_node_link(self.prio, parent.id, self.id)
+
+
+    @property
     def locker(self):
         """
         This is getter of current locker of this node
@@ -228,10 +246,22 @@ class VerseNode(verse_entity.VerseEntity):
                 return locker
 
 
+    @property
+    def locked(self):
+        """
+        Getter of lock state.
+        """
+        if self._lock_state == 'LOCKED':
+            return True
+        else:
+            return False
+
+
     def lock(self):
         """
         This method tries to lock this node
         """
+        self._lock_state = 'LOCKING'
         if self.session.state == 'CONNECTED' and self.id is not None:
             self.session.send_node_lock(self.prio, self.id)
 
@@ -240,6 +270,9 @@ class VerseNode(verse_entity.VerseEntity):
         """
         This method tries to unlock this node
         """
+        if self.locker_id != self.session.avatar_id:
+            raise TypeError('Node locked by other user can not be unlocked')
+        self._lock_state = 'UNLOCKING'
         if self.session.state == 'CONNECTED' and \
                 self.id is not None and \
                 self.locker_id == self.session.avatar_id:
@@ -329,6 +362,10 @@ class VerseNode(verse_entity.VerseEntity):
                 # because it is possible to do now (node id is known)
                 node.parent.child_nodes[node.id] = node
 
+            # Try to lock node, when client requested locking of node
+            if node._lock_state == 'LOCKING':
+                session.send_node_lock(node.prio, node.id)
+
             # Send tag_group_create command for pending tag groups
             for custom_type in node.tg_queue.keys():
                 session.send_taggroup_create(node.prio, node.id, custom_type)
@@ -407,7 +444,7 @@ class VerseNode(verse_entity.VerseEntity):
             node = session.nodes[node_id]
         except KeyError:
             return
-        node.locked = True
+        node._lock_state = 'LOCKED'
         node.locker_id = avatar_id
         return node
 
@@ -422,7 +459,7 @@ class VerseNode(verse_entity.VerseEntity):
             node = session.nodes[node_id]
         except KeyError:
             return
-        node.locked = False
+        node._lock_state = 'UNLOCKED'
         node.locker_id = None
         return node
 

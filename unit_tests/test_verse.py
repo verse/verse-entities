@@ -98,6 +98,9 @@ class TestSession(vrsent.VerseSession):
                 parent=self.test_scene_node, \
                 user_id=None, \
                 custom_type=17)
+            # Test of locking node
+            self.test_node.lock()
+            # TODO: Test of setting node permission
 
             # Create new nodes for testing of destroying nodes
             self.test_destroy_node = vrsent.VerseNode(session=self, \
@@ -224,9 +227,34 @@ class TestSession(vrsent.VerseSession):
         link between nodes
         """
         child_node = super(TestSession, self)._receive_node_link(parent_node_id, child_node_id)
-        # Start unit testing of node with changed parent
+        # Start unit testing of node with changed parent. This parent node was implicitly
+        # changed during initialization of node
         if child_node == self.test_node:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_node.TestLinkNodeCase)
+            unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
+
+
+    def _receive_node_lock(self, node_id, avatar_id):
+        """
+        Custom callback method that is called, when client received command locking
+        this node.
+        """
+        locked_node = super(TestSession, self)._receive_node_lock(node_id, avatar_id)
+        if locked_node == self.test_node:
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_node.TestLockNodeCase)
+            unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
+            # Try to unlock the node
+            locked_node.unlock()
+
+
+    def _receive_node_unlock(self, node_id, avatar_id):
+        """
+        Custom callback method that is called, when client received command unlocking
+        this node.
+        """
+        unlocked_node = super(TestSession, self)._receive_node_unlock(node_id, avatar_id)
+        if unlocked_node == self.test_node:
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_node.TestUnLockNodeCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
 

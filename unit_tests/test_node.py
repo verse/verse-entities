@@ -23,6 +23,67 @@ Module for testing class VerseNode from module versentities
 
 import unittest
 import vrsent
+import verse as vrs
+
+
+class TestUnLockNodeCase(unittest.TestCase):
+    """
+    Test case of VerseNode unlocking
+    """
+
+    node = None
+    tested = False
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        This method is called before any test is performed
+        """
+        __class__.node = vrsent.session.test_node
+        __class__.tested = True
+
+    def test_node_unlocked(self):
+        """
+        This method test if node is unlocked
+        """
+        self.assertEqual(__class__.node.locked, False)
+
+    def test_node_locker(self):
+        """
+        This method tests if node was unlocked
+        """
+        self.assertEqual(__class__.node.locker, None)
+
+
+class TestLockNodeCase(unittest.TestCase):
+    """
+    Test case of VerseNode locking
+    """
+
+    node = None
+    tested = False
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        This method is called before any test is performed
+        """
+        __class__.node = vrsent.session.test_node
+        __class__.tested = True
+
+    def test_node_locked(self):
+        """
+        This method test if node is locked
+        """
+        self.assertEqual(__class__.node.locked, True)
+
+    def test_node_locker(self):
+        """
+        This method tests if node was locked by this client app
+        """
+        session = __class__.node.session
+        avatar = session[session.avatar_id]
+        self.assertEqual(__class__.node.locker, avatar)
 
 
 class TestOwnerPermNodeCase(unittest.TestCase):
@@ -45,7 +106,8 @@ class TestOwnerPermNodeCase(unittest.TestCase):
         """
         Testing permissions for owner of node
         """
-        self.assertEqual(__class__.node.perm[vrsent.session.user_id], 3) # TODO: implement constant to API
+        self.assertEqual(__class__.node.perm[vrsent.session.user_id], \
+            vrs.PERM_NODE_READ | vrs.PERM_NODE_WRITE)
 
 
 class TestLinkNodeCase(unittest.TestCase):
