@@ -32,4 +32,4 @@ VerseLayer = verse_layer.VerseLayer
 VerseUser = verse_user.VerseUser
 VerseAvatar = verse_avatar.VerseAvatar
 
-__all__ = ['VerseSession', 'VerseNode', 'VerseTagGroup', 'VerseTag', 'VerseLayer', 'VerseUser']
+__all__ = ['VerseSession', 'VerseNode', 'VerseTagGroup', 'VerseTag', 'VerseLayer', 'VerseUser', 'VerseAvatar']
