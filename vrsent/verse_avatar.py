@@ -183,7 +183,7 @@ class VerseAvatar(verse_node.VerseNode):
         # avatars
         if node_id in session.avatars:
             del session.avatars[node_id]
-        return super(VerseAvatar, cls)._receive_node_destroy(cls, session, node_id)
+        return super(VerseAvatar, cls)._receive_node_destroy(session, node_id)
 
     @classmethod
     def _receive_node_perm(cls, session, node_id, user_id, perm):
@@ -194,4 +194,4 @@ class VerseAvatar(verse_node.VerseNode):
         if user_id != 100 and user_id != 65535:
             avatar = session.avatars[node_id]
             avatar._user_id = user_id
-        return super(VerseAvatar, cls)._receive_node_perm(cls, session, node_id, user_id, perm)
+        return super(VerseAvatar, cls)._receive_node_perm(session, node_id, user_id, perm)

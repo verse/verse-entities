@@ -56,6 +56,17 @@ DATA_TYPE_DICT = { int: vrs.VALUE_TYPE_UINT64, \
     str: vrs.VALUE_TYPE_STRING8}
 
 
+def last_subclass(cls):
+    """
+    This method is used to return last subclass of VerseNode
+    or VerseTag or VerseLayer subclass
+    """
+    if len(cls.__subclasses__()) > 0:
+        return last_subclass(cls.__subclasses__()[0])
+    else:
+        return cls
+
+
 class VerseStateError(Exception):
     """
     Exception for invalid state changes

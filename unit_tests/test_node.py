@@ -82,7 +82,7 @@ class TestLockNodeCase(unittest.TestCase):
         This method tests if node was locked by this client app
         """
         session = __class__.node.session
-        avatar = session[session.avatar_id]
+        avatar = session.avatars[session.avatar_id]
         self.assertEqual(__class__.node.locker, avatar)
 
 

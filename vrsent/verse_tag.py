@@ -26,11 +26,74 @@ import verse as vrs
 from . import verse_entity
 
 
+def find_tag_subclass(cls, node_custom_type, tg_custom_type, custom_type):
+    """
+    This method tries to find subclass with specific custom_types
+    """
+    sub_cls = cls
+    for sub_cls_it in cls.__subclasses__():
+        # Try to get attribute custom_type from subclass
+        sub_cls_custom_type = getattr(sub_cls_it, 'custom_type', None)
+        # Raise error, when developer created subclass without custom_type
+        if sub_cls_custom_type == None:
+            raise AttributeError('Subclass of VerseTag: ' + sub_cls_it + ' does not have attribute custom_type')
+        # Try to get attribute tg_custom_type from subclass
+        sub_cls_tg_custom_type = getattr(sub_cls_it, 'tg_custom_type', None)
+        # Raise error, when developer created subclass without tg_custom_type
+        if sub_cls_tg_custom_type == None:
+            raise AttributeError('Subclass of VerseTag: ' + sub_cls_it + ' does not have attribute tg_custom_type')
+        # Try to get attribute node_custom_type from subclass
+        sub_cls_node_custom_type = getattr(sub_cls_it, 'node_custom_type', None)
+        # Raise error, when developer created subclass without node_custom_type
+        if sub_cls_tg_custom_type == None:
+            raise AttributeError('Subclass of VerseTag: ' + sub_cls_it + ' does not have attribute node_custom_type')
+        if sub_cls_custom_type == custom_type and \
+                sub_cls_tg_custom_type == tg_custom_type and \
+                sub_cls_node_custom_type == node_custom_type:
+            # When subclass with corresponding custom_types is found,
+            # then store it in dictionary of subclasses
+            sub_cls = cls._subclasses[(node_custom_type, tg_custom_type, custom_type)] = verse_entity.last_subclass(sub_cls_it)
+            break
+    return sub_cls
+
 
 class VerseTag(verse_entity.VerseEntity):
     """
     Class representing Verse tag
     """
+
+    # The dictionary of subclasees of VerseTag. The key of this dictionary is tuple of:
+    # (node.custom_type, tg.custom_type, tag.custom_type)
+    # When subclass of VerseTag is created, then it has to include class attributes
+    # custom_type, tg_custom_type and node_custom_type
+    _subclasses = {}
+
+
+    def __new__(cls, *args, **kwargs):
+        """
+        Pre-constructor of new VerseTag. It can return subclass VerseTag
+        according custom_type of tag, tag group and node.
+        """
+        if len(cls.__subclasses__()) > 0:
+            try:
+                tag_group = kwargs['tg']
+                custom_type = kwargs['custom_type']
+            except KeyError:
+                return super(VerseTag, cls).__new__(cls)
+            else:
+                sub_cls = VerseTag
+                node_custom_type = tag_group.node.custom_type
+                tg_custom_type = tag_group.custom_type
+                try:
+                    sub_cls = cls._subclasses[(node_custom_type, tg_custom_type, custom_type)]
+                except KeyError:
+                    # When instance of this class has never been created, then try
+                    # to find corresponding subclass.
+                    sub_cls = find_tag_subclass(cls, node_custom_type, tg_custom_type, custom_type)
+                return super(VerseTag, sub_cls).__new__(sub_cls)
+        else:
+            return super(VerseTag, cls).__new__(cls)
+
     
     def __init__(self, tg, tag_id=None, data_type=None, count=None, custom_type=None, value=None):
         """

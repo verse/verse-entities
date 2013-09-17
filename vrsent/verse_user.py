@@ -88,4 +88,4 @@ class VerseUser(verse_node.VerseNode):
         # Remove verse user from the dictionary of users
         if node_id in session.users:
             del session.users[node_id]
-        return super(VerseUser, cls)._receive_node_destroy(cls, session, node_id)
+        return super(VerseUser, cls)._receive_node_destroy(session, node_id)

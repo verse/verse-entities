@@ -26,6 +26,25 @@ import verse as vrs
 from . import verse_entity
 
 
+def find_node_subclass(cls, custom_type):
+    """
+    This method try to find subclass of class with
+    specified custom_type in __subclasses__
+    """
+    sub_cls = cls
+    for sub_cls_it in cls.__subclasses__():
+        # Try to get attribute custom_type
+        sub_cls_custom_type = getattr(sub_cls_it, 'custom_type', None)
+        # Raise error, when developer created subclass without custom_type
+        if sub_cls_custom_type == None:
+            raise AttributeError('Subclass of VerseNode: ' + sub_cls_it + ' does not have attribute custom_type')
+        elif sub_cls_custom_type == custom_type:
+            # When subclass is found, then store it in dictionary of subclasses
+            sub_cls = cls._subclasses[custom_type] = verse_entity.last_subclass(sub_cls_it)
+            break
+    return sub_cls
+
+
 def custom_type_subclass(custom_type):
     """
     This method tries to return VerseNode subclass with specified custom type.
@@ -33,30 +52,15 @@ def custom_type_subclass(custom_type):
     """
     # Default class is VerseNode and it is returnde, when there is not any
     # subclass with this custom_type
-    cls = VerseNode
+    sub_cls = VerseNode
     try:
-        cls = VerseNode._subclasses[custom_type]
+        sub_cls = VerseNode._subclasses[custom_type]
     except KeyError:
-        # When there is no subclass in dictionary of subclasses with
-        # specified custom_type, then try to find one
-        for sub_cls_it in VerseNode.__subclasses__():
-            sub_cls_type = getattr(sub_cls_it, 'custom_type', None)
-            if sub_cls_type is not None and sub_cls_type == custom_type:
-                cls = VerseNode._subclasses[custom_type] = last_subclass(sub_cls_it)
+        sub_cls = find_node_subclass(sub_cls, custom_type)
     else:
         # Try to find last subclass with specified custom_type
-        cls = last_subclass(cls)
-    return cls
-
-
-def last_subclass(cls):
-    """
-    This method returns last subclass of VerseNode subclass
-    """
-    if len(cls.__subclasses__()) > 0 and cls.__subclasses__()[0].custom_type == cls.custom_type:
-        return last_subclass(cls.__subclasses__()[0])
-    else:
-        return cls
+        sub_cls = verse_entity.last_subclass(sub_cls)
+    return sub_cls
 
 
 class VerseNode(verse_entity.VerseEntity):
@@ -64,31 +68,32 @@ class VerseNode(verse_entity.VerseEntity):
     Class representing Verse node
     """
 
-    # The dictionary of subclasses
+    # The dictionary of subclasses. When subclass of VerseNode is created,
+    # then this subclass has include ncattribte custom_type
     _subclasses = {}
+
 
     def __new__(cls, *args, **kwargs):
         """
-        Pre-constructor of VerseNode. It can 
+        Pre-constructor of VerseNode. It can return class defined
+        by custom_type of received command or coresponding node
         """
         if len(cls.__subclasses__()) > 0:
             try:
                 custom_type = kwargs['custom_type']
             except KeyError:
+                # Return class of object, when VerseNode() was
+                # called without custom_type
                 return super(VerseNode, cls).__new__(cls)
             else:
-                sub_cls = None
-                if custom_type in cls._subclasses:
+                sub_cls = cls
+                try:
                     sub_cls = cls._subclasses[custom_type]
-                else:
-                    for sub_cls_it in cls.__subclasses__():
-                        sub_cls_type = getattr(sub_cls_it, 'custom_type', None)
-                        if sub_cls_type is not None and sub_cls_type == custom_type:
-                            sub_cls = cls._subclasses[custom_type] = last_subclass(sub_cls_it)
-                if sub_cls is not None:
-                    return super(VerseNode, sub_cls).__new__(sub_cls)
-                else:
-                    return super(VerseNode, cls).__new__(cls)
+                except KeyError:
+                    # When instance of this class has never been created, then try
+                    # to find corresponding subclass.
+                    sub_cls = find_node_subclass(cls, custom_type)
+                return super(VerseNode, sub_cls).__new__(sub_cls)
         else:
             return super(VerseNode, cls).__new__(cls)
 
@@ -97,7 +102,6 @@ class VerseNode(verse_entity.VerseEntity):
         """
         Constructor of VerseNode
         """
-
         # Check if this object is created with right custom_type
         # and when custom_type is not specified, then set it
         # according class definition
@@ -110,7 +114,6 @@ class VerseNode(verse_entity.VerseEntity):
         super(VerseNode, self).__init__(custom_type=custom_type)
 
         self.session = session
-
         self.id = node_id
 
         # When parent node is set, then it has to be subclass of VerseNode
