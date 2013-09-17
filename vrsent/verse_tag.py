@@ -57,6 +57,21 @@ def find_tag_subclass(cls, node_custom_type, tg_custom_type, custom_type):
     return sub_cls
 
 
+def custom_type_subclass(node_custom_type, tg_custom_type, custom_type):
+    """
+    This method tries to return VerseTag subclass with specified custom type.
+    Otherwise it returns VerseTag class.
+    """
+    sub_cls = VerseTag
+    try:
+        sub_cls = VerseTag._subclasses[(node_custom_type, tg_custom_type, custom_type)]
+    except KeyError:
+        sub_cls = find_tag_subclass(sub_cls, node_custom_type, tg_custom_type, custom_type)
+    else:
+        sub_cls = verse_entity.last_subclass(sub_cls)
+    return sub_cls
+
+
 class VerseTag(verse_entity.VerseEntity):
     """
     Class representing Verse tag

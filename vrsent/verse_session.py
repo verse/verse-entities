@@ -272,7 +272,14 @@ class VerseSession(vrs.Session):
         if self.debug_print is True:
             super(VerseSession, self)._receive_tag_create(node_id, taggroup_id, tag_id, data_type, count, custom_type)
         # Call calback method of model
-        return verse_tag.VerseTag._receive_tag_create(self, node_id, taggroup_id, tag_id, data_type, count, custom_type)
+        try:
+            node_custom_type = self.nodes[node_id].custom_type
+            tg_custom_type = self.nodes[node_id].taggroups[taggroup_id].custom_type
+        except KeyError:
+            cls = verse_tag.VerseTag
+        else:
+            cls = verse_tag.custom_type_subclass(node_custom_type, tg_custom_type, custom_type)
+        return cls._receive_tag_create(self, node_id, taggroup_id, tag_id, data_type, count, custom_type)
 
 
     def _receive_tag_destroy(self, node_id, taggroup_id, tag_id):
