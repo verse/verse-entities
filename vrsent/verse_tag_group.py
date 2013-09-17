@@ -38,9 +38,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
         super(VerseTagGroup, self).__init__(custom_type=custom_type)
 
         self.node = node
-
         self.id = tg_id
-
         self.tags = {}
         self.tag_queue = {}
 

@@ -271,7 +271,6 @@ class VerseSession(vrs.Session):
         # Call parent method to print debug information
         if self.debug_print is True:
             super(VerseSession, self)._receive_tag_create(node_id, taggroup_id, tag_id, data_type, count, custom_type)
-        # Call calback method of model
         try:
             node_custom_type = self.nodes[node_id].custom_type
             tg_custom_type = self.nodes[node_id].taggroups[taggroup_id].custom_type
@@ -279,6 +278,7 @@ class VerseSession(vrs.Session):
             cls = verse_tag.VerseTag
         else:
             cls = verse_tag.custom_type_subclass(node_custom_type, tg_custom_type, custom_type)
+        # Call calback method of VerseTag or it's subclass
         return cls._receive_tag_create(self, node_id, taggroup_id, tag_id, data_type, count, custom_type)
 
 
@@ -290,7 +290,16 @@ class VerseSession(vrs.Session):
         if self.debug_print is True:
             super(VerseSession, self)._receive_tag_destroy(node_id, taggroup_id, tag_id)
         # Call calback method of model
-        return verse_tag.VerseTag._receive_tag_destroy(self, node_id, taggroup_id, tag_id)
+        try:
+            node_custom_type = self.nodes[node_id].custom_type
+            tg_custom_type = self.nodes[node_id].taggroups[taggroup_id].custom_type
+            tag_custom_type = self.nodes[node_id].taggroups[taggroup_id].tags[tag_id].custom_type
+        except KeyError:
+            cls = verse_tag.VerseTag
+        else:
+            cls = verse_tag.custom_type_subclass(node_custom_type, tg_custom_type, tag_custom_type)
+        # Call calback method of VerseTag or it's subclass
+        return cls._receive_tag_destroy(self, node_id, taggroup_id, tag_id)
 
 
     def _receive_tag_set_values(self, node_id, taggroup_id, tag_id, value):
@@ -300,8 +309,16 @@ class VerseSession(vrs.Session):
         # Call method of parent class
         if self.debug_print is True:
             super(VerseSession, self)._receive_tag_set_values(node_id, taggroup_id, tag_id, value)
-        # Call callback method of model
-        return verse_tag.VerseTag._receive_tag_set_values(self, node_id, taggroup_id, tag_id, value)
+        try:
+            node_custom_type = self.nodes[node_id].custom_type
+            tg_custom_type = self.nodes[node_id].taggroups[taggroup_id].custom_type
+            tag_custom_type = self.nodes[node_id].taggroups[taggroup_id].tags[tag_id].custom_type
+        except KeyError:
+            cls = verse_tag.VerseTag
+        else:
+            cls = verse_tag.custom_type_subclass(node_custom_type, tg_custom_type, tag_custom_type)
+        # Call calback method of VerseTag or it's subclass
+        return cls._receive_tag_set_values(self, node_id, taggroup_id, tag_id, value)
 
 
     # Layer
