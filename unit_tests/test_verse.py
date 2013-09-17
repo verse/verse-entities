@@ -24,7 +24,7 @@ import unittest
 import vrsent
 import verse as vrs
 import time
-import test_node, test_tg, test_tag, test_layer
+import test_node, test_tg, test_tag, test_layer, test_user, test_avatar
 
 
 class TestSession(vrsent.VerseSession):
@@ -388,7 +388,7 @@ class TestSession(vrsent.VerseSession):
         layer = super(TestSession, self)._receive_layer_set_value(node_id, layer_id, item_id, value)
         if layer == self.test_node.test_layer:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_layer.TestLayerSetValueCase)
-            unittest.TextTestRunner(verbosity=self.verbosity).run(suite)        
+            unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
 
     def _receive_layer_unset_value(self, node_id, layer_id, item_id):
@@ -410,7 +410,7 @@ def main(hostname, username, password):
     """
     Function with main never ending verse loop
     """
-    vrsent.session = TestSession(hostname, "12344", vrs.DGRAM_SEC_DTLS)
+    vrsent.session = TestSession(hostname, "12344", vrs.DGRAM_SEC_NONE)
     vrsent.session.username = username
     vrsent.session.password = password
 
@@ -423,6 +423,13 @@ def main(hostname, username, password):
         counter += 1
         # Send connect termintate after 5 seconds
         if(counter == 50):
+            # Test VerseUsers
+            user_suite = unittest.TestLoader().loadTestsFromTestCase(test_user.TestUserCase)
+            unittest.TextTestRunner(verbosity=vrsent.session.verbosity).run(user_suite)
+            # Test VerseAvatars
+            avatar_suite = unittest.TestLoader().loadTestsFromTestCase(test_avatar.TestAvatarCase)
+            unittest.TextTestRunner(verbosity=vrsent.session.verbosity).run(avatar_suite)
+            # Print summary of test cases
             print('Test Cases Summary:')
             # Check if all test cases were performed
             for test_case in unittest.TestCase.__subclasses__():

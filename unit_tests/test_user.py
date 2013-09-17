@@ -24,3 +24,33 @@ Module for testing class VerseUser from module versentities
 import unittest
 import vrsent
 import verse as vrs
+
+class TestUserCase(unittest.TestCase):
+    """
+    Test case of VerseUser
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        This method is called before any test is performed
+        """
+        print('Verse Users:')
+        for user in vrsent.session.users.values():
+            print(user)
+        
+
+    def test_user_count(self):
+        """
+        Test of users count. There should be at least three:
+        Super users, Other users and current user
+        """      
+        self.assertGreaterEqual(len(vrsent.session.users), 3)
+
+
+    def test_user_name(self):
+        """
+        Test non-zero length of current user
+        """
+        user_id = vrsent.session.user_id
+        self.assertGreater(len(vrsent.session.users[user_id].name), 0)

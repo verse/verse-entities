@@ -126,12 +126,12 @@ class VerseAvatar(verse_node.VerseNode):
         try:
             login_time = self._info_node._tg_info._tag_login_time.value
         except AttributeError:
-            return ""
+            return 0
         else:
             try:
                 return login_time[0]
             except TypeError:
-                return ""
+                return 0
 
     @property
     def client_name(self):
