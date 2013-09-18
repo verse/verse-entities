@@ -30,6 +30,22 @@ TG_INFO_CT = 0
 TAG_USERNAME_CT = 0
 
 
+class UserNameTag(verse_tag.VerseTag):
+    """
+    Custom VerseTag subclass used for storing username
+    """
+
+    custom_type = TAG_USERNAME_CT
+    tg_custom_type = TG_INFO_CT
+    node_custom_type = vrs.USER_NODE_CT
+
+    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_STRING8, count=1, custom_type=TAG_USERNAME_CT, value=None):
+        """
+        Constructor of UserNameTag
+        """
+        super(UserNameTag, self).__init__(tg=tg, tag_id=tag_id, data_type=data_type, count=count, custom_type=custom_type, value=value)
+
+
 class VerseUser(verse_node.VerseNode):
     """
     A VerseUser is class representing user
@@ -47,10 +63,7 @@ class VerseUser(verse_node.VerseNode):
 
         # Create tag group and tag due to specification
         self._tg_info = verse_tag_group.VerseTagGroup(node=self, custom_type=TG_INFO_CT)
-        self._tg_info._tag_name = verse_tag.VerseTag(tg=self._tg_info, \
-            data_type=vrs.VALUE_TYPE_STRING8, \
-            count=1, \
-            custom_type=TAG_USERNAME_CT)
+        self._tg_info._tag_name = UserNameTag(tg=self._tg_info)
 
         # Add this verse user to the dictionary of users
         self.session.users[self.id] = self
