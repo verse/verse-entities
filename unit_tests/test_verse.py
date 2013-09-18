@@ -27,16 +27,6 @@ import time
 import test_node, test_tg, test_tag, test_layer, test_user, test_avatar, test_node_subclass
 
 
-TEST_NODE_CUSTOM_TYPE = 100
-
-
-class TestNode(vrsent.VerseNode):
-    """
-    Subclass of VerseNode
-    """
-    custom_type = TEST_NODE_CUSTOM_TYPE
-
-
 class TestSession(vrsent.VerseSession):
     """
     Class with session used in this client
@@ -64,6 +54,7 @@ class TestSession(vrsent.VerseSession):
         self.test_layer = None
         self.test_scene_node = None
         self.test_destroy_node = None
+        self.test_subclass_node = None
         # Scene node
         self.scene_node = None
         self.state = 'CONNECTED'
@@ -122,7 +113,7 @@ class TestSession(vrsent.VerseSession):
             self.test_destroy_node.destroy()
 
             # Create subclass
-            self.test_subclass_node = TestNode(session=self)
+            self.test_subclass_node = test_node_subclass.TestNode(session=self)
 
             # Create new test tag group
             self.test_node.test_tg = vrsent.VerseTagGroup(node=self.test_node, \
@@ -210,6 +201,11 @@ class TestSession(vrsent.VerseSession):
         if node == self.test_destroy_node:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_node.TestDestroyNodeCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
+
+        # Start unit testing of subclass of node
+        if node == self.test_subclass_node:
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_node_subclass.TestSubclassNodeCase)
+            unittest.TextTestRunner(verbosity=self.verbosity).run(suite)            
 
 
     def _receive_node_destroy(self, node_id):

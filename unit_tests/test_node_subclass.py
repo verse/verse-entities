@@ -24,3 +24,53 @@ Module for testing class VerseNode from module versentities
 import unittest
 import vrsent
 import verse as vrs
+
+
+TEST_NODE_CUSTOM_TYPE = 100
+
+
+class TestNode(vrsent.VerseNode):
+    """
+    Subclass of VerseNode
+    """
+    custom_type = TEST_NODE_CUSTOM_TYPE
+
+    rec_nd_crt_callbacks = {}
+
+    @classmethod
+    def _receive_node_create(cls, session, node_id, parent_id, user_id, custom_type):
+    	"""
+    	Custom callback method called, when this custom_type of VerseNode is
+    	created by verse server and appropriate command is received.
+    	"""
+    	cls.rec_nd_crt_callbacks[node_id] = True
+    	return super(TestNode, cls)._receive_node_create(session, node_id, parent_id, user_id, custom_type)
+
+
+class TestSubclassNodeCase(unittest.TestCase):
+    """
+    Test case of new TestNode
+    """
+
+    node = None
+    tested = False
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        This method is called before any test is performed
+        """
+        __class__.node = vrsent.session.test_subclass_node
+        __class__.tested = True
+
+    def test_node_custom_type(self):
+        """
+        Test of creating new node
+        """      
+        self.assertEqual(__class__.node.custom_type, TEST_NODE_CUSTOM_TYPE)
+
+    def test_node_custom_create_callback(self):
+    	"""
+    	Test if custom callback method was called
+    	"""
+    	self.assertTrue(__class__.node.rec_nd_crt_callbacks[__class__.node.id])
