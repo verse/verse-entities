@@ -113,7 +113,8 @@ class TestSession(vrsent.VerseSession):
             self.test_destroy_node.destroy()
 
             # Create subclass
-            self.test_subclass_node = test_subclasses.TestNode(session=self)
+            self.test_subclass_node = vrsent.VerseNode(session=self, \
+                custom_type=test_subclasses.TEST_NODE_CUSTOM_TYPE)
 
             # Create new test tag group
             self.test_node.test_tg = vrsent.VerseTagGroup(node=self.test_node, \

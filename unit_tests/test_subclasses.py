@@ -39,12 +39,26 @@ class TestNode(vrsent.VerseNode):
 
     @classmethod
     def _receive_node_create(cls, session, node_id, parent_id, user_id, custom_type):
-    	"""
-    	Custom callback method called, when this custom_type of VerseNode is
-    	created by verse server and appropriate command is received.
-    	"""
-    	cls.rec_nd_crt_callbacks[node_id] = True
-    	return super(TestNode, cls)._receive_node_create(session, node_id, parent_id, user_id, custom_type)
+        """
+        Custom callback method called, when this custom_type of VerseNode is
+        created by verse server and appropriate command is received.
+        """
+        cls.rec_nd_crt_callbacks[node_id] = True
+        return super(TestNode, cls)._receive_node_create(session, node_id, parent_id, user_id, custom_type)
+
+
+class SuperTestNode(TestNode):
+    """
+    Subclass of TestNode and VerseNode
+    """
+    @classmethod
+    def _receive_node_create(cls, session, node_id, parent_id, user_id, custom_type):
+        """
+        Custom callback method called, when this custom_type of VerseNode is
+        created by verse server and appropriate command is received.
+        """
+        cls.rec_nd_crt_callbacks[node_id] = False
+        return super(TestNode, cls)._receive_node_create(session, node_id, parent_id, user_id, custom_type)
 
 
 class TestSubclassNodeCase(unittest.TestCase):
@@ -69,8 +83,14 @@ class TestSubclassNodeCase(unittest.TestCase):
         """      
         self.assertEqual(__class__.node.custom_type, TEST_NODE_CUSTOM_TYPE)
 
+    def test_node_instance(self):
+        """
+        Test of subclassing of node
+        """
+        self.assertTrue(isinstance(__class__.node, SuperTestNode))
+
     def test_node_custom_create_callback(self):
-    	"""
-    	Test if custom callback method was called
-    	"""
-    	self.assertTrue(__class__.node.rec_nd_crt_callbacks[__class__.node.id])
+        """
+        Test if custom callback method was called
+        """
+        self.assertFalse(__class__.node.rec_nd_crt_callbacks[__class__.node.id])
