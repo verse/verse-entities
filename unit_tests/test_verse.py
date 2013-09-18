@@ -24,7 +24,17 @@ import unittest
 import vrsent
 import verse as vrs
 import time
-import test_node, test_tg, test_tag, test_layer, test_user, test_avatar
+import test_node, test_tg, test_tag, test_layer, test_user, test_avatar, test_node_subclass
+
+
+TEST_NODE_CUSTOM_TYPE = 100
+
+
+class TestNode(vrsent.VerseNode):
+    """
+    Subclass of VerseNode
+    """
+    custom_type = TEST_NODE_CUSTOM_TYPE
 
 
 class TestSession(vrsent.VerseSession):
@@ -110,6 +120,9 @@ class TestSession(vrsent.VerseSession):
                 custom_type=18)
             # Destroy node immediately
             self.test_destroy_node.destroy()
+
+            # Create subclass
+            self.test_subclass_node = TestNode(session=self)
 
             # Create new test tag group
             self.test_node.test_tg = vrsent.VerseTagGroup(node=self.test_node, \
