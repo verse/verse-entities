@@ -112,7 +112,7 @@ class TestSession(vrsent.VerseSession):
             # Destroy node immediately
             self.test_destroy_node.destroy()
 
-            # Create subclass
+            # Create node subclass
             self.test_subclass_node = vrsent.VerseNode(session=self, \
                 custom_type=test_subclasses.TEST_NODE_CUSTOM_TYPE)
 
@@ -322,6 +322,10 @@ class TestSession(vrsent.VerseSession):
             test_destroy_tag = self.test_node.test_tg.test_destroy_tag
         except AttributeError:
             test_destroy_tag = None
+        try:
+            test_subclass_tag = self.test_subclass_node.test_tg.test_tag
+        except AttributeError:
+            test_subclass_tag = None
         # Start unit testing of created tag
         if tag == test_new_tag:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_tag.TestCreatedTagCase)
@@ -329,6 +333,10 @@ class TestSession(vrsent.VerseSession):
         # Start unit testing of tag in destroyed state
         elif tag == test_destroy_tag:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_tag.TestDestroyingTagCase)
+            unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
+        # Start unit testing of VerseTag subclass
+        elif tag == test_subclass_tag:
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_subclasses.TestSubclassTagCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
 

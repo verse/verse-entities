@@ -26,13 +26,42 @@ import vrsent
 import verse as vrs
 
 
-TEST_NODE_CUSTOM_TYPE = 100
+TEST_NODE_CUSTOM_TYPE = 19
+TEST_TG_CUSTOM_TYPE = 34
+TEST_TAG_CUSTOM_TYPE = 66
+
+
+class TestTag(vrsent.VerseTag):
+    """
+    Subclass of VerseTag
+    """
+    custom_type = TEST_TAG_CUSTOM_TYPE
+    tg_custom_type = TEST_TG_CUSTOM_TYPE
+    node_custom_type = TEST_NODE_CUSTOM_TYPE
+
+    rec_nt_crt_callbacks = {}
+
+    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_UINT8, count=1, custom_type=None, value=(0,)):
+        """
+        Construcor of class
+        """
+        super(TestTag, self).__init__(tg=tg, tag_id=tag_id, data_type=data_type, count=count, custom_type=custom_type, value=value)
+
+
+    @classmethod
+    def _receive_tag_create(cls, session, node_id, tg_id, tag_id, data_type, count, custom_type):
+        """
+        Custom callback method of subclass
+        """
+        cls.rec_nt_crt_callbacks[(node_id, tg_id, tag_id)] = True
+        return super(TestTag, cls)._receive_tag_create(session, node_id, tg_id, tag_id, data_type, count, custom_type)
 
 
 class TestNode(vrsent.VerseNode):
     """
     Subclass of VerseNode
     """
+
     custom_type = TEST_NODE_CUSTOM_TYPE
 
     rec_nd_crt_callbacks = {}
@@ -51,6 +80,15 @@ class SuperTestNode(TestNode):
     """
     Subclass of TestNode and VerseNode
     """
+
+    def __init__(self, *args, **kwargs):
+        """
+        Constructor of this subclass
+        """
+        super(SuperTestNode, self).__init__(*args, **kwargs)
+        self.test_tg = vrsent.VerseTagGroup(node=self, custom_type=TEST_TG_CUSTOM_TYPE)
+        self.test_tg.test_tag = TestTag(tg=self.test_tg)
+
     @classmethod
     def _receive_node_create(cls, session, node_id, parent_id, user_id, custom_type):
         """
@@ -63,7 +101,7 @@ class SuperTestNode(TestNode):
 
 class TestSubclassNodeCase(unittest.TestCase):
     """
-    Test case of new TestNode
+    Test case of new TestNode and SuperTestNode
     """
 
     node = None
@@ -94,3 +132,42 @@ class TestSubclassNodeCase(unittest.TestCase):
         Test if custom callback method was called
         """
         self.assertFalse(__class__.node.rec_nd_crt_callbacks[__class__.node.id])
+
+
+class TestSubclassTagCase(unittest.TestCase):
+    """
+    Test case of new TestTag
+    """
+
+    node = None
+    tg = None
+    tag = None
+    tested = False
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        This method is called before any test is performed
+        """
+        __class__.node = vrsent.session.test_subclass_node
+        __class__.tg = vrsent.session.test_subclass_node.test_tg
+        __class__.tag = vrsent.session.test_subclass_node.test_tg.test_tag
+        __class__.tested = True
+
+    def test_node_custom_type(self):
+        """
+        Test of creating new node
+        """      
+        self.assertEqual(__class__.tag.custom_type, TEST_TAG_CUSTOM_TYPE)
+
+    def test_node_instance(self):
+        """
+        Test of subclassing of node
+        """
+        self.assertTrue(isinstance(__class__.tag, TestTag))
+
+    def test_node_custom_create_callback(self):
+        """
+        Test if custom callback method was called
+        """
+        self.assertTrue(__class__.tag.rec_nt_crt_callbacks[(__class__.node.id, __class__.tg.id, __class__.tag.id)])

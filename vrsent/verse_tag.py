@@ -114,6 +114,14 @@ class VerseTag(verse_entity.VerseEntity):
         """
         Constructor of VerseTag
         """
+        # Check if this object is created with right custom_type
+        # and when custom_type is not specified, then set it
+        # according class definition
+        if hasattr(self.__class__, 'custom_type'):
+            if custom_type is not None:
+                assert self.__class__.custom_type == custom_type
+            else:
+                custom_type = self.__class__.custom_type
 
         # Call method of parent to initialize basic values
         super(VerseTag, self).__init__(custom_type=custom_type)
