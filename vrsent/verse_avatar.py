@@ -32,6 +32,62 @@ TAG_CLIENT_NAME_CT = 2
 TAG_CLIENT_VERSION_CT = 3
 
 
+class HostnameTag(verse_tag.VerseTag):
+    """
+    VerseTag subclass for storing hostname
+    """
+    custom_type = TAG_HOSTNAME_CT
+    tg_custom_type = TG_INFO_CT
+    node_custom_type = vrs.AVATAR_NODE_CT
+    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_STRING8, count=1, custom_type=TAG_HOSTNAME_CT, value=None):
+        """
+        Constructor of HostnameTag
+        """
+        super(HostnameTag, self).__init__(tg=tg, tag_id=tag_id, data_type=data_type, count=count, custom_type=custom_type, value=value)
+
+
+class LoginTimeTag(verse_tag.VerseTag):
+    """
+    VerseTag subclass for storing login time
+    """
+    custom_type = TAG_LOGIN_TIME_CT
+    tg_custom_type = TG_INFO_CT
+    node_custom_type = vrs.AVATAR_NODE_CT
+    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_UINT64, count=1, custom_type=TAG_LOGIN_TIME_CT, value=None):
+        """
+        Constructor of LoginTimeTag
+        """
+        super(LoginTimeTag, self).__init__(tg=tg, tag_id=tag_id, data_type=data_type, count=count, custom_type=custom_type, value=value)
+
+
+class ClientNameTag(verse_tag.VerseTag):
+    """
+    VerseTag subclass for storing client name
+    """
+    custom_type = TAG_CLIENT_NAME_CT
+    tg_custom_type = TG_INFO_CT
+    node_custom_type = vrs.AVATAR_NODE_CT
+    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_STRING8, count=1, custom_type=TAG_CLIENT_NAME_CT, value=None):
+        """
+        Constructor of ClientNameTag
+        """
+        super(ClientNameTag, self).__init__(tg=tg, tag_id=tag_id, data_type=data_type, count=count, custom_type=custom_type, value=value)
+
+
+class ClientVersionTag(verse_tag.VerseTag):
+    """
+    VerseTag subclass for storing client version
+    """
+    custom_type = TAG_CLIENT_VERSION_CT
+    tg_custom_type = TG_INFO_CT
+    node_custom_type = vrs.AVATAR_NODE_CT
+    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_STRING8, count=1, custom_type=TAG_CLIENT_VERSION_CT, value=None):
+        """
+        Constructor of ClientVersionTag
+        """
+        super(ClientVersionTag, self).__init__(tg=tg, tag_id=tag_id, data_type=data_type, count=count, custom_type=custom_type, value=value)
+
+
 class VerseAvatarInfo(verse_node.VerseNode):
     """
     Class storing information about Verse avatar/client
@@ -50,22 +106,10 @@ class VerseAvatarInfo(verse_node.VerseNode):
         # Create tag group with info information due to specification
         self._tg_info = verse_tag_group.VerseTagGroup(node=self, custom_type=TG_INFO_CT)
         # Create tags due to specification
-        self._tg_info._tag_hostname = verse_tag.VerseTag(tg=self._tg_info, \
-            data_type=vrs.VALUE_TYPE_STRING8, \
-            count=1, \
-            custom_type=TAG_HOSTNAME_CT)
-        self._tg_info._tag_login_time = verse_tag.VerseTag(tg=self._tg_info, \
-            data_type=vrs.VALUE_TYPE_UINT64, \
-            count=1, \
-            custom_type=TAG_LOGIN_TIME_CT)
-        self._tg_info._tag_client_name = verse_tag.VerseTag(tg=self._tg_info, \
-            data_type=vrs.VALUE_TYPE_STRING8, \
-            count=1, \
-            custom_type=TAG_CLIENT_NAME_CT)
-        self._tg_info._tag_client_version = verse_tag.VerseTag(tg=self._tg_info, \
-            data_type=vrs.VALUE_TYPE_STRING8, \
-            count=1, \
-            custom_type=TAG_CLIENT_VERSION_CT)
+        self._tg_info._tag_hostname = HostnameTag(tg=self._tg_info)
+        self._tg_info._tag_login_time = LoginTimeTag(tg=self._tg_info)
+        self._tg_info._tag_client_name = ClientNameTag(tg=self._tg_info)
+        self._tg_info._tag_client_version = ClientVersionTag(tg=self._tg_info)
 
 
 class VerseAvatar(verse_node.VerseNode):
