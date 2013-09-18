@@ -152,6 +152,23 @@ class VerseNode(verse_entity.VerseEntity):
                 self._parent_node.child_nodes[node_id] = self
 
 
+    def __str__(self):
+        """
+        This method print content of VerseNode
+        """
+        parent_id = str(self._parent_node.id) if self._parent_node is not None else 'None'
+        return 'VerseNode, id: ' + \
+            str(self.id) + \
+            ', owner_id: ' + \
+            str(self.user_id) + \
+            ', parent_id: ' + \
+            parent_id + \
+            ', prio: ' + \
+            str(self.prio) + \
+            ', locked: ' + \
+            str(self.locked)
+
+
     def destroy(self, send_destroy_cmd=True):
         """
         This method try to send destroy command
