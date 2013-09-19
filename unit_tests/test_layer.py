@@ -46,7 +46,7 @@ class TestLayerSetValueCase(unittest.TestCase):
         """
         Test of destroyed layer
         """
-        for key, value in layer.values.items():
+        for key, value in __class__.layer.items.items():
             self.assertEqual(key, value)
 
 

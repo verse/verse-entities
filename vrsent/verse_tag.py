@@ -177,6 +177,22 @@ class VerseTag(verse_entity.VerseEntity):
                 raise VerseCustomTypeError(self.custom_type)
 
 
+    def __str__(self):
+        """
+        String representiion of VerseTag
+        """
+        return 'VerseTag, id: ' + \
+            str(self.id) + \
+            ', data_type: ' + \
+            str(self.data_type) + \
+            ', count: ' + \
+            str(self.count) + \
+            ', custom_type: ' + \
+            str(self.custom_type) + \
+            ', values: ' + \
+            str(self.value)
+
+
     def destroy(self):
         """
         Send destroy command of VerseTag

@@ -166,7 +166,9 @@ class VerseNode(verse_entity.VerseEntity):
             ', prio: ' + \
             str(self.prio) + \
             ', locked: ' + \
-            str(self.locked)
+            str(self.locked) + \
+            ', custom_type: ' + \
+            str(self.custom_type)
 
 
     def destroy(self, send_destroy_cmd=True):

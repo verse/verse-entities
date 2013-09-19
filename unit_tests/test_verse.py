@@ -404,7 +404,7 @@ class TestSession(vrsent.VerseSession):
         Custom callback method that is called, when client receive command layer set value of item
         """
         layer = super(TestSession, self)._receive_layer_set_value(node_id, layer_id, item_id, value)
-        if layer == self.test_node.test_layer:
+        if layer == self.test_node.test_layer and item_id == 5:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_layer.TestLayerSetValueCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 

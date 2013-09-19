@@ -113,6 +113,23 @@ class VerseLayer(verse_entity.VerseEntity):
             self.parent_layer.child_layers[layer_id] = self
 
 
+    def __str__(self):
+        """
+        String representation of VerseLayer
+        """
+        parent_layer_id = self.parent_layer.id if self.parent_layer is not None else str(None)
+        return 'VerseLayer, id: ' + \
+            str(self.id) + \
+            ', parent_layer_id: ' + \
+            str(parent_layer_id) + \
+            ', data_type: ' + \
+            str(self.data_type) + \
+            ', count: ' + \
+            str(self.count) + \
+            '. custom_type: ' + \
+            str(self.custom_type)
+
+
     def _send_create(self):
         """
         Send layer create to Verse server
@@ -148,6 +165,7 @@ class VerseLayer(verse_entity.VerseEntity):
         """
         if self.id is not None:
             self.node.session.send_layer_subscribe(self.node.prio, self.node.id, self.id, self.version, self.crc32)
+            self.subscribed = True
 
 
     def _send_unsubscribe(self):
@@ -156,6 +174,7 @@ class VerseLayer(verse_entity.VerseEntity):
         """
         if self.id is not None:
             self.node.session.send_layer_unsubscribe(self.node.prio, self.node.id, self.id, self.version, self.crc22)
+            self.subscribed = False
 
 
     def _clean(self):
@@ -184,14 +203,14 @@ class VerseLayer(verse_entity.VerseEntity):
         Static method of class that add reference to the
         the dictionary of layers and send pending layer set values
         """
-
+        
         # Try to find node
         node = None
         try:
             node = session.nodes[node_id]
         except KeyError:
             return
-
+        
         # Try to find/create parent layer
         if parent_layer_id is not None:
             try:
@@ -203,7 +222,7 @@ class VerseLayer(verse_entity.VerseEntity):
                 parent_layer = None
         else:
             parent_layer = None
-
+        
         # Try to find this layer in pending layers of node. Otherwise create new layer
         try:
             layer = node.layer_queue[custom_type]
@@ -218,9 +237,14 @@ class VerseLayer(verse_entity.VerseEntity):
             layer.id = layer_id
             node.layers[layer_id] = layer
 
+        # Change state of layer
+        layer._receive_create()
+
         # When this layer has some pending values, then send them to Verse server
         for item_id, value in layer.items.items():
             session.send_layer_set_value(node.prio, node.id, layer.id, item_id, layer.data_type, value)
+
+        return layer
 
 
     @classmethod

@@ -58,6 +58,16 @@ class VerseTagGroup(verse_entity.VerseEntity):
                 raise VerseCustomTypeError(self.custom_type)
 
 
+    def __str__(self):
+        """
+        String representation of VerseTagGroup
+        """
+        return 'VerseTagGroup, id:' + \
+            str(self.id) + \
+            ', custom_type: ' + \
+            str(self.custom_type)
+
+
     def _send_create(self):
         """
         Send tag group create command to Verse server
