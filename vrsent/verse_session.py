@@ -25,6 +25,29 @@ at verse client.
 
 import verse as vrs
 from . import verse_node, verse_tag_group, verse_tag, verse_layer
+import threading
+import time
+
+
+class CallbackUpdate(threading.Thread):
+    """
+    This class is used to run callback_update method in
+    own thread
+    """
+
+    def __init__(self, session, *args, **kwargs):
+        """
+        """
+        super(CallbackUpdate, self).__init__(*args, **kwargs)
+        self.session = session
+
+    def run(self):
+        """
+        """
+        DELAY = 0.05
+        while(self.session.state != 'DISCONNECTED'):
+            self.session.callback_update()
+            time.sleep(DELAY)
 
 
 class VerseSession(vrs.Session):
@@ -35,15 +58,17 @@ class VerseSession(vrs.Session):
     # The list of session instances
     __sessions = {}
 
-    def __init__(self, hostname="localhost", service="12345", flags=vrs.DGRAM_SEC_DTLS):
+    def __init__(self, hostname="localhost", service="12345", \
+            flags=vrs.DGRAM_SEC_DTLS, callback_thread=False,
+            username=None, password=None):
         """
         Constructor of VerseSession
         """
         # Call method of parent class to connect to Verse server
         super(VerseSession, self).__init__(hostname, service, flags)
         self._fps = 60.0
-        self.username = None
-        self.password = None
+        self.username = username
+        self.password = password
         self.debug_print = False
         self.state = 'CONNECTING'
         # Add this session from list of sessions
@@ -60,6 +85,10 @@ class VerseSession(vrs.Session):
         # server has not sent confirmation about creating of these nodes.
         # Each custom_type of node has its own queue
         self.my_node_queues = {}
+        # Start callback_update thread
+        if callback_thread == True:
+            self.cb_thread = CallbackUpdate(self)
+            self.cb_thread.start()
 
 
     def __del__(self):

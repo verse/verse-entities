@@ -174,7 +174,7 @@ class VerseTag(verse_entity.VerseEntity):
                 self.tg.tag_queue[self.custom_type] = self
             # Check uniqueness of custom_type inside the tag group
             if tag is not None:
-                raise VerseCustomTypeError(self.custom_type)
+                raise verse_entity.VerseCustomTypeError(self.custom_type)
 
 
     def __str__(self):
