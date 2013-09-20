@@ -351,6 +351,7 @@ class VerseNode(verse_entity.VerseEntity):
             # dictionary of nodes
             node = node_queue.pop()
             node.id = node_id
+            node.user_id = user_id
             session.nodes[node_id] = node
             if node.parent is None:
                 node.parent = parent_node

@@ -55,7 +55,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
             except KeyError:
                 self.node.tg_queue[self.custom_type] = self
             if tg is not None:
-                raise VerseCustomTypeError(self.custom_type)
+                raise TypeError('VerseTagGroup with: ' + str(self.custom_type) + ' already exists in VerseNode: ' + str(node.id))
 
 
     def __str__(self):

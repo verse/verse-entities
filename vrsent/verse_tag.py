@@ -174,7 +174,7 @@ class VerseTag(verse_entity.VerseEntity):
                 self.tg.tag_queue[self.custom_type] = self
             # Check uniqueness of custom_type inside the tag group
             if tag is not None:
-                raise verse_entity.VerseCustomTypeError(self.custom_type)
+                raise TypeError('VerseTag with: ' + str(self.custom_type) + ' already exists in VerseTagGroup: ' + str(tg.id))
 
 
     def __str__(self):
