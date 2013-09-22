@@ -73,7 +73,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
         Send tag group create command to Verse server
         """
         if self.node.id is not None:
-            self.node.session.send_taggroup_create(self.node.prio, self.node.id, self.custom_type)
+            self.node.session.send_taggroup_create(self.node._prio, self.node.id, self.custom_type)
 
 
     def _send_destroy(self):
@@ -81,7 +81,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
         Send tag group destroy command to Verse server
         """
         if self.id is not None:
-            self.node.session.send_taggroup_destroy(self.node.prio, self.node.id, self.id)
+            self.node.session.send_taggroup_destroy(self.node._prio, self.node.id, self.id)
 
 
     def _send_subscribe(self):
@@ -89,7 +89,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
         Send tag group subscribe command
         """
         if self.id is not None and self.subscribed == False:
-            self.node.session.send_taggroup_subscribe(self.node.prio, self.node.id, self.id, self.version, self.crc32)
+            self.node.session.send_taggroup_subscribe(self.node._prio, self.node.id, self.id, self.version, self.crc32)
             self.subscribed = True
 
 
@@ -141,7 +141,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
 
         # Send tag_create commands for pending tags
         for custom_type, tag in tg.tag_queue.items():
-            session.send_tag_create(node.prio, node.id, tg.id, tag.data_type, tag.count, custom_type)
+            session.send_tag_create(node._prio, node.id, tg.id, tag.data_type, tag.count, custom_type)
         # Return reference at tag group object
         return tg
 

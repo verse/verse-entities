@@ -160,7 +160,7 @@ class VerseSession(vrs.Session):
         # Send pending node create commands
         for queue in self.my_node_queues.values():
             for node in queue:
-                self.send_node_create(node.prio, node.custom_type)
+                self.send_node_create(node._prio, node.custom_type)
 
 
     def _receive_connect_terminate(self, error):
