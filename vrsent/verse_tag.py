@@ -276,7 +276,7 @@ class VerseTag(verse_entity.VerseEntity):
             return
         # Try to find tag group
         try:
-            tg = node.taggroups[tg_id]
+            tg = node.tag_groups[tg_id]
         except KeyError:
             return
         # Was this tag created by this client?
@@ -313,7 +313,7 @@ class VerseTag(verse_entity.VerseEntity):
             return
         # Try to find tag group
         try:
-            tg = node.taggroups[tg_id]
+            tg = node.tag_groups[tg_id]
         except KeyError:
             return
         # Try to find tag
@@ -339,7 +339,7 @@ class VerseTag(verse_entity.VerseEntity):
             return
         # Try to find tag group
         try:
-            tg = node.taggroups[tg_id]
+            tg = node.tag_groups[tg_id]
         except KeyError:
             return
         # Try to find tag

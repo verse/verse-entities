@@ -305,7 +305,7 @@ class VerseSession(vrs.Session):
             super(VerseSession, self)._receive_tag_create(node_id, taggroup_id, tag_id, data_type, count, custom_type)
         try:
             node_custom_type = self.nodes[node_id].custom_type
-            tg_custom_type = self.nodes[node_id].taggroups[taggroup_id].custom_type
+            tg_custom_type = self.nodes[node_id].tag_groups[taggroup_id].custom_type
         except KeyError:
             cls = verse_tag.VerseTag
         else:
@@ -324,8 +324,8 @@ class VerseSession(vrs.Session):
         # Call calback method of model
         try:
             node_custom_type = self.nodes[node_id].custom_type
-            tg_custom_type = self.nodes[node_id].taggroups[taggroup_id].custom_type
-            tag_custom_type = self.nodes[node_id].taggroups[taggroup_id].tags[tag_id].custom_type
+            tg_custom_type = self.nodes[node_id].tag_groups[taggroup_id].custom_type
+            tag_custom_type = self.nodes[node_id].tag_groups[taggroup_id].tags[tag_id].custom_type
         except KeyError:
             cls = verse_tag.VerseTag
         else:
@@ -343,8 +343,8 @@ class VerseSession(vrs.Session):
             super(VerseSession, self)._receive_tag_set_values(node_id, taggroup_id, tag_id, value)
         try:
             node_custom_type = self.nodes[node_id].custom_type
-            tg_custom_type = self.nodes[node_id].taggroups[taggroup_id].custom_type
-            tag_custom_type = self.nodes[node_id].taggroups[taggroup_id].tags[tag_id].custom_type
+            tg_custom_type = self.nodes[node_id].tag_groups[taggroup_id].custom_type
+            tag_custom_type = self.nodes[node_id].tag_groups[taggroup_id].tags[tag_id].custom_type
         except KeyError:
             cls = verse_tag.VerseTag
         else:

@@ -124,7 +124,7 @@ class VerseNode(verse_entity.VerseEntity):
         
         self.user_id = user_id
         self.child_nodes = {}
-        self.taggroups = {}
+        self.tag_groups = {}
         self.tg_queue = {}
         self.layers = {}
         self.layer_queue = {}
@@ -201,7 +201,7 @@ class VerseNode(verse_entity.VerseEntity):
                     pass
                 self._parent_node = None
         # Clear tag groups
-        self.taggroups.clear()
+        self.tag_groups.clear()
         self.tg_queue.clear()
         # Clear layers
         self.layers.clear()

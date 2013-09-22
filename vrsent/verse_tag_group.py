@@ -46,7 +46,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
 
         # Set bindings
         if tg_id is not None:
-            self.node.taggroups[tg_id] = self
+            self.node.tag_groups[tg_id] = self
             self.node.tg_queue[self.custom_type] = self
         else:
             tg = None
@@ -99,7 +99,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
         """
         # Remove references at all this taggroup
         if self.id is not None:
-            self.node.taggroups.pop(self.id)
+            self.node.tag_groups.pop(self.id)
         self.node.tg_queue.pop(self.custom_type)
         # Clean all tags and queue of tags
         self.tags.clear()
@@ -134,7 +134,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
             tg = VerseTagGroup(node, tg_id, custom_type)
         else:
             tg.id = tg_id
-            node.taggroups[tg_id] = tg
+            node.tag_groups[tg_id] = tg
 
         # Update state and subscribe command
         tg._receive_create()
@@ -159,7 +159,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
             return
         # Try to find tag group
         try:
-            tg = node.taggroups[tg_id]
+            tg = node.tag_groups[tg_id]
         except KeyError:
             return
         # Destroy tag group
