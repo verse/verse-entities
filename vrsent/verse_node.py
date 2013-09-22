@@ -347,14 +347,21 @@ class VerseNode(verse_entity.VerseEntity):
         # Is it node created by this client?
         if parent_id == session.avatar_id and user_id == session.user_id:
             node_queue = session.my_node_queues[custom_type]
-            # If this is node created by this client, then add it to
-            # dictionary of nodes
+            # If this is node created by this client, then remove it from
+            # the queue of nodes and add it to the dictionary of nodes
             node = node_queue.pop()
-            node.id = node_id
-            node.user_id = user_id
             session.nodes[node_id] = node
+            # Set node ID, when it is known
+            node.id = node_id
+            # Set user id
+            if node.user_id is None:
+                node.user_id = user_id
+            # Set parent node
             if node.parent is None:
                 node.parent = parent_node
+                # And add node to the dictionary of child nodes
+                parent_node.child_nodes[node_id] = node
+            # Send pending data (tag groups, layers, new paren)
             send_pending_data = True
         else:
             # Was this node already created?

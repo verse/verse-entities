@@ -37,17 +37,20 @@ class CallbackUpdate(threading.Thread):
 
     def __init__(self, session, *args, **kwargs):
         """
+        This method initialize object of thread
         """
         super(CallbackUpdate, self).__init__(*args, **kwargs)
         self.session = session
 
     def run(self):
         """
+        This method is executed, when thread is started.
         """
-        DELAY = 0.05
+        # Never ending loop that executed callback functions,
+        # when commands are received from Verse server
         while(self.session.state != 'DISCONNECTED'):
             self.session.callback_update()
-            time.sleep(DELAY)
+            time.sleep(1.0/self.session.fps)
 
 
 class VerseSession(vrs.Session):
