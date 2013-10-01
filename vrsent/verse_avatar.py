@@ -38,7 +38,7 @@ class HostnameTag(verse_tag.VerseTag):
     """
     custom_type = TAG_HOSTNAME_CT
     tg_custom_type = TG_INFO_CT
-    node_custom_type = vrs.AVATAR_NODE_CT
+    node_custom_type = vrs.AVATAR_INFO_NODE_CT
     def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_STRING8, count=1, custom_type=TAG_HOSTNAME_CT, value=None):
         """
         Constructor of HostnameTag
@@ -52,7 +52,7 @@ class LoginTimeTag(verse_tag.VerseTag):
     """
     custom_type = TAG_LOGIN_TIME_CT
     tg_custom_type = TG_INFO_CT
-    node_custom_type = vrs.AVATAR_NODE_CT
+    node_custom_type = vrs.AVATAR_INFO_NODE_CT
     def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_UINT64, count=1, custom_type=TAG_LOGIN_TIME_CT, value=None):
         """
         Constructor of LoginTimeTag
@@ -66,7 +66,7 @@ class ClientNameTag(verse_tag.VerseTag):
     """
     custom_type = TAG_CLIENT_NAME_CT
     tg_custom_type = TG_INFO_CT
-    node_custom_type = vrs.AVATAR_NODE_CT
+    node_custom_type = vrs.AVATAR_INFO_NODE_CT
     def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_STRING8, count=1, custom_type=TAG_CLIENT_NAME_CT, value=None):
         """
         Constructor of ClientNameTag
@@ -80,7 +80,7 @@ class ClientVersionTag(verse_tag.VerseTag):
     """
     custom_type = TAG_CLIENT_VERSION_CT
     tg_custom_type = TG_INFO_CT
-    node_custom_type = vrs.AVATAR_NODE_CT
+    node_custom_type = vrs.AVATAR_INFO_NODE_CT
     def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_STRING8, count=1, custom_type=TAG_CLIENT_VERSION_CT, value=None):
         """
         Constructor of ClientVersionTag
@@ -93,7 +93,7 @@ class VerseAvatarInfo(verse_node.VerseNode):
     Class storing information about Verse avatar/client
     """
 
-    custom_type = 5 # TODO: replace with constant from verse module
+    custom_type = vrs.AVATAR_INFO_NODE_CT
 
     def __init__(self, *args, **kwargs):
         """
@@ -117,7 +117,7 @@ class VerseAvatar(verse_node.VerseNode):
     Class representing Verse avatar/client
     """
 
-    custom_type = 4  # TODO: replace with constant from verse module
+    custom_type = vrs.AVATAR_NODE_CT
 
     def __init__(self, *args, **kwargs):
         """
