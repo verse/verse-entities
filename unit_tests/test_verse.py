@@ -59,7 +59,6 @@ class TestSession(vrsent.VerseSession):
         self.scene_node = None
         self.state = 'CONNECTED'
         self.verbosity = 1
-        self.debug_print = True
 
 
     # Node
@@ -96,19 +95,26 @@ class TestSession(vrsent.VerseSession):
             # Create new test node
             self.test_node = vrsent.VerseNode(session=self, \
                 node_id=None, \
-                parent=self.test_scene_node, \
+                parent=None, \
                 user_id=None, \
                 custom_type=17)
             # Test of locking node
             self.test_node.lock()
             # TODO: Test of setting node permission
 
+            # Create node for testing changing link between nodes
+            self.test_link_node = vrsent.VerseNode(session=self, \
+                node_id=None, \
+                parent=self.test_scene_node, \
+                user_id=None, \
+                custom_type=18)
+
             # Create new nodes for testing of destroying nodes
             self.test_destroy_node = vrsent.VerseNode(session=self, \
                 node_id=None, \
                 parent=None, \
                 user_id=None,
-                custom_type=18)
+                custom_type=19)
             # Destroy node immediately
             self.test_destroy_node.destroy()
 
@@ -239,7 +245,7 @@ class TestSession(vrsent.VerseSession):
         child_node = super(TestSession, self)._receive_node_link(parent_node_id, child_node_id)
         # Start unit testing of node with changed parent. This parent node was implicitly
         # changed during initialization of node
-        if child_node == self.test_node:
+        if child_node == self.test_link_node:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_node.TestLinkNodeCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
@@ -424,11 +430,12 @@ class TestSession(vrsent.VerseSession):
         self.state = 'DISCONNECTED'
 
 
-def main(hostname, username, password):
+def main(hostname, service, debug, username, password):
     """
     Function with main never ending verse loop
     """
-    vrsent.session = TestSession(hostname, "12344", vrs.DGRAM_SEC_NONE)
+    vrsent.session = TestSession(hostname, service, vrs.DGRAM_SEC_NONE)
+    vrsent.session.debug_print = debug
     vrsent.session.username = username
     vrsent.session.password = password
 
@@ -460,9 +467,11 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--hostname', nargs='?', default='localhost', help='Hostname of Verse server')
+    parser.add_argument('--service',  nargs='?', default='12345', help='')
     parser.add_argument('--username', nargs='?', default=None, help='Username')
     parser.add_argument('--password', nargs='?', default=None, help='Password')
+    parser.add_argument('--debug',    nargs='?', default=False, help='Debug print')
     args = parser.parse_args()
     #vrs.set_debug_level(vrs.PRINT_DEBUG_MSG)
     vrs.set_client_info("Python UnitTest Verse Client", "0.1")
-    main(args.hostname, args.username, args.password)
+    main(args.hostname, args.service, args.debug, args.username, args.password)

@@ -46,7 +46,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
 
         # Set bindings
         if tg_id is not None:
-            self.node.taggroups[tg_id] = self
+            self.node.tag_groups[tg_id] = self
             self.node.tg_queue[self.custom_type] = self
         else:
             tg = None
@@ -73,7 +73,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
         Send tag group create command to Verse server
         """
         if self.node.id is not None:
-            self.node.session.send_taggroup_create(self.node.prio, self.node.id, self.custom_type)
+            self.node.session.send_taggroup_create(self.node._prio, self.node.id, self.custom_type)
 
 
     def _send_destroy(self):
@@ -81,7 +81,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
         Send tag group destroy command to Verse server
         """
         if self.id is not None:
-            self.node.session.send_taggroup_destroy(self.node.prio, self.node.id, self.id)
+            self.node.session.send_taggroup_destroy(self.node._prio, self.node.id, self.id)
 
 
     def _send_subscribe(self):
@@ -89,7 +89,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
         Send tag group subscribe command
         """
         if self.id is not None and self.subscribed == False:
-            self.node.session.send_taggroup_subscribe(self.node.prio, self.node.id, self.id, self.version, self.crc32)
+            self.node.session.send_taggroup_subscribe(self.node._prio, self.node.id, self.id, self.version, self.crc32)
             self.subscribed = True
 
 
@@ -99,7 +99,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
         """
         # Remove references at all this taggroup
         if self.id is not None:
-            self.node.taggroups.pop(self.id)
+            self.node.tag_groups.pop(self.id)
         self.node.tg_queue.pop(self.custom_type)
         # Clean all tags and queue of tags
         self.tags.clear()
@@ -134,14 +134,14 @@ class VerseTagGroup(verse_entity.VerseEntity):
             tg = VerseTagGroup(node, tg_id, custom_type)
         else:
             tg.id = tg_id
-            node.taggroups[tg_id] = tg
+            node.tag_groups[tg_id] = tg
 
         # Update state and subscribe command
         tg._receive_create()
 
         # Send tag_create commands for pending tags
         for custom_type, tag in tg.tag_queue.items():
-            session.send_tag_create(node.prio, node.id, tg.id, tag.data_type, tag.count, custom_type)
+            session.send_tag_create(node._prio, node.id, tg.id, tag.data_type, tag.count, custom_type)
         # Return reference at tag group object
         return tg
 
@@ -159,7 +159,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
             return
         # Try to find tag group
         try:
-            tg = node.taggroups[tg_id]
+            tg = node.tag_groups[tg_id]
         except KeyError:
             return
         # Destroy tag group

@@ -124,7 +124,8 @@ class TestLinkNodeCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        cls.child_node = vrsent.session.test_node
+
+        cls.child_node = vrsent.session.test_link_node
         cls.parent_node = vrsent.session.test_scene_node
         cls.avatar_node = vrsent.session.avatar_node
         cls.tested = True
@@ -206,6 +207,7 @@ class TestCreatedNodeCase(unittest.TestCase):
     """
 
     node = None
+    avatar_node = None
     tested = False
 
     @classmethod
@@ -214,6 +216,7 @@ class TestCreatedNodeCase(unittest.TestCase):
         This method is called before any test is performed
         """
         cls.node = vrsent.session.test_node
+        cls.avatar_node = vrsent.session.nodes[vrsent.session.avatar_id]
         cls.tested = True
 
     def test_node_created(self):
@@ -233,6 +236,24 @@ class TestCreatedNodeCase(unittest.TestCase):
         Test of node subscribtion
         """      
         self.assertEqual(self.node.subscribed, True)
+
+    def test_parent_node(self):
+        """
+        Test of parent node
+        """
+        self.assertEqual(__class__.node.parent, __class__.avatar_node)
+
+    def test_node_is_child_node(self):
+        """
+        Test if new node is in child nodes of avatar node
+        """
+        self.assertEqual(__class__.avatar_node.child_nodes[__class__.node.id], __class__.node)
+
+    def test_node_owner(self):
+        """
+        Test if owner of new node is current users
+        """
+        self.assertEqual(__class__.node.user_id, vrsent.session.user_id)
 
 
 class TestNewNodeCase(unittest.TestCase):

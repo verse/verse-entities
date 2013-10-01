@@ -12,6 +12,8 @@ Versentities module contains several class of basic Verse entities:
 * VerseTagGroup
 * VerseTag
 * VerseLayer
+* VerseUser (subclass of VerseNode)
+* VerseAvatar (subclass of VerseNode)
 
 These classes could be used for implementation custom subclasees.
 

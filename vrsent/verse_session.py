@@ -37,17 +37,20 @@ class CallbackUpdate(threading.Thread):
 
     def __init__(self, session, *args, **kwargs):
         """
+        This method initialize object of thread
         """
         super(CallbackUpdate, self).__init__(*args, **kwargs)
         self.session = session
 
     def run(self):
         """
+        This method is executed, when thread is started.
         """
-        DELAY = 0.05
+        # Never ending loop that executed callback functions,
+        # when commands are received from Verse server
         while(self.session.state != 'DISCONNECTED'):
             self.session.callback_update()
-            time.sleep(DELAY)
+            time.sleep(1.0/self.session.fps)
 
 
 class VerseSession(vrs.Session):
@@ -157,7 +160,7 @@ class VerseSession(vrs.Session):
         # Send pending node create commands
         for queue in self.my_node_queues.values():
             for node in queue:
-                self.send_node_create(node.prio, node.custom_type)
+                self.send_node_create(node._prio, node.custom_type)
 
 
     def _receive_connect_terminate(self, error):
@@ -302,7 +305,7 @@ class VerseSession(vrs.Session):
             super(VerseSession, self)._receive_tag_create(node_id, taggroup_id, tag_id, data_type, count, custom_type)
         try:
             node_custom_type = self.nodes[node_id].custom_type
-            tg_custom_type = self.nodes[node_id].taggroups[taggroup_id].custom_type
+            tg_custom_type = self.nodes[node_id].tag_groups[taggroup_id].custom_type
         except KeyError:
             cls = verse_tag.VerseTag
         else:
@@ -321,8 +324,8 @@ class VerseSession(vrs.Session):
         # Call calback method of model
         try:
             node_custom_type = self.nodes[node_id].custom_type
-            tg_custom_type = self.nodes[node_id].taggroups[taggroup_id].custom_type
-            tag_custom_type = self.nodes[node_id].taggroups[taggroup_id].tags[tag_id].custom_type
+            tg_custom_type = self.nodes[node_id].tag_groups[taggroup_id].custom_type
+            tag_custom_type = self.nodes[node_id].tag_groups[taggroup_id].tags[tag_id].custom_type
         except KeyError:
             cls = verse_tag.VerseTag
         else:
@@ -340,8 +343,8 @@ class VerseSession(vrs.Session):
             super(VerseSession, self)._receive_tag_set_values(node_id, taggroup_id, tag_id, value)
         try:
             node_custom_type = self.nodes[node_id].custom_type
-            tg_custom_type = self.nodes[node_id].taggroups[taggroup_id].custom_type
-            tag_custom_type = self.nodes[node_id].taggroups[taggroup_id].tags[tag_id].custom_type
+            tg_custom_type = self.nodes[node_id].tag_groups[taggroup_id].custom_type
+            tag_custom_type = self.nodes[node_id].tag_groups[taggroup_id].tags[tag_id].custom_type
         except KeyError:
             cls = verse_tag.VerseTag
         else:
