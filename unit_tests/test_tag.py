@@ -40,16 +40,16 @@ class TestChangedTagCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.node = vrsent.session.test_node
-        __class__.tg = vrsent.session.test_node.test_tg
-        __class__.tag = vrsent.session.test_node.test_tg.test_tag
-        __class__.tested = True
+        cls.node = vrsent.session.test_node
+        cls.tg = vrsent.session.test_node.test_tg
+        cls.tag = vrsent.session.test_node.test_tg.test_tag
+        cls.tested = True
 
     def test_tag_value(self):
         """
         Test of tag value
         """      
-        self.assertEqual(__class__.tag.value, (123,))
+        self.assertEqual(self.tag.value, (123,))
 
 
 class TestDestroyingTagCase(unittest.TestCase):
@@ -67,16 +67,16 @@ class TestDestroyingTagCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.node = vrsent.session.test_node
-        __class__.tg = vrsent.session.test_node.test_tg
-        __class__.tag = vrsent.session.test_node.test_tg.test_destroy_tag
-        __class__.tested = True
+        cls.node = vrsent.session.test_node
+        cls.tg = vrsent.session.test_node.test_tg
+        cls.tag = vrsent.session.test_node.test_tg.test_destroy_tag
+        cls.tested = True
 
     def test_tag_destroying(self):
         """
         Test of state of destroying tag
         """      
-        self.assertEqual(__class__.tag.state, vrsent.verse_entity.ENTITY_DESTROYING)
+        self.assertEqual(self.tag.state, vrsent.verse_entity.ENTITY_DESTROYING)
 
 
 class TestDestroyedTagCase(unittest.TestCase):
@@ -94,16 +94,16 @@ class TestDestroyedTagCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.node = vrsent.session.test_node
-        __class__.tg = vrsent.session.test_node.test_tg
-        __class__.tag = vrsent.session.test_node.test_tg.test_destroy_tag
-        __class__.tested = True
+        cls.node = vrsent.session.test_node
+        cls.tg = vrsent.session.test_node.test_tg
+        cls.tag = vrsent.session.test_node.test_tg.test_destroy_tag
+        cls.tested = True
 
     def test_tag_destroyed(self):
         """
         Test of state of destroyed tag
         """      
-        self.assertEqual(__class__.tag.state, vrsent.verse_entity.ENTITY_DESTROYED)
+        self.assertEqual(self.tag.state, vrsent.verse_entity.ENTITY_DESTROYED)
 
 
 class TestCreatedTagCase(unittest.TestCase):
@@ -121,16 +121,16 @@ class TestCreatedTagCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.node = vrsent.session.test_node
-        __class__.tg = vrsent.session.test_node.test_tg
-        __class__.tag = vrsent.session.test_node.test_tg.test_tag
-        __class__.tested = True
+        cls.node = vrsent.session.test_node
+        cls.tg = vrsent.session.test_node.test_tg
+        cls.tag = vrsent.session.test_node.test_tg.test_tag
+        cls.tested = True
 
     def test_tag_created(self):
         """
         Test of state of created tag
         """      
-        self.assertEqual(__class__.tag.state, vrsent.verse_entity.ENTITY_CREATED)
+        self.assertEqual(self.tag.state, vrsent.verse_entity.ENTITY_CREATED)
 
 
 class TestNewTagCase(unittest.TestCase):
@@ -148,13 +148,13 @@ class TestNewTagCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.node = vrsent.session.test_node
-        __class__.tg = vrsent.session.test_node.test_tg
-        __class__.tag = vrsent.session.test_node.test_tg.test_tag
-        __class__.tested = True
+        cls.node = vrsent.session.test_node
+        cls.tg = vrsent.session.test_node.test_tg
+        cls.tag = vrsent.session.test_node.test_tg.test_tag
+        cls.tested = True
 
     def test_tag_not_created(self):
         """
         Test of state of created tag
         """      
-        self.assertEqual(__class__.tag.state, vrsent.verse_entity.ENTITY_CREATING)
+        self.assertEqual(self.tag.state, vrsent.verse_entity.ENTITY_CREATING)

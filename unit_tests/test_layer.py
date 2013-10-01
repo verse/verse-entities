@@ -38,15 +38,15 @@ class TestLayerSetValueCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.node = vrsent.session.test_node
-        __class__.layer = vrsent.session.test_node.test_destroy_layer
-        __class__.tested = True
+        cls.node = vrsent.session.test_node
+        cls.layer = vrsent.session.test_node.test_destroy_layer
+        cls.tested = True
 
     def test_layer_set_value(self):
         """
         Test of destroyed layer
         """
-        for key, value in __class__.layer.items.items():
+        for key, value in self.layer.items.items():
             self.assertEqual(key, value)
 
 
@@ -64,15 +64,15 @@ class TestDestroyedLayerCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.node = vrsent.session.test_node
-        __class__.layer = vrsent.session.test_node.test_destroy_layer
-        __class__.tested = True
+        cls.node = vrsent.session.test_node
+        cls.layer = vrsent.session.test_node.test_destroy_layer
+        cls.tested = True
 
     def test_layer_destroyed(self):
         """
         Test of destroyed layer
         """      
-        self.assertEqual(__class__.layer.state, vrsent.verse_entity.ENTITY_DESTROYED)
+        self.assertEqual(self.layer.state, vrsent.verse_entity.ENTITY_DESTROYED)
 
 
 class TestDestroyingLayerCase(unittest.TestCase):
@@ -89,15 +89,15 @@ class TestDestroyingLayerCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.node = vrsent.session.test_node
-        __class__.layer = vrsent.session.test_node.test_destroy_layer
-        __class__.tested = True
+        cls.node = vrsent.session.test_node
+        cls.layer = vrsent.session.test_node.test_destroy_layer
+        cls.tested = True
 
     def test_layer_destroying(self):
         """
         Test of destroying layer
         """      
-        self.assertEqual(__class__.layer.state, vrsent.verse_entity.ENTITY_DESTROYING)
+        self.assertEqual(self.layer.state, vrsent.verse_entity.ENTITY_DESTROYING)
 
 
 class TestNewLayerCase(unittest.TestCase):
@@ -114,21 +114,21 @@ class TestNewLayerCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.node = vrsent.session.test_node
-        __class__.layer = vrsent.session.test_node.test_layer
-        __class__.tested = True
+        cls.node = vrsent.session.test_node
+        cls.layer = vrsent.session.test_node.test_layer
+        cls.tested = True
 
     def test_layer_not_created(self):
         """
         Test of creating new layer
         """      
-        self.assertEqual(__class__.layer.state, vrsent.verse_entity.ENTITY_CREATING)
+        self.assertEqual(self.layer.state, vrsent.verse_entity.ENTITY_CREATING)
 
     def test_layer_not_subscribed(self):
         """
         Test of subscription of new layer
         """      
-        self.assertEqual(__class__.layer.subscribed, False)
+        self.assertEqual(self.layer.subscribed, False)
 
 
 class TestCreatedLayerCase(unittest.TestCase):
@@ -145,24 +145,24 @@ class TestCreatedLayerCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.node = vrsent.session.test_node
-        __class__.layer = vrsent.session.test_node.test_layer
-        __class__.tested = True
+        cls.node = vrsent.session.test_node
+        cls.layer = vrsent.session.test_node.test_layer
+        cls.tested = True
 
     def test_layer_created(self):
         """
         Test of state of created layer
         """      
-        self.assertEqual(__class__.layer.state, vrsent.verse_entity.ENTITY_CREATED)
+        self.assertEqual(self.layer.state, vrsent.verse_entity.ENTITY_CREATED)
 
     def test_layer_id(self):
         """
         Test of layer ID
         """      
-        self.assertIsNotNone(__class__.layer.id)
+        self.assertIsNotNone(self.layer.id)
 
     def test_layer_subscribed(self):
         """
         Test of subscription of created layer
         """      
-        self.assertEqual(__class__.layer.subscribed, True)
+        self.assertEqual(self.layer.subscribed, True)

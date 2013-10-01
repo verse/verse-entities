@@ -40,15 +40,15 @@ class TestDestroyingTagGroupCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.node = vrsent.session.test_node
-        __class__.tg = vrsent.session.test_node.test_destroy_tg
-        __class__.tested = True
+        cls.node = vrsent.session.test_node
+        cls.tg = vrsent.session.test_node.test_destroy_tg
+        cls.tested = True
 
     def test_tg_destroying(self):
         """
         Test of state of destroying tag
         """      
-        self.assertEqual(__class__.tg.state, vrsent.verse_entity.ENTITY_DESTROYING)
+        self.assertEqual(self.tg.state, vrsent.verse_entity.ENTITY_DESTROYING)
 
 
 class TestDestroyedTagGroupCase(unittest.TestCase):
@@ -66,15 +66,15 @@ class TestDestroyedTagGroupCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.node = vrsent.session.test_node
-        __class__.tg = vrsent.session.test_node.test_destroy_tg
-        __class__.tested = True
+        cls.node = vrsent.session.test_node
+        cls.tg = vrsent.session.test_node.test_destroy_tg
+        cls.tested = True
 
     def test_tgp_destroyed(self):
         """
         Test of state of destroyed tag group
         """      
-        self.assertEqual(__class__.tg.state, vrsent.verse_entity.ENTITY_DESTROYED)
+        self.assertEqual(self.tg.state, vrsent.verse_entity.ENTITY_DESTROYED)
 
 
 class TestCreatedTagGroupCase(unittest.TestCase):
@@ -92,27 +92,27 @@ class TestCreatedTagGroupCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.node = vrsent.session.test_node
-        __class__.tg = vrsent.session.test_node.test_tg
-        __class__.tested = True
+        cls.node = vrsent.session.test_node
+        cls.tg = vrsent.session.test_node.test_tg
+        cls.tested = True
 
     def test_tg_created(self):
         """
         Test of state of created tag group
         """      
-        self.assertEqual(__class__.tg.state, vrsent.verse_entity.ENTITY_CREATED)
+        self.assertEqual(self.tg.state, vrsent.verse_entity.ENTITY_CREATED)
 
     def test_tg_id(self):
         """
         Test of tag group ID
         """      
-        self.assertIsNotNone(__class__.tg.id)
+        self.assertIsNotNone(self.tg.id)
 
     def test_tg_subscribed(self):
         """
         Test of subscription of created tag group
         """      
-        self.assertEqual(__class__.tg.subscribed, True)
+        self.assertEqual(self.tg.subscribed, True)
 
 
 class TestNewTagGroupCase(unittest.TestCase):
@@ -130,18 +130,18 @@ class TestNewTagGroupCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.node = vrsent.session.test_node
-        __class__.tg = vrsent.session.test_node.test_tg
-        __class__.tested = True
+        cls.node = vrsent.session.test_node
+        cls.tg = vrsent.session.test_node.test_tg
+        cls.tested = True
 
     def test_tg_not_created(self):
         """
         Test of creating new tag group
         """      
-        self.assertEqual(__class__.tg.state, vrsent.verse_entity.ENTITY_CREATING)
+        self.assertEqual(self.tg.state, vrsent.verse_entity.ENTITY_CREATING)
 
     def test_tg_not_subscribed(self):
         """
         Test of subscription of new tag group
         """      
-        self.assertEqual(__class__.tg.subscribed, False)
+        self.assertEqual(self.tg.subscribed, False)

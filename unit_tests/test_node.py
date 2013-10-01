@@ -39,20 +39,20 @@ class TestUnLockNodeCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.node = vrsent.session.test_node
-        __class__.tested = True
+        cls.node = vrsent.session.test_node
+        cls.tested = True
 
     def test_node_unlocked(self):
         """
         This method test if node is unlocked
         """
-        self.assertEqual(__class__.node.locked, False)
+        self.assertEqual(self.node.locked, False)
 
     def test_node_locker(self):
         """
         This method tests if node was unlocked
         """
-        self.assertEqual(__class__.node.locker, None)
+        self.assertEqual(self.node.locker, None)
 
 
 class TestLockNodeCase(unittest.TestCase):
@@ -68,22 +68,22 @@ class TestLockNodeCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.node = vrsent.session.test_node
-        __class__.tested = True
+        cls.node = vrsent.session.test_node
+        cls.tested = True
 
     def test_node_locked(self):
         """
         This method test if node is locked
         """
-        self.assertEqual(__class__.node.locked, True)
+        self.assertEqual(self.node.locked, True)
 
     def test_node_locker(self):
         """
         This method tests if node was locked by this client app
         """
-        session = __class__.node.session
+        session = self.node.session
         avatar = session.avatars[session.avatar_id]
-        self.assertEqual(__class__.node.locker, avatar)
+        self.assertEqual(self.node.locker, avatar)
 
 
 class TestOwnerPermNodeCase(unittest.TestCase):
@@ -99,14 +99,14 @@ class TestOwnerPermNodeCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.node = vrsent.session.test_node
-        __class__.tested = True
+        cls.node = vrsent.session.test_node
+        cls.tested = True
 
     def test_node_owner_perm(self):
         """
         Testing permissions for owner of node
         """
-        self.assertEqual(__class__.node.perm[vrsent.session.user_id], \
+        self.assertEqual(self.node.perm[vrsent.session.user_id], \
             vrs.PERM_NODE_READ | vrs.PERM_NODE_WRITE)
 
 
@@ -124,23 +124,23 @@ class TestLinkNodeCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.child_node = vrsent.session.test_node
-        __class__.parent_node = vrsent.session.test_scene_node
-        __class__.avatar_node = vrsent.session.avatar_node
-        __class__.tested = True
+        cls.child_node = vrsent.session.test_node
+        cls.parent_node = vrsent.session.test_scene_node
+        cls.avatar_node = vrsent.session.avatar_node
+        cls.tested = True
 
     def test_child_node_link(self):
         """
         Test of node with changed link to parent node
         """      
-        self.assertEqual(__class__.child_node.parent, __class__.parent_node)
+        self.assertEqual(self.child_node.parent, self.parent_node)
 
     def test_parent_node_link(self):
         """
         Test that new parent node includes child node in
         dictionary of child nodes
         """
-        self.assertEqual(__class__.parent_node.child_nodes[__class__.child_node.id], __class__.child_node)
+        self.assertEqual(self.parent_node.child_nodes[self.child_node.id], self.child_node)
 
     def test_avatar_child_nodes(self):
         """
@@ -148,7 +148,7 @@ class TestLinkNodeCase(unittest.TestCase):
         reference at node anymore
         """
         try:
-            node = __class__.avatar_node.child_nodes[__class__.child_node.id]
+            node = self.avatar_node.child_nodes[self.child_node.id]
         except KeyError:
             node = None
         self.assertIsNone(node)
@@ -167,14 +167,14 @@ class TestDestroyedNodeCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.node = vrsent.session.test_destroy_node
-        __class__.tested = True
+        cls.node = vrsent.session.test_destroy_node
+        cls.tested = True
 
     def test_node_destroying(self):
         """
         Test of creating new node
         """      
-        self.assertEqual(__class__.node.state, vrsent.verse_entity.ENTITY_DESTROYED)
+        self.assertEqual(self.node.state, vrsent.verse_entity.ENTITY_DESTROYED)
 
 
 class TestDestroyNodeCase(unittest.TestCase):
@@ -190,14 +190,14 @@ class TestDestroyNodeCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.node = vrsent.session.test_destroy_node
-        __class__.tested = True
+        cls.node = vrsent.session.test_destroy_node
+        cls.tested = True
 
     def test_node_destroying(self):
         """
         Test of creating new node
         """      
-        self.assertEqual(__class__.node.state, vrsent.verse_entity.ENTITY_DESTROYING)
+        self.assertEqual(self.node.state, vrsent.verse_entity.ENTITY_DESTROYING)
 
 
 class TestCreatedNodeCase(unittest.TestCase):
@@ -213,26 +213,26 @@ class TestCreatedNodeCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.node = vrsent.session.test_node
-        __class__.tested = True
+        cls.node = vrsent.session.test_node
+        cls.tested = True
 
     def test_node_created(self):
         """
         Test of creating new node
         """      
-        self.assertEqual(__class__.node.state, vrsent.verse_entity.ENTITY_CREATED)
+        self.assertEqual(self.node.state, vrsent.verse_entity.ENTITY_CREATED)
 
     def test_node_id(self):
         """
         Test of node ID
         """      
-        self.assertIsNotNone(__class__.node.id)
+        self.assertIsNotNone(self.node.id)
 
     def test_node_subscribed(self):
         """
         Test of node subscribtion
         """      
-        self.assertEqual(__class__.node.subscribed, True)
+        self.assertEqual(self.node.subscribed, True)
 
 
 class TestNewNodeCase(unittest.TestCase):
@@ -248,17 +248,17 @@ class TestNewNodeCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.node = vrsent.session.test_node
-        __class__.tested = True
+        cls.node = vrsent.session.test_node
+        cls.tested = True
 
     def test_node_not_created(self):
         """
         Test of creating new node
         """      
-        self.assertEqual(__class__.node.state, vrsent.verse_entity.ENTITY_CREATING)
+        self.assertEqual(self.node.state, vrsent.verse_entity.ENTITY_CREATING)
 
     def test_node_not_subscribed(self):
         """
         Test of creating new node
         """      
-        self.assertEqual(__class__.node.subscribed, False)
+        self.assertEqual(self.node.subscribed, False)

@@ -53,8 +53,22 @@ class TestTag(vrsent.VerseTag):
         """
         Custom callback method of subclass
         """
-        cls.rec_nt_crt_callbacks[(node_id, tg_id, tag_id)] = True
+        cls.rec_nt_crt_callbacks[(node_id, tg_id, tag_id)] = cls.__name__
         return super(TestTag, cls)._receive_tag_create(session, node_id, tg_id, tag_id, data_type, count, custom_type)
+
+
+class SuperTestTag(TestTag):
+    """
+    Subclass of TestTag
+    """
+
+    @classmethod
+    def _receive_tag_create(cls, session, node_id, tg_id, tag_id, data_type, count, custom_type):
+        """
+        Custom callback method of subclass
+        """
+        cls.rec_nt_crt_callbacks[(node_id, tg_id, tag_id)] = cls.__name__
+        return super(SuperTestTag, cls)._receive_tag_create(session, node_id, tg_id, tag_id, data_type, count, custom_type)
 
 
 class TestNode(vrsent.VerseNode):
@@ -72,13 +86,13 @@ class TestNode(vrsent.VerseNode):
         Custom callback method called, when this custom_type of VerseNode is
         created by verse server and appropriate command is received.
         """
-        cls.rec_nd_crt_callbacks[node_id] = True
+        cls.rec_nd_crt_callbacks[node_id] = cls.__name__
         return super(TestNode, cls)._receive_node_create(session, node_id, parent_id, user_id, custom_type)
 
 
 class SuperTestNode(TestNode):
     """
-    Subclass of TestNode and VerseNode
+    Subclass of TestNode
     """
 
     def __init__(self, *args, **kwargs):
@@ -95,8 +109,8 @@ class SuperTestNode(TestNode):
         Custom callback method called, when this custom_type of VerseNode is
         created by verse server and appropriate command is received.
         """
-        cls.rec_nd_crt_callbacks[node_id] = False
-        return super(TestNode, cls)._receive_node_create(session, node_id, parent_id, user_id, custom_type)
+        cls.rec_nd_crt_callbacks[node_id] = cls.__name__
+        return super(SuperTestNode, cls)._receive_node_create(session, node_id, parent_id, user_id, custom_type)
 
 
 class TestSubclassNodeCase(unittest.TestCase):
@@ -112,26 +126,26 @@ class TestSubclassNodeCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.node = vrsent.session.test_subclass_node
-        __class__.tested = True
+        cls.node = vrsent.session.test_subclass_node
+        cls.tested = True
 
     def test_node_custom_type(self):
         """
         Test of creating new node
         """      
-        self.assertEqual(__class__.node.custom_type, TEST_NODE_CUSTOM_TYPE)
+        self.assertEqual(self.node.custom_type, TEST_NODE_CUSTOM_TYPE)
 
     def test_node_instance(self):
         """
         Test of subclassing of node
         """
-        self.assertTrue(isinstance(__class__.node, SuperTestNode))
+        self.assertTrue(isinstance(self.node, SuperTestNode))
 
     def test_node_custom_create_callback(self):
         """
         Test if custom callback method was called
         """
-        self.assertFalse(__class__.node.rec_nd_crt_callbacks[__class__.node.id])
+        self.assertEqual(self.node.rec_nd_crt_callbacks[self.node.id], 'SuperTestNode')
 
 
 class TestSubclassTagCase(unittest.TestCase):
@@ -149,25 +163,26 @@ class TestSubclassTagCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
-        __class__.node = vrsent.session.test_subclass_node
-        __class__.tg = vrsent.session.test_subclass_node.test_tg
-        __class__.tag = vrsent.session.test_subclass_node.test_tg.test_tag
-        __class__.tested = True
+        cls.node = vrsent.session.test_subclass_node
+        cls.tg   = vrsent.session.test_subclass_node.test_tg
+        cls.tag  = vrsent.session.test_subclass_node.test_tg.test_tag
+        cls.tested = True
 
     def test_node_custom_type(self):
         """
         Test of creating new node
         """      
-        self.assertEqual(__class__.tag.custom_type, TEST_TAG_CUSTOM_TYPE)
+        self.assertEqual(self.tag.custom_type, TEST_TAG_CUSTOM_TYPE)
 
     def test_node_instance(self):
         """
         Test of subclassing of node
         """
-        self.assertTrue(isinstance(__class__.tag, TestTag))
+        self.assertTrue(isinstance(self.tag, TestTag))
 
     def test_node_custom_create_callback(self):
         """
         Test if custom callback method was called
         """
-        self.assertTrue(__class__.tag.rec_nt_crt_callbacks[(__class__.node.id, __class__.tg.id, __class__.tag.id)])
+        self.assertEqual(self.tag.rec_nt_crt_callbacks[(self.node.id, self.tg.id, self.tag.id)], \
+            'SuperTestTag')
