@@ -25,6 +25,7 @@ import unittest
 import vrsent
 import verse as vrs
 
+
 class TestAvatarCase(unittest.TestCase):
     """
     Test case of VerseAvatar
@@ -35,6 +36,7 @@ class TestAvatarCase(unittest.TestCase):
         """
         This method is called before any test is performed
         """
+        cls.my_avatar = vrsent.session.avatars[vrsent.session.avatar_id]
         print('Verse Avatars:')
         for avatar in vrsent.session.avatars.values():
             print(avatar)
@@ -51,37 +53,32 @@ class TestAvatarCase(unittest.TestCase):
         """
         Test non-zero length of current avatar name
         """
-        avatar_id = vrsent.session.avatar_id
-        self.assertGreater(len(vrsent.session.avatars[avatar_id].username), 0)
+        self.assertGreater(len(self.my_avatar.username), 0)
 
 
     def test_avatar_hostname(self):
         """
         Test non-zero length of current avatar hostname
         """
-        avatar_id = vrsent.session.avatar_id
-        self.assertGreater(len(vrsent.session.avatars[avatar_id].hostname), 0)
+        self.assertGreater(len(self.my_avatar.hostname), 0)
 
 
     def test_avatar_client_name(self):
         """
         Test non-zero length of current avatar client name
         """
-        avatar_id = vrsent.session.avatar_id
-        self.assertGreater(len(vrsent.session.avatars[avatar_id].client_name), 0)
+        self.assertGreater(len(self.my_avatar.client_name), 0)
 
 
     def test_avatar_client_version(self):
         """
         Test non-zero length of current avatar client version
         """
-        avatar_id = vrsent.session.avatar_id
-        self.assertGreater(len(vrsent.session.avatars[avatar_id].client_version), 0)
+        self.assertGreater(len(self.my_avatar.client_version), 0)
 
 
     def test_avatar_login_time(self):
         """
         Test non-zero value of current avatar login time
         """
-        avatar_id = vrsent.session.avatar_id
-        self.assertGreater(vrsent.session.avatars[avatar_id].login_time, 0)
+        self.assertGreater(self.my_avatar.login_time, 0)
