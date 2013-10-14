@@ -21,7 +21,11 @@ Module for testing class VerseUser from module versentities
 """
 
 
-import unittest
+import sys
+if sys.version >= '2.7':
+    import unittest
+else:
+    import unittest2 as unittest
 import vrsent
 import verse as vrs
 

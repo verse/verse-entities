@@ -20,8 +20,11 @@
 Module for testing class VerseNode from module versentities
 """
 
-
-import unittest
+import sys
+if sys.version >= '2.7':
+    import unittest
+else:
+    import unittest2 as unittest
 import vrsent
 import verse as vrs
 
@@ -241,19 +244,19 @@ class TestCreatedNodeCase(unittest.TestCase):
         """
         Test of parent node
         """
-        self.assertEqual(__class__.node.parent, __class__.avatar_node)
+        self.assertEqual(self.node.parent, self.avatar_node)
 
     def test_node_is_child_node(self):
         """
         Test if new node is in child nodes of avatar node
         """
-        self.assertEqual(__class__.avatar_node.child_nodes[__class__.node.id], __class__.node)
+        self.assertEqual(self.avatar_node.child_nodes[self.node.id], self.node)
 
     def test_node_owner(self):
         """
         Test if owner of new node is current users
         """
-        self.assertEqual(__class__.node.user_id, vrsent.session.user_id)
+        self.assertEqual(self.node.user_id, vrsent.session.user_id)
 
 
 class TestNewNodeCase(unittest.TestCase):
