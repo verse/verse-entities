@@ -36,56 +36,88 @@ class HostnameTag(verse_tag.VerseTag):
     """
     VerseTag subclass for storing hostname
     """
+
     custom_type = TAG_HOSTNAME_CT
     tg_custom_type = TG_INFO_CT
     node_custom_type = vrs.AVATAR_INFO_NODE_CT
-    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_STRING8, count=1, custom_type=TAG_HOSTNAME_CT, value=None):
+
+    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_STRING8, \
+        count=1, custom_type=TAG_HOSTNAME_CT, value=None):
         """
         Constructor of HostnameTag
         """
-        super(HostnameTag, self).__init__(tg=tg, tag_id=tag_id, data_type=data_type, count=count, custom_type=custom_type, value=value)
+        super(HostnameTag, self).__init__(tg=tg, \
+            tag_id=tag_id, \
+            data_type=data_type, \
+            count=count, \
+            custom_type=custom_type, \
+            value=value)
 
 
 class LoginTimeTag(verse_tag.VerseTag):
     """
     VerseTag subclass for storing login time
     """
+
     custom_type = TAG_LOGIN_TIME_CT
     tg_custom_type = TG_INFO_CT
     node_custom_type = vrs.AVATAR_INFO_NODE_CT
-    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_UINT64, count=1, custom_type=TAG_LOGIN_TIME_CT, value=None):
+
+    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_UINT64, \
+        count=1, custom_type=TAG_LOGIN_TIME_CT, value=None):
         """
         Constructor of LoginTimeTag
         """
-        super(LoginTimeTag, self).__init__(tg=tg, tag_id=tag_id, data_type=data_type, count=count, custom_type=custom_type, value=value)
+        super(LoginTimeTag, self).__init__(tg=tg, \
+            tag_id=tag_id, \
+            data_type=data_type, \
+            count=count, \
+            custom_type=custom_type, \
+            value=value)
 
 
 class ClientNameTag(verse_tag.VerseTag):
     """
     VerseTag subclass for storing client name
     """
+
     custom_type = TAG_CLIENT_NAME_CT
     tg_custom_type = TG_INFO_CT
     node_custom_type = vrs.AVATAR_INFO_NODE_CT
-    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_STRING8, count=1, custom_type=TAG_CLIENT_NAME_CT, value=None):
+
+    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_STRING8, \
+        count=1, custom_type=TAG_CLIENT_NAME_CT, value=None):
         """
         Constructor of ClientNameTag
         """
-        super(ClientNameTag, self).__init__(tg=tg, tag_id=tag_id, data_type=data_type, count=count, custom_type=custom_type, value=value)
+        super(ClientNameTag, self).__init__(tg=tg, \
+            tag_id=tag_id, \
+            data_type=data_type, \
+            count=count, \
+            custom_type=custom_type, \
+            value=value)
 
 
 class ClientVersionTag(verse_tag.VerseTag):
     """
     VerseTag subclass for storing client version
     """
+
     custom_type = TAG_CLIENT_VERSION_CT
     tg_custom_type = TG_INFO_CT
     node_custom_type = vrs.AVATAR_INFO_NODE_CT
-    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_STRING8, count=1, custom_type=TAG_CLIENT_VERSION_CT, value=None):
+
+    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_STRING8, \
+        count=1, custom_type=TAG_CLIENT_VERSION_CT, value=None):
         """
         Constructor of ClientVersionTag
         """
-        super(ClientVersionTag, self).__init__(tg=tg, tag_id=tag_id, data_type=data_type, count=count, custom_type=custom_type, value=value)
+        super(ClientVersionTag, self).__init__(tg=tg, \
+            tag_id=tag_id, \
+            data_type=data_type, \
+            count=count, \
+            custom_type=custom_type, \
+            value=value)
 
 
 class VerseAvatarInfo(verse_node.VerseNode):
@@ -222,6 +254,7 @@ class VerseAvatar(verse_node.VerseNode):
     @classmethod
     def _receive_node_destroy(cls, session, node_id):
         """
+        This method is called, when server destroyed avatar node
         """
         # When this is avatar node, then remove avatar from dictionary of
         # avatars
@@ -232,6 +265,8 @@ class VerseAvatar(verse_node.VerseNode):
     @classmethod
     def _receive_node_perm(cls, session, node_id, user_id, perm):
         """
+        This method is called, when client received command node_perm.
+        This command specify user assigned to this avatar.
         """
         # When client received user permission for other user then super_user
         # or other_users, then this indicates user of this avatar/client

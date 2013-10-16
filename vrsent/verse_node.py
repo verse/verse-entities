@@ -72,7 +72,6 @@ class VerseNode(verse_entity.VerseEntity):
     # then this subclass has include ncattribte custom_type
     _subclasses = {}
 
-
     def __new__(cls, *args, **kwargs):
         """
         Pre-constructor of VerseNode. It can return class defined
@@ -97,7 +96,6 @@ class VerseNode(verse_entity.VerseEntity):
         else:
             return super(VerseNode, cls).__new__(cls)
 
-    
     def __init__(self, session, node_id=None, parent=None, user_id=None, custom_type=None):
         """
         Constructor of VerseNode
@@ -121,7 +119,7 @@ class VerseNode(verse_entity.VerseEntity):
             if issubclass(parent.__class__, VerseNode) != True:
                 raise TypeError("Node is not subclass of model.VerseNode")
         self._parent_node = parent
-        
+
         self.user_id = user_id
         self.child_nodes = {}
         self.tag_groups = {}
@@ -151,7 +149,6 @@ class VerseNode(verse_entity.VerseEntity):
             if self._parent_node is not None:
                 self._parent_node.child_nodes[node_id] = self
 
-
     def __str__(self):
         """
         This method print content of VerseNode
@@ -170,14 +167,12 @@ class VerseNode(verse_entity.VerseEntity):
             ', custom_type: ' + \
             str(self.custom_type)
 
-
     def destroy(self, send_destroy_cmd=True):
         """
         This method try to send destroy command
         """
         # Change state and send commands
         self._destroy()
-
 
     def _clean(self):
         """
@@ -207,7 +202,6 @@ class VerseNode(verse_entity.VerseEntity):
         self.layers.clear()
         self.layer_queue.clear()
 
-
     def _send_create(self):
         """
         This method send node create command to Verse server
@@ -215,14 +209,12 @@ class VerseNode(verse_entity.VerseEntity):
         if self.session.state == 'CONNECTED' and self.id is None:
             self.session.send_node_create(self._prio, self.custom_type)
 
-
     def _send_destroy(self):
         """
         This method send destroy command to Verse server
         """
         if self.session.state == 'CONNECTED' and self.id is not None:
             self.session.send_node_destroy(self._prio, self.id)
-
 
     def _send_subscribe(self):
         """
@@ -232,14 +224,12 @@ class VerseNode(verse_entity.VerseEntity):
             self.session.send_node_subscribe(self._prio, self.id, self.version, self.crc32)
             self.subscribed = True
 
-
     @property
     def parent(self):
         """
         This is getter of parent node
         """
         return self._parent_node
-
 
     @parent.setter
     def parent(self, parent):
@@ -250,14 +240,12 @@ class VerseNode(verse_entity.VerseEntity):
         if self.session.state == 'CONNECTED' and self.id is not None:
             self.session.send_node_link(self._prio, parent.id, self.id)
 
-
     @property
     def prio(self):
         """
         This is getter of node priority
         """
         return self._prio
-
 
     @prio.setter
     def prio(self, new_prio):
@@ -267,7 +255,6 @@ class VerseNode(verse_entity.VerseEntity):
         self._prio = new_prio
         if self.id is not None:
             self.session.send_node_link(self._prio, self.id, self._prio)
-
 
     @property
     def locker(self):
@@ -285,7 +272,6 @@ class VerseNode(verse_entity.VerseEntity):
             else:
                 return locker
 
-
     @property
     def locked(self):
         """
@@ -296,7 +282,6 @@ class VerseNode(verse_entity.VerseEntity):
         else:
             return False
 
-
     def lock(self):
         """
         This method tries to lock this node
@@ -304,7 +289,6 @@ class VerseNode(verse_entity.VerseEntity):
         self._lock_state = 'LOCKING'
         if self.session.state == 'CONNECTED' and self.id is not None:
             self.session.send_node_lock(self._prio, self.id)
-
 
     def unlock(self):
         """
@@ -318,7 +302,6 @@ class VerseNode(verse_entity.VerseEntity):
                 self.locker_id == self.session.avatar_id:
             self.session.send_node_unlock(self._prio, self.id)
 
-
     @property
     def owner(self):
         """
@@ -330,7 +313,6 @@ class VerseNode(verse_entity.VerseEntity):
             return None
         else:
             return owner
-
 
     @owner.setter
     def owner(self, owner):
@@ -345,7 +327,6 @@ class VerseNode(verse_entity.VerseEntity):
             self.user_id = owner.id
             # Send command
             self.session.send_node_owner(self._prio, self.id, self.user_id)
-
 
     @classmethod
     def _receive_node_create(cls, session, node_id, parent_id, user_id, custom_type):
@@ -399,24 +380,24 @@ class VerseNode(verse_entity.VerseEntity):
         if send_pending_data == True:
 
             # When node priority is different from default node priority
-            if node._prio != vrs.DEFAULT_PRIORITY:
-                session.send_node_prio(node._prio, node.id, node._prio)
+            if node.prio != vrs.DEFAULT_PRIORITY:
+                session.send_node_prio(node.prio, node.id, node.prio)
 
             # When parent node is different then current parent, then send node_link
             # command to Verse server
             if node.parent is not None and parent_id != node.parent.id:
-                session.send_node_link(node._prio, node.parent.id, node.id)
+                session.send_node_link(node.prio, node.parent.id, node.id)
                 # Add reference to list of child nodes to parent node now,
                 # because it is possible to do now (node id is known)
                 node.parent.child_nodes[node.id] = node
 
             # Try to lock node, when client requested locking of node
             if node._lock_state == 'LOCKING':
-                session.send_node_lock(node._prio, node.id)
+                session.send_node_lock(node.prio, node.id)
 
             # Send tag_group_create command for pending tag groups
             for custom_type in node.tg_queue.keys():
-                session.send_taggroup_create(node._prio, node.id, custom_type)
+                session.send_taggroup_create(node.prio, node.id, custom_type)
 
             # Send layer_create command for pending layers without parent layer
             # This module will send automaticaly layer_create command for layers
@@ -424,7 +405,7 @@ class VerseNode(verse_entity.VerseEntity):
             # will be received
             for layer in node.layer_queue.values():
                 if layer.parent_layer is None:
-                    session.send_layer_create(node._prio, \
+                    session.send_layer_create(node.prio, \
                         node.id, \
                         -1, \
                         layer.data_type, \
@@ -451,10 +432,12 @@ class VerseNode(verse_entity.VerseEntity):
         # Return reference at this node
         return node
 
-
     @classmethod
     def _receive_node_link(cls, session, parent_node_id, child_node_id):
         """
+        Static method of class that should be called, when node_link
+        callback method of Session class is called. This method change
+        links between nodes.
         """
         # Try to find parent node
         try:
@@ -471,16 +454,15 @@ class VerseNode(verse_entity.VerseEntity):
         if child_node.parent.id != parent_node.id:
             # First remove child node from list of child nodes
             # of current parent node
-            child.parent.child_nodes.pop(child_node_id)
+            child_node.parent.child_nodes.pop(child_node_id)
             # Set new parent of child node
-            child.parent = parent_node
+            child_node.parent = parent_node
             # Add child node to the list of child node of new
             # parent node
             parent_node.child_nodes[child_node_id] = child_node
 
         # Return reference at child node
         return child_node
-
 
     @classmethod
     def _receive_node_lock(cls, session, node_id, avatar_id):
@@ -496,7 +478,6 @@ class VerseNode(verse_entity.VerseEntity):
         node.locker_id = avatar_id
         return node
 
-
     @classmethod
     def _receive_node_unlock(cls, session, node_id, avatar_id):
         """
@@ -511,7 +492,6 @@ class VerseNode(verse_entity.VerseEntity):
         node.locker_id = None
         return node
 
-
     @classmethod
     def _receive_node_owner(cls, session, node_id, user_id):
         """
@@ -524,8 +504,7 @@ class VerseNode(verse_entity.VerseEntity):
             return
         else:
             node.user_id = user_id
-            return none
-
+            return None
 
     @classmethod
     def _receive_node_perm(cls, session, node_id, user_id, perm):
@@ -542,16 +521,15 @@ class VerseNode(verse_entity.VerseEntity):
         # Return reference at this node
         return node
 
-
     @classmethod
     def _receive_node_subscribe(cls, session, node_id, version, crc32):
         """
         Static method of class that should be called when
         node subscribe command is received from Verse server
         """
-        # TODO
+        # TODO: implement this method, then this will be supported by
+        # Verse server
         pass
-
 
     @classmethod
     def _receive_node_unsubscribe(cls, session, node_id, version, crc32):
@@ -559,5 +537,6 @@ class VerseNode(verse_entity.VerseEntity):
         Static method of class that should be called when
         node unsubscribe command is received from Verse server
         """
-        # TODO
+        # TODO: implement this method, then this will be supported by
+        # Verse server
         pass

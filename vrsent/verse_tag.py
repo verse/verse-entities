@@ -16,13 +16,14 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+
 """
 This module includes class VerseTag representing verse tag at verse
 client. This class could be used for sharing of scalar values or
 vector of values (2D, 3D or Quaternions).
 """
 
-import verse as vrs
+
 from . import verse_entity
 
 
@@ -83,7 +84,6 @@ class VerseTag(verse_entity.VerseEntity):
     # custom_type, tg_custom_type and node_custom_type
     _subclasses = {}
 
-
     def __new__(cls, *args, **kwargs):
         """
         Pre-constructor of new VerseTag. It can return subclass VerseTag
@@ -109,7 +109,6 @@ class VerseTag(verse_entity.VerseEntity):
         else:
             return super(VerseTag, cls).__new__(cls)
 
-    
     def __init__(self, tg, tag_id=None, data_type=None, count=None, custom_type=None, value=None):
         """
         Constructor of VerseTag
@@ -176,7 +175,6 @@ class VerseTag(verse_entity.VerseEntity):
             if tag is not None:
                 raise TypeError('VerseTag with: ' + str(self.custom_type) + ' already exists in VerseTagGroup: ' + str(tg.id))
 
-
     def __str__(self):
         """
         String representiion of VerseTag
@@ -191,7 +189,6 @@ class VerseTag(verse_entity.VerseEntity):
             str(self.custom_type) + \
             ', values: ' + \
             str(self.value)
-
 
     def destroy(self):
         """
@@ -215,7 +212,7 @@ class VerseTag(verse_entity.VerseEntity):
         self._value = val
         # Send value to Verse server
         if self.id is not None:
-            self.tg.node.session.send_tag_set_values(self.tg.node._prio, \
+            self.tg.node.session.send_tag_set_values(self.tg.node.prio, \
                 self.tg.node.id, \
                 self.tg.id, \
                 self.id, \
@@ -235,7 +232,7 @@ class VerseTag(verse_entity.VerseEntity):
         Send tag create command to Verse server
         """
         if self.tg.id is not None:
-            self.tg.node.session.send_tag_create(self.tg.node._prio, \
+            self.tg.node.session.send_tag_create(self.tg.node.prio, \
                 self.tg.node.id, \
                 self.tg.id, \
                 self.data_type, \
@@ -247,7 +244,7 @@ class VerseTag(verse_entity.VerseEntity):
         Send tag destroy command to Verse server
         """
         if self.id is not None:
-            self.tg.node.session.send_tag_destroy(self.tg.node._prio, \
+            self.tg.node.session.send_tag_destroy(self.tg.node.prio, \
                 self.tg.node.id, \
                 self.tg.id, \
                 self.id)

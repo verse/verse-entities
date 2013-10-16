@@ -16,12 +16,13 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+
 """
 This module includes class VerseLayer representing verse layer at verse
 client. This class could be used for sharing list or dictionaries.
 """
 
-import verse as vrs
+
 from . import verse_entity
 
 
@@ -37,33 +38,31 @@ class VerseLayerItems(dict):
         """
         Constructor of VerseLayerItems
         """
+        super(VerseLayerItems, self).__init__()
         self.layer = layer
-
 
     def __setitem__(self, key, value):
         """
         Setter of item that tries to send new value to Verse server
         """
         if self.layer.id is not None and self.layer.send_cmds == True:
-            self.layer.node.session.send_layer_set_value(self.layer.node._prio, \
+            self.layer.node.session.send_layer_set_value(self.layer.node.prio, \
                 self.layer.node.id, \
                 self.layer.id, \
                 key, \
                 value)
         return super(VerseLayerItems, self).__setitem__(key, value)
 
-
     def pop(self, key):
         """
         Pop item from dict that tries to unset value at Verse server
         """
         if self.layer.id is not None:
-            self.layer.node.session.send_layer_unset_value(self.layer.node._prio, \
+            self.layer.node.session.send_layer_unset_value(self.layer.node.prio, \
                 self.layer.node.id, \
                 self.layer.id, \
                 key)
         return super(VerseLayerItems, self).pop(key)
-
 
     def popitem(self):
         """
@@ -71,13 +70,11 @@ class VerseLayerItems(dict):
         """
         key, value = super(VerseLayerItems, self).popitem()
         if self.layer.id is not None:
-            self.layer.node.session.send_layer_unset_value(self.layer.node._prio, \
+            self.layer.node.session.send_layer_unset_value(self.layer.node.prio, \
                 self.layer.node.id, \
                 self.layer.id, \
                 key)
         return (key, value)
-
-
 
 
 class VerseLayer(verse_entity.VerseEntity):
@@ -85,7 +82,6 @@ class VerseLayer(verse_entity.VerseEntity):
     Class representing Verse layer. Verse layer is entity that could share
     dictionary like data structures.
     """
-
 
     def __init__(self, node, parent_layer=None, layer_id=None, data_type=None, count=1, custom_type=None):
         """
@@ -112,7 +108,6 @@ class VerseLayer(verse_entity.VerseEntity):
         if self.parent_layer is not None and layer_id is not None:
             self.parent_layer.child_layers[layer_id] = self
 
-
     def __str__(self):
         """
         String representation of VerseLayer
@@ -129,53 +124,48 @@ class VerseLayer(verse_entity.VerseEntity):
             '. custom_type: ' + \
             str(self.custom_type)
 
-
     def _send_create(self):
         """
         Send layer create to Verse server
         """
         if self.id is not None:
             if self.parent_layer is not None:
-                self.node.session.send_layer_create(self.node._prio, \
+                self.node.session.send_layer_create(self.node.prio, \
                     self.node.id, \
                     self.parent_layer.id, \
                     self.data_type, \
                     self.count, \
                     self.custom_type)
             else:
-                self.node.session.send_layer_create(self.node._prio, \
+                self.node.session.send_layer_create(self.node.prio, \
                     self.node.id, \
                     -1, \
                     self.data_type, \
                     self.count, \
                     self.custom_type)
 
-
     def _send_destroy(self):
         """
         Send layer destroy command to Verse server
         """
         if self.id is not None:
-            self.node.session.send_layer_destroy(self.node._prio, self.node.id, self.id)
-
+            self.node.session.send_layer_destroy(self.node.prio, self.node.id, self.id)
 
     def _send_subscribe(self):
         """
         Send layer subscribe command to Verse server
         """
         if self.id is not None:
-            self.node.session.send_layer_subscribe(self.node._prio, self.node.id, self.id, self.version, self.crc32)
+            self.node.session.send_layer_subscribe(self.node.prio, self.node.id, self.id, self.version, self.crc32)
             self.subscribed = True
-
 
     def _send_unsubscribe(self):
         """
         Send layer unsubscribe to Verse server
         """
         if self.id is not None:
-            self.node.session.send_layer_unsubscribe(self.node._prio, self.node.id, self.id, self.version, self.crc22)
+            self.node.session.send_layer_unsubscribe(self.node.prio, self.node.id, self.id, self.version, self.crc32)
             self.subscribed = False
-
 
     def _clean(self):
         """
@@ -189,28 +179,26 @@ class VerseLayer(verse_entity.VerseEntity):
         self.child_layers.clear()
         self.node.layers.pop(self.id)
 
-
     def destroy(self):
         """
         Change state of entity and send destroy command to Verse server
         """
         self._destroy()
 
-    
     @classmethod
     def _receive_layer_create(cls, session, node_id, parent_layer_id, layer_id, data_type, count, custom_type):
         """
         Static method of class that add reference to the
         the dictionary of layers and send pending layer set values
         """
-        
+
         # Try to find node
         node = None
         try:
             node = session.nodes[node_id]
         except KeyError:
             return
-        
+
         # Try to find/create parent layer
         if parent_layer_id is not None:
             try:
@@ -222,7 +210,7 @@ class VerseLayer(verse_entity.VerseEntity):
                 parent_layer = None
         else:
             parent_layer = None
-        
+
         # Try to find this layer in pending layers of node. Otherwise create new layer
         try:
             layer = node.layer_queue[custom_type]
@@ -242,10 +230,9 @@ class VerseLayer(verse_entity.VerseEntity):
 
         # When this layer has some pending values, then send them to Verse server
         for item_id, value in layer.items.items():
-            session.send_layer_set_value(node._prio, node.id, layer.id, item_id, layer.data_type, value)
+            session.send_layer_set_value(node.prio, node.id, layer.id, item_id, layer.data_type, value)
 
         return layer
-
 
     @classmethod
     def _receive_layer_destroy(cls, session, node_id, layer_id):
@@ -270,7 +257,6 @@ class VerseLayer(verse_entity.VerseEntity):
 
         return layer
 
-
     @classmethod
     def _receive_layer_set_value(cls, session, node_id, layer_id, item_id, value):
         """
@@ -294,7 +280,6 @@ class VerseLayer(verse_entity.VerseEntity):
         layer.send_cmds = True
 
         return layer
-
 
     @classmethod
     def _receive_layer_unset_value(cls, session, node_id, layer_id, item_id):
@@ -321,7 +306,6 @@ class VerseLayer(verse_entity.VerseEntity):
 
         return layer
 
-
     @classmethod
     def _receive_layer_subscribe(cls, session, node_id, layer_id, version, crc32):
         """
@@ -330,7 +314,6 @@ class VerseLayer(verse_entity.VerseEntity):
         """
         # TODO
         pass
-
 
     @classmethod
     def _receive_layer_unsubscribe(cls, session, node_id, layer_id, version, crc32):

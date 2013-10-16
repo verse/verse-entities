@@ -51,7 +51,7 @@ class VerseUser(verse_node.VerseNode):
     A VerseUser is class representing user
     """
 
-    custom_type = 6 # TODO: replace with constant
+    custom_type = vrs.USER_NODE_CT
 
     def __init__(self, *args, **kwargs):
         """

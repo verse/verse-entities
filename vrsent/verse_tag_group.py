@@ -16,13 +16,14 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+
 """
 This module includes class VerseTagGroup representing verse tag group
 at verse client. This class could not be used for sharing any data.
 This class is used only for encapsulating verse tags.
 """
 
-import verse as vrs
+
 from . import verse_entity
 
 
@@ -57,7 +58,6 @@ class VerseTagGroup(verse_entity.VerseEntity):
             if tg is not None:
                 raise TypeError('VerseTagGroup with: ' + str(self.custom_type) + ' already exists in VerseNode: ' + str(node.id))
 
-
     def __str__(self):
         """
         String representation of VerseTagGroup
@@ -67,31 +67,27 @@ class VerseTagGroup(verse_entity.VerseEntity):
             ', custom_type: ' + \
             str(self.custom_type)
 
-
     def _send_create(self):
         """
         Send tag group create command to Verse server
         """
         if self.node.id is not None:
-            self.node.session.send_taggroup_create(self.node._prio, self.node.id, self.custom_type)
-
+            self.node.session.send_taggroup_create(self.node.prio, self.node.id, self.custom_type)
 
     def _send_destroy(self):
         """
         Send tag group destroy command to Verse server
         """
         if self.id is not None:
-            self.node.session.send_taggroup_destroy(self.node._prio, self.node.id, self.id)
-
+            self.node.session.send_taggroup_destroy(self.node.prio, self.node.id, self.id)
 
     def _send_subscribe(self):
         """
         Send tag group subscribe command
         """
         if self.id is not None and self.subscribed == False:
-            self.node.session.send_taggroup_subscribe(self.node._prio, self.node.id, self.id, self.version, self.crc32)
+            self.node.session.send_taggroup_subscribe(self.node.prio, self.node.id, self.id, self.version, self.crc32)
             self.subscribed = True
-
 
     def _clean(self):
         """
@@ -105,14 +101,12 @@ class VerseTagGroup(verse_entity.VerseEntity):
         self.tags.clear()
         self.tag_queue.clear()
 
-
     def destroy(self):
         """
         Method for destroying tag group
         """
         # Change state and send destroy command to Verse server
         self._destroy()
-
 
     @classmethod
     def _receive_tg_create(cls, session, node_id, tg_id, custom_type):
@@ -141,10 +135,9 @@ class VerseTagGroup(verse_entity.VerseEntity):
 
         # Send tag_create commands for pending tags
         for custom_type, tag in tg.tag_queue.items():
-            session.send_tag_create(node._prio, node.id, tg.id, tag.data_type, tag.count, custom_type)
+            session.send_tag_create(node.prio, node.id, tg.id, tag.data_type, tag.count, custom_type)
         # Return reference at tag group object
         return tg
-
 
     @classmethod
     def _receive_tg_destroy(cls, session, node_id, tg_id):
@@ -167,7 +160,6 @@ class VerseTagGroup(verse_entity.VerseEntity):
         # Return reference at this object
         return tg
 
-
     @classmethod
     def _receive_tg_subscribe(cls, session, node_id, tg_id, version, crc32):
         """
@@ -176,7 +168,6 @@ class VerseTagGroup(verse_entity.VerseEntity):
         """
         # TODO
         pass
-
 
     @classmethod
     def _receive_tg_unsubscribe(cls, session, node_id, tg_id, version, crc32):
