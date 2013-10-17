@@ -56,7 +56,10 @@ class VerseTagGroup(verse_entity.VerseEntity):
             except KeyError:
                 self.node.tg_queue[self.custom_type] = self
             if tg is not None:
-                raise TypeError('VerseTagGroup with: ' + str(self.custom_type) + ' already exists in VerseNode: ' + str(node.id))
+                raise TypeError('VerseTagGroup with: ' +
+                                str(self.custom_type) +
+                                ' already exists in VerseNode: ' +
+                                str(node.id))
 
     def __str__(self):
         """
@@ -72,21 +75,40 @@ class VerseTagGroup(verse_entity.VerseEntity):
         Send tag group create command to Verse server
         """
         if self.node.id is not None:
-            self.node.session.send_taggroup_create(self.node.prio, self.node.id, self.custom_type)
+            self.node.session.send_taggroup_create(self.node.prio,
+                                                   self.node.id,
+                                                   self.custom_type)
 
     def _send_destroy(self):
         """
         Send tag group destroy command to Verse server
         """
         if self.id is not None:
-            self.node.session.send_taggroup_destroy(self.node.prio, self.node.id, self.id)
+            self.node.session.send_taggroup_destroy(self.node.prio,
+                                                    self.node.id, self.id)
 
     def _send_subscribe(self):
         """
         Send tag group subscribe command
         """
-        if self.id is not None and self.subscribed == False:
-            self.node.session.send_taggroup_subscribe(self.node.prio, self.node.id, self.id, self.version, self.crc32)
+        if self.id is not None and self.subscribed is False:
+            self.node.session.send_taggroup_subscribe(self.node.prio,
+                                                      self.node.id,
+                                                      self.id,
+                                                      self.version,
+                                                      self.crc32)
+            self.subscribed = True
+
+    def _send_unsubscribe(self):
+        """
+        Send tag group unsubscribe command
+        """
+        if self.id is not None and self.subscribed is False:
+            self.node.session.send_taggroup_unsubscribe(self.node.prio,
+                                                        self.node.id,
+                                                        self.id,
+                                                        self.version,
+                                                        self.crc32)
             self.subscribed = True
 
     def _clean(self):
@@ -135,7 +157,8 @@ class VerseTagGroup(verse_entity.VerseEntity):
 
         # Send tag_create commands for pending tags
         for custom_type, tag in tg.tag_queue.items():
-            session.send_tag_create(node.prio, node.id, tg.id, tag.data_type, tag.count, custom_type)
+            session.send_tag_create(node.prio, node.id, tg.id, tag.data_type,
+                                    tag.count, custom_type)
         # Return reference at tag group object
         return tg
 
