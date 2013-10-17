@@ -26,13 +26,13 @@ wants to do unauthorized state switch.
 import verse as vrs
 
 
-ENTITY_RESERVED     = 0
-ENTITY_CREATING     = 1
-ENTITY_CREATED      = 2
-ENTITY_ASSUMED      = 3
+ENTITY_RESERVED = 0
+ENTITY_CREATING = 1
+ENTITY_CREATED = 2
+ENTITY_ASSUMED = 3
 ENTITY_WANT_DESTROY = 4
-ENTITY_DESTROYING   = 5
-ENTITY_DESTROYED    = 6
+ENTITY_DESTROYING = 5
+ENTITY_DESTROYED = 6
 
 
 # Set of suppoered Verse value types
@@ -51,7 +51,7 @@ SUPPORTED_DATA_TYPES = set((int, float, str))
 
 
 # Dictionary used for estimation of VerseTag VerseLayer data_type
-DATA_TYPE_DICT = { int: vrs.VALUE_TYPE_UINT64, \
+DATA_TYPE_DICT = {int: vrs.VALUE_TYPE_UINT64, \
     float: vrs.VALUE_TYPE_REAL64, \
     str: vrs.VALUE_TYPE_STRING8}
 

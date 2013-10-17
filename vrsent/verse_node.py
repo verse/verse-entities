@@ -216,13 +216,42 @@ class VerseNode(verse_entity.VerseEntity):
         if self.session.state == 'CONNECTED' and self.id is not None:
             self.session.send_node_destroy(self._prio, self.id)
 
+    def _autosubscribe(self):
+        """
+        This method can control auto subscribtion to VerseNode
+        """
+        return True
+
     def _send_subscribe(self):
         """
-        This method send subscribe command to Verse server
+        This method tries to automaticaly send node_subscribe command
+        to Verse server
         """
-        if self.session.state == 'CONNECTED' and self.id is not None:
+        if self.session.state == 'CONNECTED' and \
+                self.id is not None and \
+                self._autosubscribe() == True:
             self.session.send_node_subscribe(self._prio, self.id, self.version, self.crc32)
             self.subscribed = True
+
+    def _send_unsubscribe(self):
+        """
+        This method tries to automaticaly send node_unsubscribe command
+        to Verse server
+        """
+        if self.session.state == 'CONNECTED' and \
+                self.id is not None:
+            self.session.send_node_unsubscribe(self._prio, self.id, self.version, self.crc32)
+            self.subscribed = False
+
+    def subscribe(self):
+        """
+        This method tries to send node_subscribe command to Verse server
+        """
+        if self.session.state == 'CONNECTED' and \
+                self.id is not None:
+            self.session.send_node_subscribe(self._prio, self.id, self.version, self.crc32)
+            self.subscribed = True
+        return self.subscribed
 
     @property
     def parent(self):
