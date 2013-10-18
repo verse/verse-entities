@@ -87,9 +87,9 @@ class VerseTagGroup(verse_entity.VerseEntity):
             self.node.session.send_taggroup_destroy(self.node.prio,
                                                     self.node.id, self.id)
 
-    def _send_subscribe(self):
+    def subscribe(self):
         """
-        Send tag group subscribe command
+        This method tries to send tag group subscribe command
         """
         if self.id is not None and self.subscribed is False:
             self.node.session.send_taggroup_subscribe(self.node.prio,
@@ -99,9 +99,9 @@ class VerseTagGroup(verse_entity.VerseEntity):
                                                       self.crc32)
             self.subscribed = True
 
-    def _send_unsubscribe(self):
+    def unsubscribe(self):
         """
-        Send tag group unsubscribe command
+        This method tries to send tag group unsubscribe command
         """
         if self.id is not None and self.subscribed is False:
             self.node.session.send_taggroup_unsubscribe(self.node.prio,

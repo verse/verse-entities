@@ -149,22 +149,32 @@ class VerseLayer(verse_entity.VerseEntity):
         Send layer destroy command to Verse server
         """
         if self.id is not None:
-            self.node.session.send_layer_destroy(self.node.prio, self.node.id, self.id)
+            self.node.session.send_layer_destroy(self.node.prio, \
+                                                 self.node.id, \
+                                                 self.id)
 
-    def _send_subscribe(self):
+    def subscribe(self):
         """
-        Send layer subscribe command to Verse server
+        Tries to send layer subscribe command to Verse server
         """
-        if self.id is not None:
-            self.node.session.send_layer_subscribe(self.node.prio, self.node.id, self.id, self.version, self.crc32)
+        if self.id is not None and self.subscribed is False:
+            self.node.session.send_layer_subscribe(self.node.prio, \
+                                                   self.node.id, \
+                                                   self.id, \
+                                                   self.version, \
+                                                   self.crc32)
             self.subscribed = True
 
-    def _send_unsubscribe(self):
+    def unsubscribe(self):
         """
-        Send layer unsubscribe to Verse server
+        Tries to send layer unsubscribe to Verse server
         """
-        if self.id is not None:
-            self.node.session.send_layer_unsubscribe(self.node.prio, self.node.id, self.id, self.version, self.crc32)
+        if self.id is not None and self.subscribed is True:
+            self.node.session.send_layer_unsubscribe(self.node.prio, \
+                                                     self.node.id, \
+                                                     self.id, \
+                                                     self.version, \
+                                                     self.crc32)
             self.subscribed = False
 
     def _clean(self):
