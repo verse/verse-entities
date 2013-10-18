@@ -267,8 +267,14 @@ class VerseSession(vrs.Session):
         # Call parent method to print debug information
         if self.debug_print is True:
             super(VerseSession, self)._receive_taggroup_create(node_id, taggroup_id, custom_type)
+        try:
+            node_custom_type = self.nodes[node_id].custom_type
+        except KeyError:
+            cls = verse_tag_group.VerseTagGroup
+        else:
+            cls = verse_tag_group.custom_type_subclass(node_custom_type, custom_type)
         # Call calback method of model
-        return verse_tag_group.VerseTagGroup._receive_tg_create(self, node_id, taggroup_id, custom_type)
+        return cls._receive_tg_create(self, node_id, taggroup_id, custom_type)
 
     def _receive_taggroup_destroy(self, node_id, taggroup_id):
         """
@@ -278,8 +284,15 @@ class VerseSession(vrs.Session):
         # Call parent method to print debug information
         if self.debug_print is True:
             super(VerseSession, self)._receive_taggroup_destroy(node_id, taggroup_id)
+        try:
+            node_custom_type = self.nodes[node_id].custom_type
+            custom_type = self.nodes[node_id].tag_groups[taggroup_id].custom_type
+        except KeyError:
+            cls = verse_tag_group.VerseTagGroup
+        else:
+            cls = verse_tag_group.custom_type_subclass(node_custom_type, custom_type)
         # Call calback method of model
-        return verse_tag_group.VerseTagGroup._receive_tg_destroy(self, node_id, taggroup_id)
+        return cls._receive_tg_destroy(self, node_id, taggroup_id)
 
     # Tags
     def _receive_tag_create(self, node_id, taggroup_id, tag_id, data_type, count, custom_type):
