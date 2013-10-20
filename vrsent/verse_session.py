@@ -254,7 +254,7 @@ class VerseSession(vrs.Session):
         # Call parent method to print debug information
         if self.debug_print is True:
             super(VerseSession, self)._receive_node_owner(node_id, user_id)
-        # Call callback method of coresponding class and return node
+        # Call callback method of corresponding class and return node
         cls = verse_node.custom_type_subclass(self.nodes[node_id].custom_type)
         return cls._receive_node_owner(self, node_id, user_id)
 
@@ -273,7 +273,7 @@ class VerseSession(vrs.Session):
             cls = verse_tag_group.VerseTagGroup
         else:
             cls = verse_tag_group.custom_type_subclass(node_custom_type, custom_type)
-        # Call calback method of model
+        # Call callback method of model
         return cls._receive_tg_create(self, node_id, taggroup_id, custom_type)
 
     def _receive_taggroup_destroy(self, node_id, taggroup_id):

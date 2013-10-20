@@ -293,12 +293,20 @@ class TestSession(vrsent.VerseSession):
             test_destroy_tg = self.test_node.test_destroy_tg
         except AttributeError:
             test_destroy_tg = None
+        try:
+            test_subclass_tg = self.test_subclass_node.test_tg
+        except AttributeError:
+            test_subclass_tg = None
         # Start unit testing of created tag group
+        suite = None
         if tg == test_new_tg:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_tg.TestCreatedTagGroupCase)
-            unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
         elif tg == test_destroy_tg:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_tg.TestDestroyingTagGroupCase)
+        elif tg == test_subclass_tg:
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_subclasses.TestSubclassTagGroupCase)
+        # Run test case
+        if suite is not None:
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
 
@@ -439,6 +447,9 @@ def main(hostname, service, debug, username, password):
     Function with main never ending verse loop
     """
     vrsent.session = TestSession(hostname, service, vrs.DGRAM_SEC_NONE)
+    if debug is not False:
+        if type(debug) == str and debug == 'True':
+            debug = True
     vrsent.session.debug_print = debug
     vrsent.session.username = username
     vrsent.session.password = password
