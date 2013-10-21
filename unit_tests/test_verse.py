@@ -399,11 +399,14 @@ class TestSession(vrsent.VerseSession):
             data_type, \
             count, \
             custom_type)
+        suite = None
         if layer == self.test_node.test_layer:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_layer.TestCreatedLayerCase)
-            unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
         elif layer == self.test_node.test_destroy_layer:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_layer.TestDestroyingLayerCase)
+        elif layer == self.test_subclass_node.test_layer:
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_subclasses.TestSubclassLayerCase)
+        if suite is not None:            
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 
 

@@ -362,8 +362,14 @@ class VerseSession(vrs.Session):
                 data_type, \
                 count, \
                 custom_type)
+        try:
+            node_custom_type = self.nodes[node_id].custom_type
+        except KeyError:
+            cls = verse_layer.VerseLayer
+        else:
+            cls = verse_layer.custom_type_subclass(node_custom_type, custom_type)
         # Call callback method of model
-        return verse_layer.VerseLayer._receive_layer_create(self, \
+        return cls._receive_layer_create(self, \
             node_id, \
             parent_layer_id, \
             layer_id, \
@@ -378,8 +384,15 @@ class VerseSession(vrs.Session):
         # Call method of parent class
         if self.debug_print is True:
             super(VerseSession, self)._receive_layer_destroy(node_id, layer_id)
+        try:
+            node_custom_type = self.nodes[node_id].custom_type
+            custom_type = self.nodes[node_id].layers[layer_id]
+        except KeyError:
+            cls = verse_layer.VerseLayer
+        else:
+            cls = verse_layer.custom_type_subclass(node_custom_type, custom_type)
         # Call callback method of model
-        return verse_layer.VerseLayer._receive_layer_destroy(self, node_id, layer_id)
+        return cls._receive_layer_destroy(self, node_id, layer_id)
 
     def _receive_layer_set_value(self, node_id, layer_id, item_id, value):
         """
@@ -388,8 +401,15 @@ class VerseSession(vrs.Session):
         # Call method of parent class
         if self.debug_print is True:
             super(VerseSession, self)._receive_layer_set_value(node_id, layer_id, item_id, value)
+        try:
+            node_custom_type = self.nodes[node_id].custom_type
+            custom_type = self.nodes[node_id].layers[layer_id]
+        except KeyError:
+            cls = verse_layer.VerseLayer
+        else:
+            cls = verse_layer.custom_type_subclass(node_custom_type, custom_type)
         # Call callback method of model
-        return verse_layer.VerseLayer._receive_layer_set_value(self, node_id, layer_id, item_id, value)
+        return cls._receive_layer_set_value(self, node_id, layer_id, item_id, value)
 
     def _receive_layer_unset_value(self, node_id, layer_id, item_id):
         """
@@ -398,5 +418,12 @@ class VerseSession(vrs.Session):
         # Call method of parent class
         if self.debug_print is True:
             super(VerseSession, self)._receive_layer_unset_value(node_id, layer_id, item_id)
+        try:
+            node_custom_type = self.nodes[node_id].custom_type
+            custom_type = self.nodes[node_id].layers[layer_id]
+        except KeyError:
+            cls = verse_layer.VerseLayer
+        else:
+            cls = verse_layer.custom_type_subclass(node_custom_type, custom_type)
         # Call callback method of model
-        return verse_layer.VerseLayer._receive_layer_unset_value(self, node_id, layer_id, item_id)
+        return cls._receive_layer_unset_value(self, node_id, layer_id, item_id)
