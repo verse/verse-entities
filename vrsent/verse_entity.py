@@ -73,12 +73,11 @@ def name_to_custom_type(cls_name):
     This method should be used for generating 'unique' custom_type
     from name of custom subclasses
     """
-    sum = 1
+    str_hash = 1
     for ch in cls_name:
         num = ord(ch) 
-        sum += (sum % 100)*num
-        sum += num
-    return sum % 65535
+        str_hash += ((str_hash % 100) * num) + num
+    return str_hash % 65535
 
 
 class VerseStateError(Exception):
@@ -118,13 +117,12 @@ class VerseEntity(object):
         # class name as modulo 65535 of original cutom_type hash
         custom_type = kwargs.get('custom_type', 0)
         if custom_type is None:
-            # TODO: replace it with something more reliable
-            self.custom_type = hash(self.__class__.__name__) % 65535
+            self.custom_type = name_to_custom_type(self.__class__.__name__)
         else:
             if type(custom_type) == int:
                 self.custom_type = custom_type
             else:
-                self.custom_type = hash(custom_type) % 65535
+                self.custom_type = name_to_custom_type(custom_type)
 
     def _send_create(self):
         """
