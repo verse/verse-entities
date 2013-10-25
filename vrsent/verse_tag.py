@@ -37,17 +37,23 @@ def find_tag_subclass(cls, node_custom_type, tg_custom_type, custom_type):
         sub_cls_custom_type = getattr(sub_cls_it, 'custom_type', None)
         # Raise error, when developer created subclass without custom_type
         if sub_cls_custom_type == None:
-            raise AttributeError('Subclass of VerseTag: ' + sub_cls_it + ' does not have attribute custom_type')
+            raise AttributeError('Subclass of VerseTag: ' + 
+                                 sub_cls_it + 
+                                 ' does not have attribute custom_type')
         # Try to get attribute tg_custom_type from subclass
         sub_cls_tg_custom_type = getattr(sub_cls_it, 'tg_custom_type', None)
         # Raise error, when developer created subclass without tg_custom_type
         if sub_cls_tg_custom_type == None:
-            raise AttributeError('Subclass of VerseTag: ' + sub_cls_it + ' does not have attribute tg_custom_type')
+            raise AttributeError('Subclass of VerseTag: ' +
+                                 sub_cls_it +
+                                 ' does not have attribute tg_custom_type')
         # Try to get attribute node_custom_type from subclass
         sub_cls_node_custom_type = getattr(sub_cls_it, 'node_custom_type', None)
         # Raise error, when developer created subclass without node_custom_type
-        if sub_cls_tg_custom_type == None:
-            raise AttributeError('Subclass of VerseTag: ' + sub_cls_it + ' does not have attribute node_custom_type')
+        if sub_cls_node_custom_type == None:
+            raise AttributeError('Subclass of VerseTag: ' +
+                                 sub_cls_it +
+                                 ' does not have attribute node_custom_type')
         if sub_cls_custom_type == custom_type and \
                 sub_cls_tg_custom_type == tg_custom_type and \
                 sub_cls_node_custom_type == node_custom_type:
@@ -67,7 +73,7 @@ def custom_type_subclass(node_custom_type, tg_custom_type, custom_type):
     try:
         sub_cls = VerseTag._subclasses[(node_custom_type, tg_custom_type, custom_type)]
     except KeyError:
-        sub_cls = find_tag_subclass(sub_cls, node_custom_type, tg_custom_type, custom_type)
+        sub_cls = find_tag_subclass(VerseTag, node_custom_type, tg_custom_type, custom_type)
     else:
         sub_cls = verse_entity.last_subclass(sub_cls)
     return sub_cls

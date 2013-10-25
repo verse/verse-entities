@@ -28,7 +28,7 @@ from . import verse_entity
 
 def find_node_subclass(cls, custom_type):
     """
-    This method try to find subclass of class with
+    This method tries to find subclass of class with
     specified custom_type in __subclasses__
     """
     sub_cls = cls
@@ -50,13 +50,13 @@ def custom_type_subclass(custom_type):
     This method tries to return VerseNode subclass with specified custom type.
     Otherwise it returns VerseNode class.
     """
-    # Default class is VerseNode and it is returnde, when there is not any
+    # Default class is VerseNode and it is returned, when there is not any
     # subclass with this custom_type
     sub_cls = VerseNode
     try:
         sub_cls = VerseNode._subclasses[custom_type]
     except KeyError:
-        sub_cls = find_node_subclass(sub_cls, custom_type)
+        sub_cls = find_node_subclass(VerseNode, custom_type)
     else:
         # Try to find last subclass with specified custom_type
         sub_cls = verse_entity.last_subclass(sub_cls)
@@ -69,13 +69,13 @@ class VerseNode(verse_entity.VerseEntity):
     """
 
     # The dictionary of subclasses. When subclass of VerseNode is created,
-    # then this subclass has include ncattribte custom_type
+    # then this subclass has to have unique custom_type
     _subclasses = {}
 
     def __new__(cls, *args, **kwargs):
         """
         Pre-constructor of VerseNode. It can return class defined
-        by custom_type of received command or coresponding node
+        by custom_type of received command or corresponding node.
         """
         if len(cls.__subclasses__()) > 0:
             try:
@@ -216,33 +216,6 @@ class VerseNode(verse_entity.VerseEntity):
         if self.session.state == 'CONNECTED' and self.id is not None:
             self.session.send_node_destroy(self._prio, self.id)
 
-    def _autosubscribe(self):
-        """
-        This method can control auto subscribtion to VerseNode
-        """
-        return True
-
-    def _send_subscribe(self):
-        """
-        This method tries to automaticaly send node_subscribe command
-        to Verse server
-        """
-        if self.session.state == 'CONNECTED' and \
-                self.id is not None and \
-                self._autosubscribe() == True:
-            self.session.send_node_subscribe(self._prio, self.id, self.version, self.crc32)
-            self.subscribed = True
-
-    def _send_unsubscribe(self):
-        """
-        This method tries to automaticaly send node_unsubscribe command
-        to Verse server
-        """
-        if self.session.state == 'CONNECTED' and \
-                self.id is not None:
-            self.session.send_node_unsubscribe(self._prio, self.id, self.version, self.crc32)
-            self.subscribed = False
-
     def subscribe(self):
         """
         This method tries to send node_subscribe command to Verse server
@@ -252,6 +225,15 @@ class VerseNode(verse_entity.VerseEntity):
             self.session.send_node_subscribe(self._prio, self.id, self.version, self.crc32)
             self.subscribed = True
         return self.subscribed
+
+    def unsubscribe(self):
+        """
+        This method tries to send node_unsubscribe command to Verse server
+        """
+        if self.session.state == 'CONNECTED' and \
+                self.id is not None:
+            self.session.send_node_unsubscribe(self._prio, self.id, self.version, self.crc32)
+            self.subscribed = False
 
     @property
     def parent(self):

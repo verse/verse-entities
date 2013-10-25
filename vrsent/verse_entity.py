@@ -23,6 +23,7 @@ also includes class VerseStateError that is raised, when verse entity
 wants to do unauthorized state switch.
 """
 
+
 import verse as vrs
 
 
@@ -35,7 +36,7 @@ ENTITY_DESTROYING = 5
 ENTITY_DESTROYED = 6
 
 
-# Set of suppoered Verse value types
+# Set of supported Verse value types
 SUPPORTED_VALUE_TYPES = set((vrs.VALUE_TYPE_UINT8, \
     vrs.VALUE_TYPE_UINT16, \
     vrs.VALUE_TYPE_UINT32, \
@@ -58,8 +59,8 @@ DATA_TYPE_DICT = {int: vrs.VALUE_TYPE_UINT64, \
 
 def last_subclass(cls):
     """
-    This method is used to return last subclass of VerseNode
-    or VerseTag or VerseLayer subclass
+    This method is used to return last subclass of VerseNode,
+    VerseTag, VerseTagGroup or VerseLayer subclass
     """
     if len(cls.__subclasses__()) > 0:
         return last_subclass(cls.__subclasses__()[0])
@@ -137,13 +138,20 @@ class VerseEntity(object):
         """
         pass
 
-    def _send_subscribe(self):
+    def _auto_subscribe(self):
+        """
+        Default behavior is to automatically subscribe to everything.
+        This could be changed in subclass.
+        """
+        return True
+
+    def subscribe(self):
         """
         Dummy method
         """
         pass
 
-    def _send_unsubscribe(self):
+    def unsubscribe(self):
         """
         Dummy method
         """
@@ -160,7 +168,8 @@ class VerseEntity(object):
             else:
                 # Skip _send_create(), when ID is known and jump to assumed state
                 self.state = ENTITY_ASSUMED
-                self._send_subscribe()
+                if self._auto_subscribe() is True:
+                    self.subscribe()
         else:
             raise VerseStateError(self.state, "create")
 
@@ -183,7 +192,8 @@ class VerseEntity(object):
         """
         if self.state == ENTITY_RESERVED or self.state == ENTITY_CREATING:
             self.state = ENTITY_CREATED
-            self._send_subscribe()
+            if self._auto_subscribe() is True:
+                self.subscribe()
         elif self.state == ENTITY_ASSUMED:
             self.state = ENTITY_CREATED
         elif self.state == ENTITY_WANT_DESTROY:

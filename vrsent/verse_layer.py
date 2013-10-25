@@ -77,11 +77,83 @@ class VerseLayerItems(dict):
         return (key, value)
 
 
+def find_layer_subclass(cls, node_custom_type, custom_type):
+    """
+    This method tries to find subclass with specific custom_types
+    """
+    sub_cls = cls
+    for sub_cls_it in cls.__subclasses__():
+        # Try to get attribute custom_type from subclass
+        sub_cls_custom_type = getattr(sub_cls_it, 'custom_type', None)
+        # Raise error, when developer created subclass without custom_type
+        if sub_cls_custom_type == None:
+            raise AttributeError('Subclass of VerseLayer: ' + 
+                                 sub_cls_it + 
+                                 ' does not have attribute custom_type')
+        # Try to get attribute node_custom_type from subclass
+        sub_cls_node_custom_type = getattr(sub_cls_it, 'node_custom_type', None)
+        # Raise error, when developer created subclass without node_custom_type
+        if sub_cls_node_custom_type == None:
+            raise AttributeError('Subclass of VerseLayer: ' + 
+                                 sub_cls_it +
+                                 ' does not have attribute node_custom_type')
+        if sub_cls_custom_type == custom_type and \
+                sub_cls_node_custom_type == node_custom_type:
+            # When subclass with corresponding custom_types is found,
+            # then store it in dictionary of subclasses
+            sub_cls = cls._subclasses[(node_custom_type, custom_type)] = verse_entity.last_subclass(sub_cls_it)
+            break
+    return sub_cls
+
+
+def custom_type_subclass(node_custom_type, custom_type):
+    """
+    This method tries to return VerseTagGroup subclass with specified custom type.
+    Otherwise it returns VerseTag class.
+    """
+    sub_cls = VerseLayer
+    try:
+        sub_cls = VerseLayer._subclasses[(node_custom_type, custom_type)]
+    except KeyError:
+        sub_cls = find_layer_subclass(VerseLayer, node_custom_type, custom_type)
+    else:
+        sub_cls = verse_entity.last_subclass(sub_cls)
+    return sub_cls
+
+
 class VerseLayer(verse_entity.VerseEntity):
     """
     Class representing Verse layer. Verse layer is entity that could share
     dictionary like data structures.
     """
+    
+    _subclasses = {}
+
+    def __new__(cls, *args, **kwargs):
+        """
+        Pre-constructor of VerseLayer. It can return class defined
+        by custom_type of received command or corresponding tag group.
+        """
+        if len(cls.__subclasses__()) > 0:
+            try:
+                node = kwargs['node']
+                custom_type = kwargs['custom_type']
+            except KeyError:
+                # Return class of object, when VerseNode() was
+                # called without custom_type
+                return super(VerseLayer, cls).__new__(cls)
+            else:
+                sub_cls = cls
+                node_custom_type = node.custom_type
+                try:
+                    sub_cls = cls._subclasses[(node_custom_type, custom_type)]
+                except KeyError:
+                    # When instance of this class has never been created, then try
+                    # to find corresponding subclass.
+                    sub_cls = find_layer_subclass(cls, node_custom_type, custom_type)
+                return super(VerseLayer, sub_cls).__new__(sub_cls)
+        else:
+            return super(VerseLayer, cls).__new__(cls)
 
     def __init__(self, node, parent_layer=None, layer_id=None, data_type=None, count=1, custom_type=None):
         """
@@ -149,22 +221,32 @@ class VerseLayer(verse_entity.VerseEntity):
         Send layer destroy command to Verse server
         """
         if self.id is not None:
-            self.node.session.send_layer_destroy(self.node.prio, self.node.id, self.id)
+            self.node.session.send_layer_destroy(self.node.prio, \
+                                                 self.node.id, \
+                                                 self.id)
 
-    def _send_subscribe(self):
+    def subscribe(self):
         """
-        Send layer subscribe command to Verse server
+        Tries to send layer subscribe command to Verse server
         """
-        if self.id is not None:
-            self.node.session.send_layer_subscribe(self.node.prio, self.node.id, self.id, self.version, self.crc32)
+        if self.id is not None and self.subscribed is False:
+            self.node.session.send_layer_subscribe(self.node.prio, \
+                                                   self.node.id, \
+                                                   self.id, \
+                                                   self.version, \
+                                                   self.crc32)
             self.subscribed = True
 
-    def _send_unsubscribe(self):
+    def unsubscribe(self):
         """
-        Send layer unsubscribe to Verse server
+        Tries to send layer unsubscribe to Verse server
         """
-        if self.id is not None:
-            self.node.session.send_layer_unsubscribe(self.node.prio, self.node.id, self.id, self.version, self.crc32)
+        if self.id is not None and self.subscribed is True:
+            self.node.session.send_layer_unsubscribe(self.node.prio, \
+                                                     self.node.id, \
+                                                     self.id, \
+                                                     self.version, \
+                                                     self.crc32)
             self.subscribed = False
 
     def _clean(self):

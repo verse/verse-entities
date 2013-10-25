@@ -27,10 +27,82 @@ This class is used only for encapsulating verse tags.
 from . import verse_entity
 
 
+def find_tg_subclass(cls, node_custom_type, custom_type):
+    """
+    This method tries to find subclass with specific custom_types
+    """
+    sub_cls = cls
+    for sub_cls_it in cls.__subclasses__():
+        # Try to get attribute custom_type from subclass
+        sub_cls_custom_type = getattr(sub_cls_it, 'custom_type', None)
+        # Raise error, when developer created subclass without custom_type
+        if sub_cls_custom_type == None:
+            raise AttributeError('Subclass of VerseTagGroup: ' + 
+                                 sub_cls_it + 
+                                 ' does not have attribute custom_type')
+        # Try to get attribute node_custom_type from subclass
+        sub_cls_node_custom_type = getattr(sub_cls_it, 'node_custom_type', None)
+        # Raise error, when developer created subclass without node_custom_type
+        if sub_cls_node_custom_type == None:
+            raise AttributeError('Subclass of VerseTagGroup: ' + 
+                                 sub_cls_it +
+                                 ' does not have attribute node_custom_type')
+        if sub_cls_custom_type == custom_type and \
+                sub_cls_node_custom_type == node_custom_type:
+            # When subclass with corresponding custom_types is found,
+            # then store it in dictionary of subclasses
+            sub_cls = cls._subclasses[(node_custom_type, custom_type)] = verse_entity.last_subclass(sub_cls_it)
+            break
+    return sub_cls
+
+
+def custom_type_subclass(node_custom_type, custom_type):
+    """
+    This method tries to return VerseTagGroup subclass with specified custom type.
+    Otherwise it returns VerseTag class.
+    """
+    sub_cls = VerseTagGroup
+    try:
+        sub_cls = VerseTagGroup._subclasses[(node_custom_type, custom_type)]
+    except KeyError:
+        sub_cls = find_tg_subclass(VerseTagGroup, node_custom_type, custom_type)
+    else:
+        sub_cls = verse_entity.last_subclass(sub_cls)
+    return sub_cls
+
+
 class VerseTagGroup(verse_entity.VerseEntity):
     """
     Class representing Verse tag group
     """
+    
+    _subclasses = {}
+
+    def __new__(cls, *args, **kwargs):
+        """
+        Pre-constructor of VerseTagGroup. It can return class defined
+        by custom_type of received command or corresponding tag group.
+        """
+        if len(cls.__subclasses__()) > 0:
+            try:
+                node = kwargs['node']
+                custom_type = kwargs['custom_type']
+            except KeyError:
+                # Return class of object, when VerseNode() was
+                # called without custom_type
+                return super(VerseTagGroup, cls).__new__(cls)
+            else:
+                sub_cls = cls
+                node_custom_type = node.custom_type
+                try:
+                    sub_cls = cls._subclasses[(node_custom_type, custom_type)]
+                except KeyError:
+                    # When instance of this class has never been created, then try
+                    # to find corresponding subclass.
+                    sub_cls = find_tg_subclass(cls, node_custom_type, custom_type)
+                return super(VerseTagGroup, sub_cls).__new__(sub_cls)
+        else:
+            return super(VerseTagGroup, cls).__new__(cls)
 
     def __init__(self, node, tg_id=None, custom_type=None):
         """
@@ -56,7 +128,10 @@ class VerseTagGroup(verse_entity.VerseEntity):
             except KeyError:
                 self.node.tg_queue[self.custom_type] = self
             if tg is not None:
-                raise TypeError('VerseTagGroup with: ' + str(self.custom_type) + ' already exists in VerseNode: ' + str(node.id))
+                raise TypeError('VerseTagGroup with: ' +
+                                str(self.custom_type) +
+                                ' already exists in VerseNode: ' +
+                                str(node.id))
 
     def __str__(self):
         """
@@ -72,21 +147,40 @@ class VerseTagGroup(verse_entity.VerseEntity):
         Send tag group create command to Verse server
         """
         if self.node.id is not None:
-            self.node.session.send_taggroup_create(self.node.prio, self.node.id, self.custom_type)
+            self.node.session.send_taggroup_create(self.node.prio,
+                                                   self.node.id,
+                                                   self.custom_type)
 
     def _send_destroy(self):
         """
         Send tag group destroy command to Verse server
         """
         if self.id is not None:
-            self.node.session.send_taggroup_destroy(self.node.prio, self.node.id, self.id)
+            self.node.session.send_taggroup_destroy(self.node.prio,
+                                                    self.node.id, self.id)
 
-    def _send_subscribe(self):
+    def subscribe(self):
         """
-        Send tag group subscribe command
+        This method tries to send tag group subscribe command
         """
-        if self.id is not None and self.subscribed == False:
-            self.node.session.send_taggroup_subscribe(self.node.prio, self.node.id, self.id, self.version, self.crc32)
+        if self.id is not None and self.subscribed is False:
+            self.node.session.send_taggroup_subscribe(self.node.prio,
+                                                      self.node.id,
+                                                      self.id,
+                                                      self.version,
+                                                      self.crc32)
+            self.subscribed = True
+
+    def unsubscribe(self):
+        """
+        This method tries to send tag group unsubscribe command
+        """
+        if self.id is not None and self.subscribed is False:
+            self.node.session.send_taggroup_unsubscribe(self.node.prio,
+                                                        self.node.id,
+                                                        self.id,
+                                                        self.version,
+                                                        self.crc32)
             self.subscribed = True
 
     def _clean(self):
@@ -135,7 +229,8 @@ class VerseTagGroup(verse_entity.VerseEntity):
 
         # Send tag_create commands for pending tags
         for custom_type, tag in tg.tag_queue.items():
-            session.send_tag_create(node.prio, node.id, tg.id, tag.data_type, tag.count, custom_type)
+            session.send_tag_create(node.prio, node.id, tg.id, tag.data_type,
+                                    tag.count, custom_type)
         # Return reference at tag group object
         return tg
 

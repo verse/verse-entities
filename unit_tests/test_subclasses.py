@@ -32,6 +32,7 @@ import verse as vrs
 
 TEST_NODE_CUSTOM_TYPE = 19
 TEST_TG_CUSTOM_TYPE = 34
+TEST_LAYER_CUSTOM_TYPE = 132
 TEST_TAG_CUSTOM_TYPE = 66
 
 
@@ -47,7 +48,7 @@ class TestTag(vrsent.VerseTag):
 
     def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_UINT8, count=1, custom_type=None, value=(0,)):
         """
-        Construcor of class
+        Constructor of class
         """
         super(TestTag, self).__init__(tg=tg, tag_id=tag_id, data_type=data_type, count=count, custom_type=custom_type, value=value)
 
@@ -73,6 +74,102 @@ class SuperTestTag(TestTag):
         """
         cls.rec_nt_crt_callbacks[(node_id, tg_id, tag_id)] = cls.__name__
         return super(SuperTestTag, cls)._receive_tag_create(session, node_id, tg_id, tag_id, data_type, count, custom_type)
+
+
+class TestTagGroup(vrsent.VerseTagGroup):
+    """
+    Custom subclass of VerseTagGroup
+    """
+
+    custom_type = TEST_TG_CUSTOM_TYPE
+    node_custom_type = TEST_NODE_CUSTOM_TYPE
+
+    rec_tg_crt_callbacks = {}
+
+    def __init__(self, node, tg_id=None, custom_type=TEST_TG_CUSTOM_TYPE):
+        """
+        Constructor of custom TestTagGroup
+        """
+        super(TestTagGroup, self).__init__(node=node, tg_id=tg_id, custom_type=custom_type)
+        self.test_tag = TestTag(tg=self)
+
+    @classmethod
+    def _receive_tg_create(cls, session, node_id, tg_id, custom_type):
+        """
+        Custom callback method called, when this custom_type of VerseTagGroup is
+        created by verse server and appropriate command is received.
+        """
+        cls.rec_tg_crt_callbacks[(node_id, tg_id)] = cls.__name__
+        return super(TestTagGroup, cls)._receive_tg_create(session, node_id, tg_id, custom_type)
+
+
+class SuperTestTagGroup(TestTagGroup):
+    """
+    Subclass of VerseTagGroup
+    """
+
+    @classmethod
+    def _receive_tg_create(cls, session, node_id, tg_id, custom_type):
+        """
+        Custom callback method called, when this custom_type of VerseTagGroup is
+        created by verse server and appropriate command is received.
+        """
+        cls.rec_tg_crt_callbacks[(node_id, tg_id)] = cls.__name__
+        return super(SuperTestTagGroup, cls)._receive_tg_create(session, node_id, tg_id, custom_type)
+
+
+class TestLayer(vrsent.VerseLayer):
+    """
+    Custom subclass of VerseLayer
+    """
+
+    custom_type = TEST_LAYER_CUSTOM_TYPE
+    node_custom_type = TEST_NODE_CUSTOM_TYPE
+
+    rec_layer_crt_callbacks = {}
+
+    def __init__(self,
+                 node,
+                 parent_layer=None,
+                 layer_id=None,
+                 data_type=vrs.VALUE_TYPE_UINT8, 
+                 count=1,
+                 custom_type=TEST_LAYER_CUSTOM_TYPE):
+        """
+        Constructor of custom TestLayer
+        """
+        super(TestLayer, self).__init__(node=node,
+                                        parent_layer=parent_layer,
+                                        layer_id=layer_id,
+                                        data_type=data_type,
+                                        count=count,
+                                        custom_type=custom_type)
+        for item_id in range(10):
+            self.items[item_id] = (item_id,)
+
+    @classmethod
+    def _receive_layer_create(cls, session, node_id, parent_layer_id, layer_id, data_type, count, custom_type):
+        """
+        Custom callback method called, when this custom_type of VerseLaer is
+        created by verse server and appropriate command is received.
+        """
+        cls.rec_layer_crt_callbacks[(node_id, layer_id)] = cls.__name__
+        return super(TestLayer, cls)._receive_layer_create(session, node_id, parent_layer_id, layer_id, data_type, count, custom_type)
+
+
+class SuperTestLayer(TestLayer):
+    """
+    Subclass of VerseTagGroup
+    """
+
+    @classmethod
+    def _receive_layer_create(cls, session, node_id, parent_layer_id, layer_id, data_type, count, custom_type):
+        """
+        Custom callback method called, when this custom_type of VerseLaer is
+        created by verse server and appropriate command is received.
+        """
+        cls.rec_layer_crt_callbacks[(node_id, layer_id)] = cls.__name__
+        return super(TestLayer, cls)._receive_layer_create(session, node_id, parent_layer_id, layer_id, data_type, count, custom_type)
 
 
 class TestNode(vrsent.VerseNode):
@@ -104,8 +201,8 @@ class SuperTestNode(TestNode):
         Constructor of this subclass
         """
         super(SuperTestNode, self).__init__(*args, **kwargs)
-        self.test_tg = vrsent.VerseTagGroup(node=self, custom_type=TEST_TG_CUSTOM_TYPE)
-        self.test_tg.test_tag = TestTag(tg=self.test_tg)
+        self.test_tg = TestTagGroup(node=self)
+        self.test_layer = TestLayer(node=self)
 
     @classmethod
     def _receive_node_create(cls, session, node_id, parent_id, user_id, custom_type):
@@ -152,9 +249,85 @@ class TestSubclassNodeCase(unittest.TestCase):
         self.assertEqual(self.node.rec_nd_crt_callbacks[self.node.id], 'SuperTestNode')
 
 
+class TestSubclassLayerCase(unittest.TestCase):
+    """
+    Test case of custom VerseTagGroup subclass
+    """
+
+    node = None
+    layer = None
+    tested = False
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        This method is called before any test is performed
+        """
+        cls.node = vrsent.session.test_subclass_node
+        cls.layer   = vrsent.session.test_subclass_node.test_layer
+        cls.tested = True
+
+    def test_layer_custom_type(self):
+        """
+        Test of creating new layer
+        """
+        self.assertEqual(self.layer.custom_type, TEST_LAYER_CUSTOM_TYPE)
+
+    def test_layer_instance(self):
+        """
+        Test of subclassing of layer
+        """
+        self.assertTrue(isinstance(self.layer, TestLayer))
+
+    def test_layer_custom_create_callback(self):
+        """
+        Test if custom callback method was called
+        """
+        self.assertEqual(self.layer.rec_layer_crt_callbacks[(self.node.id, self.layer.id)], \
+            'SuperTestLayer')
+
+
+class TestSubclassTagGroupCase(unittest.TestCase):
+    """
+    Test case of custom VerseTagGroup subclass
+    """
+
+    node = None
+    tg = None
+    tested = False
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        This method is called before any test is performed
+        """
+        cls.node = vrsent.session.test_subclass_node
+        cls.tg   = vrsent.session.test_subclass_node.test_tg
+        cls.tested = True
+
+    def test_tg_custom_type(self):
+        """
+        Test of creating new tag group
+        """
+        self.assertEqual(self.tg.custom_type, TEST_TG_CUSTOM_TYPE)
+
+    def test_tg_instance(self):
+        """
+        Test of subclassing of tag group
+        """
+        self.assertTrue(isinstance(self.tg, TestTagGroup))
+
+    def test_tg_custom_create_callback(self):
+        """
+        Test if custom callback method was called
+        """
+        self.assertEqual(self.tg.rec_tg_crt_callbacks[(self.node.id, self.tg.id)], \
+            'SuperTestTagGroup')
+
+
 class TestSubclassTagCase(unittest.TestCase):
     """
-    Test case of new TestTag
+    Test case of custom VerseTag subclass
     """
 
     node = None
@@ -172,19 +345,19 @@ class TestSubclassTagCase(unittest.TestCase):
         cls.tag  = vrsent.session.test_subclass_node.test_tg.test_tag
         cls.tested = True
 
-    def test_node_custom_type(self):
+    def test_tag_custom_type(self):
         """
-        Test of creating new node
+        Test of creating new tag
         """      
         self.assertEqual(self.tag.custom_type, TEST_TAG_CUSTOM_TYPE)
 
-    def test_node_instance(self):
+    def test_tag_instance(self):
         """
-        Test of subclassing of node
+        Test of subclassing of tag
         """
         self.assertTrue(isinstance(self.tag, TestTag))
 
-    def test_node_custom_create_callback(self):
+    def test_tag_custom_create_callback(self):
         """
         Test if custom callback method was called
         """
