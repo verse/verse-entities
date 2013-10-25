@@ -67,6 +67,19 @@ def last_subclass(cls):
         return cls
 
 
+def name_to_custom_type(cls_name):
+    """
+    This method should be used for generating 'unique' custom_type
+    from name of custom subclasses
+    """
+    sum = 1
+    for ch in cls_name:
+        num = ord(ch) 
+        sum += (sum % 100)*num
+        sum += num
+    return sum % 65535
+
+
 class VerseStateError(Exception):
     """
     Exception for invalid state changes
