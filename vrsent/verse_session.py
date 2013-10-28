@@ -61,6 +61,9 @@ class VerseSession(vrs.Session):
     # The list of session instances
     __sessions = {}
 
+    # The dictionary of VerseNode subclasses (custom_type is used as key)
+    node_custom_types = {}
+
     def __init__(self, hostname="localhost", service="12345", \
             flags=vrs.DGRAM_SEC_DTLS, callback_thread=False,
             username=None, password=None):
