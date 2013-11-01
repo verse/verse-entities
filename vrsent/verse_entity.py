@@ -68,6 +68,20 @@ def last_subclass(cls):
         return cls
 
 
+def name_to_custom_type(cls_name):
+    """
+    This method should be used for generating 'unique' custom_type
+    from name of custom subclasses
+    """
+    str_hash = 1
+    max_val = (1 << 64) - 1
+    for ch in cls_name:
+        num = ord(ch) 
+        str_hash +=  num + (str_hash << 6) + (str_hash << 16 ) - str_hash
+        str_hash = str_hash & max_val
+    return str_hash % 65535
+
+
 class VerseStateError(Exception):
     """
     Exception for invalid state changes
@@ -101,17 +115,23 @@ class VerseEntity(object):
         self.crc32 = 0
         self.state = ENTITY_RESERVED
         self.subscribed = False
-        # When custom_type is not defined, then compute custom_type from
-        # class name as modulo 65535 of original cutom_type hash
+        # Try to get custom_type argument
         custom_type = kwargs.get('custom_type', 0)
+        # When custom_type is not specified, then try to generate one
+        # from name of class
         if custom_type is None:
-            # TODO: replace it with something more reliable
-            self.custom_type = hash(self.__class__.__name__) % 65535
+            self.custom_type = self._name_to_custom_type()
         else:
             if type(custom_type) == int:
                 self.custom_type = custom_type
             else:
-                self.custom_type = hash(custom_type) % 65535
+                raise TypeError('Specified custom_type is not int')
+
+    def _name_to_custom_type(self):
+        """
+        Dummy method
+        """
+        return 0
 
     def _send_create(self):
         """
