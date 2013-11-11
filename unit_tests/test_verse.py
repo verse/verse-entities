@@ -94,14 +94,14 @@ class TestSession(vrsent.VerseSession):
                 node_id=None, \
                 parent=self.scene_node, \
                 user_id=None,
-                custom_type=16)
+                custom_type=32)
 
             # Create new test node
             self.test_node = vrsent.VerseNode(session=self, \
                 node_id=None, \
                 parent=None, \
                 user_id=None, \
-                custom_type=17)
+                custom_type=33)
             # Test of locking node
             self.test_node.lock()
             # TODO: Test of setting node permission
@@ -111,14 +111,14 @@ class TestSession(vrsent.VerseSession):
                 node_id=None, \
                 parent=self.test_scene_node, \
                 user_id=None, \
-                custom_type=18)
+                custom_type=34)
 
             # Create new nodes for testing of destroying nodes
             self.test_destroy_node = vrsent.VerseNode(session=self, \
                 node_id=None, \
                 parent=None, \
                 user_id=None,
-                custom_type=19)
+                custom_type=35)
             # Destroy node immediately
             self.test_destroy_node.destroy()
 
