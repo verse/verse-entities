@@ -34,19 +34,10 @@ def find_tg_subclass(cls, node_custom_type, custom_type):
     sub_cls = cls
     for sub_cls_it in cls.__subclasses__():
         # Try to get attribute custom_type from subclass
-        sub_cls_custom_type = getattr(sub_cls_it, 'custom_type', None)
-        # Raise error, when developer created subclass without custom_type
-        if sub_cls_custom_type == None:
-            raise AttributeError('Subclass of VerseTagGroup: ' + 
-                                 sub_cls_it + 
-                                 ' does not have attribute custom_type')
+        sub_cls_custom_type = getattr(sub_cls_it, 'custom_type', -1)
         # Try to get attribute node_custom_type from subclass
-        sub_cls_node_custom_type = getattr(sub_cls_it, 'node_custom_type', None)
-        # Raise error, when developer created subclass without node_custom_type
-        if sub_cls_node_custom_type == None:
-            raise AttributeError('Subclass of VerseTagGroup: ' + 
-                                 sub_cls_it +
-                                 ' does not have attribute node_custom_type')
+        sub_cls_node_custom_type = getattr(sub_cls_it, 'node_custom_type', -1)
+        # All custom types have to match
         if sub_cls_custom_type == custom_type and \
                 sub_cls_node_custom_type == node_custom_type:
             # When subclass with corresponding custom_types is found,
@@ -78,6 +69,9 @@ class VerseTagGroup(verse_entity.VerseEntity):
     
     _subclasses = {}
 
+    custom_type = None
+    node_custom_type = None
+
     def __new__(cls, *args, **kwargs):
         """
         Pre-constructor of VerseTagGroup. It can return class defined
@@ -88,8 +82,7 @@ class VerseTagGroup(verse_entity.VerseEntity):
                 node = kwargs['node']
                 custom_type = kwargs['custom_type']
             except KeyError:
-                # Return class of object, when VerseNode() was
-                # called without custom_type
+                # TODO: try to find node and custom_type in args
                 return super(VerseTagGroup, cls).__new__(cls)
             else:
                 sub_cls = cls

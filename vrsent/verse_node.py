@@ -34,11 +34,9 @@ def find_node_subclass(cls, custom_type):
     sub_cls = cls
     for sub_cls_it in cls.__subclasses__():
         # Try to get attribute custom_type
-        sub_cls_custom_type = getattr(sub_cls_it, 'custom_type', None)
-        # Raise error, when developer created subclass without custom_type
-        if sub_cls_custom_type == None:
-            raise AttributeError('Subclass of VerseNode: ' + sub_cls_it + ' does not have attribute custom_type')
-        elif sub_cls_custom_type == custom_type:
+        sub_cls_custom_type = getattr(sub_cls_it, 'custom_type', -1)
+        # Custom types have to match
+        if sub_cls_custom_type == custom_type:
             # When subclass is found, then store it in dictionary of subclasses
             sub_cls = cls._subclasses[custom_type] = verse_entity.last_subclass(sub_cls_it)
             break
@@ -86,6 +84,7 @@ class VerseNode(verse_entity.VerseEntity):
             try:
                 custom_type = kwargs['custom_type']
             except KeyError:
+                # TODO: try to find custom_type in args
                 # Return class of object, when VerseNode() was
                 # called without custom_type
                 if cls.__name__ == 'VerseNode':
@@ -98,6 +97,8 @@ class VerseNode(verse_entity.VerseEntity):
                     kwargs['custom_type'] = custom_type
                     # Assign generated cutom_type to class member
                     cls.custom_type = custom_type
+                    # Add it to the dictionary of subclasses
+                    cls._subclasses[custom_type] = cls
             sub_cls = cls
             try:
                 sub_cls = cls._subclasses[custom_type]

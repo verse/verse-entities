@@ -172,6 +172,43 @@ class SuperTestLayer(TestLayer):
         return super(TestLayer, cls)._receive_layer_create(session, node_id, parent_layer_id, layer_id, data_type, count, custom_type)
 
 
+class CustomTag(vrsent.VerseTag):
+    """
+    Another subclass of VerseTag
+    """
+
+    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_UINT8, count=1, custom_type=None, value=(0,)):
+        """
+        Constructor of CustomTag
+        """
+        super(CustomTag, self).__init__(tg=tg, tag_id=tag_id, data_type=data_type, count=count, custom_type=custom_type, value=value)
+
+
+class CustomTagGroup(vrsent.VerseTagGroup):
+    """
+    Another subclass of VerseTagGroup
+    """
+
+    def __init__(self, *args, **kwargs):
+        """
+        Constructor
+        """
+        super(CustomTagGroup, self).__init__(*args, **kwargs)
+
+
+class CustomNode(vrsent.VerseNode):
+    """
+    Another subclass of VerseNode
+    """
+
+    def __init__(self, *args, **kwargs):
+        """
+        Constructor of CustomNode
+        """
+        super(CustomNode, self).__init__(*args, **kwargs)
+        self.custom_tg = CustomTagGroup(node=self)
+
+
 class TestNode(vrsent.VerseNode):
     """
     Subclass of VerseNode

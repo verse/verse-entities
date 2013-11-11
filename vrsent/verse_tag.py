@@ -32,35 +32,26 @@ def find_tag_subclass(cls, node_custom_type, tg_custom_type, custom_type):
     This method tries to find subclass with specific custom_types
     """
     sub_cls = cls
+    print('*** 1')
     for sub_cls_it in cls.__subclasses__():
+        print('*** 2', sub_cls_it)
         # Try to get attribute custom_type from subclass
-        sub_cls_custom_type = getattr(sub_cls_it, 'custom_type', None)
-        # Raise error, when developer created subclass without custom_type
-        if sub_cls_custom_type == None:
-            raise AttributeError('Subclass of VerseTag: ' + 
-                                 sub_cls_it + 
-                                 ' does not have attribute custom_type')
+        sub_cls_custom_type = getattr(sub_cls_it, 'custom_type', -1)
         # Try to get attribute tg_custom_type from subclass
-        sub_cls_tg_custom_type = getattr(sub_cls_it, 'tg_custom_type', None)
-        # Raise error, when developer created subclass without tg_custom_type
-        if sub_cls_tg_custom_type == None:
-            raise AttributeError('Subclass of VerseTag: ' +
-                                 sub_cls_it +
-                                 ' does not have attribute tg_custom_type')
+        sub_cls_tg_custom_type = getattr(sub_cls_it, 'tg_custom_type', -1)
         # Try to get attribute node_custom_type from subclass
-        sub_cls_node_custom_type = getattr(sub_cls_it, 'node_custom_type', None)
-        # Raise error, when developer created subclass without node_custom_type
-        if sub_cls_node_custom_type == None:
-            raise AttributeError('Subclass of VerseTag: ' +
-                                 sub_cls_it +
-                                 ' does not have attribute node_custom_type')
+        sub_cls_node_custom_type = getattr(sub_cls_it, 'node_custom_type', -1)
+        print('*** 3', sub_cls_custom_type, sub_cls_tg_custom_type, sub_cls_node_custom_type)
+        # All custom types have to match
         if sub_cls_custom_type == custom_type and \
                 sub_cls_tg_custom_type == tg_custom_type and \
                 sub_cls_node_custom_type == node_custom_type:
+            print('*** 4')
             # When subclass with corresponding custom_types is found,
             # then store it in dictionary of subclasses
             sub_cls = cls._subclasses[(node_custom_type, tg_custom_type, custom_type)] = verse_entity.last_subclass(sub_cls_it)
             break
+    print('*** 5 returning: ', sub_cls)
     return sub_cls
 
 
@@ -90,29 +81,41 @@ class VerseTag(verse_entity.VerseEntity):
     # custom_type, tg_custom_type and node_custom_type
     _subclasses = {}
 
+    custom_type = None
+    tg_custom_type = None
+    node_custom_type = None
+
     def __new__(cls, *args, **kwargs):
         """
         Pre-constructor of new VerseTag. It can return subclass VerseTag
         according custom_type of tag, tag group and node.
         """
+        print('### 1')
         if len(cls.__subclasses__()) > 0:
+            print('### 2')
             try:
                 tag_group = kwargs['tg']
                 custom_type = kwargs['custom_type']
             except KeyError:
+                print('### 3')
+                # TODO: try to find tag_group and custom_type in args
                 return super(VerseTag, cls).__new__(cls)
             else:
+                print('### 4')
                 sub_cls = VerseTag
                 node_custom_type = tag_group.node.custom_type
                 tg_custom_type = tag_group.custom_type
                 try:
                     sub_cls = cls._subclasses[(node_custom_type, tg_custom_type, custom_type)]
                 except KeyError:
+                    print('### 5')
                     # When instance of this class has never been created, then try
                     # to find corresponding subclass.
                     sub_cls = find_tag_subclass(cls, node_custom_type, tg_custom_type, custom_type)
+                print('### 6'. sub_cls)
                 return super(VerseTag, sub_cls).__new__(sub_cls)
         else:
+            print('### 7')
             return super(VerseTag, cls).__new__(cls)
 
     def __init__(self, tg, tag_id=None, data_type=None, count=None, custom_type=None, value=None):

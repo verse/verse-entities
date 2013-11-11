@@ -71,14 +71,15 @@ class TestSession(vrsent.VerseSession):
         Custom callback method that is called, when client received
         command node_create
         """
+        print('>>> 1')
         node = super(TestSession, self)._receive_node_create(node_id, parent_id, user_id, custom_type)
-
+        print('>>> 2')
         # Start all unit tests, when avatar node is created
         if node_id == self.avatar_id:
-
+            print('>>> 3')
             # Save reference at avatar node
             self.avatar_node = node
-
+            print('>>> 4')
             # Try to find node that is parent node of all scene nodes
             try:
                 self.scene_node = self.nodes[3]
@@ -88,14 +89,14 @@ class TestSession(vrsent.VerseSession):
                     parent=self.root_node, \
                     user_id=100,
                     custom_type=32)
-
+            print('>>> 5')
             # Create test scene node
             self.test_scene_node = vrsent.VerseNode(session=self, \
                 node_id=None, \
                 parent=self.scene_node, \
                 user_id=None,
                 custom_type=33)
-
+            print('>>> 6')
             # Create new test node
             self.test_node = vrsent.VerseNode(session=self, \
                 node_id=None, \
@@ -105,14 +106,14 @@ class TestSession(vrsent.VerseSession):
             # Test of locking node
             self.test_node.lock()
             # TODO: Test of setting node permission
-
+            print('>>> 7')
             # Create node for testing changing link between nodes
             self.test_link_node = vrsent.VerseNode(session=self, \
                 node_id=None, \
                 parent=self.test_scene_node, \
                 user_id=None, \
                 custom_type=35)
-
+            print('>>> 8')
             # Create new nodes for testing of destroying nodes
             self.test_destroy_node = vrsent.VerseNode(session=self, \
                 node_id=None, \
@@ -121,44 +122,49 @@ class TestSession(vrsent.VerseSession):
                 custom_type=36)
             # Destroy node immediately
             self.test_destroy_node.destroy()
-
+            print('>>> 9')
             # Create node subclass
             self.test_subclass_node = vrsent.VerseNode(session=self, \
                 custom_type=test_subclasses.TEST_NODE_CUSTOM_TYPE)
-
+            print('>>> 10')
+            # Create custom subclass of VerseNode
+            #self.custom_node = test_subclasses.CustomNode()
+            print('>>> 11')
             # Create new test tag group
             self.test_node.test_tg = vrsent.VerseTagGroup(node=self.test_node, \
                 tg_id=None, \
                 custom_type=132)
-
+            print('>>> 12')
             # Create new test tag group for testing of tag group destroying 
             self.test_node.test_destroy_tg = vrsent.VerseTagGroup(node=self.test_node, \
                 tg_id=None, \
                 custom_type=133)
             self.test_node.test_destroy_tg.destroy()
-
+            print('>>> 13')
             # Create new test tag and set it's value
             self.test_node.test_tg.test_tag = vrsent.VerseTag(tg=self.test_node.test_tg, \
                 tag_id=None, \
                 data_type=vrs.VALUE_TYPE_UINT8, \
                 custom_type=64,
                 value=(123,))
-
+            print('>>> 14')
             # Create new tag for testing of tag destroying
             self.test_node.test_tg.test_destroy_tag = vrsent.VerseTag(tg=self.test_node.test_tg, \
                 tag_id=None, \
                 data_type=vrs.VALUE_TYPE_UINT8, \
                 custom_type=65,
                 value=(124,))
+            print('>>> 15')
             # Destroy tag immediately
             self.test_node.test_tg.test_destroy_tag.destroy()
-
+            print('>>> creating layer')
             # Create test layer
             self.test_node.test_layer = vrsent.VerseLayer(node=self.test_node, \
                 parent_layer=None, \
                 data_type=vrs.VALUE_TYPE_UINT8, \
                 count=1,
                 custom_type=128)
+            print('>>>', self.test_node.test_layer)
             # Fill layer with test values
             for item_id in range(10):
                 self.test_node.test_layer.items[item_id] = (item_id,)
