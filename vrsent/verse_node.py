@@ -37,7 +37,9 @@ def find_node_subclass(cls, custom_type):
         sub_cls_custom_type = getattr(sub_cls_it, 'custom_type', None)
         # Raise error, when developer created subclass without custom_type
         if sub_cls_custom_type == None:
-            raise AttributeError('Subclass of VerseNode: ' + sub_cls_it + ' does not have attribute custom_type')
+            raise AttributeError('Subclass of VerseNode: ' + \
+                str(sub_cls_it) + \
+                ' does not have attribute custom_type')
         elif sub_cls_custom_type == custom_type:
             # When subclass is found, then store it in dictionary of subclasses
             sub_cls = cls._subclasses[custom_type] = verse_entity.last_subclass(sub_cls_it)

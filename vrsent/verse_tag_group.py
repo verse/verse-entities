@@ -38,14 +38,14 @@ def find_tg_subclass(cls, node_custom_type, custom_type):
         # Raise error, when developer created subclass without custom_type
         if sub_cls_custom_type == None:
             raise AttributeError('Subclass of VerseTagGroup: ' + 
-                                 sub_cls_it + 
+                                 str(sub_cls_it) + 
                                  ' does not have attribute custom_type')
         # Try to get attribute node_custom_type from subclass
         sub_cls_node_custom_type = getattr(sub_cls_it, 'node_custom_type', None)
         # Raise error, when developer created subclass without node_custom_type
         if sub_cls_node_custom_type == None:
             raise AttributeError('Subclass of VerseTagGroup: ' + 
-                                 sub_cls_it +
+                                 str(sub_cls_it) +
                                  ' does not have attribute node_custom_type')
         if sub_cls_custom_type == custom_type and \
                 sub_cls_node_custom_type == node_custom_type:
