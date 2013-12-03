@@ -17,7 +17,8 @@
 # ##### END GPL LICENSE BLOCK #####
 
 """
-Module for testing class VerseNode from module versentities
+Module for testing subclassing of VerseNode, VerseTagGroup, VerseTag and
+VerseLayer classes.
 """
 
 
