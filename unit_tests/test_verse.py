@@ -28,7 +28,7 @@ else:
 import vrsent
 import verse as vrs
 import time
-import test_node, test_tg, test_tag, test_layer, test_user, test_avatar, test_subclasses
+import test_node, test_tg, test_tag, test_layer, test_user, test_avatar, test_subclasses, test_subscribe
 
 
 class TestSession(vrsent.VerseSession):
@@ -59,6 +59,7 @@ class TestSession(vrsent.VerseSession):
         self.test_scene_node = None
         self.test_destroy_node = None
         self.test_subclass_node = None
+        self.test_subscribe_node = None
         # Scene node
         self.scene_node = None
         self.state = 'CONNECTED'
@@ -187,6 +188,9 @@ class TestSession(vrsent.VerseSession):
             # Destroy layer immediately
             self.test_node.test_destroy_layer.destroy()
 
+            # Create node that is not automaticaly subscribed
+            self.test_subscribe_node = test_subscribe.SubscribeNode(session=self)
+
             # Test new Node
             suite = unittest.TestLoader().loadTestsFromTestCase(test_node.TestNewNodeCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
@@ -216,6 +220,11 @@ class TestSession(vrsent.VerseSession):
         # Start unit testing of subclass of node
         if node == self.test_subclass_node:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_subclasses.TestSubclassNodeCase)
+            unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
+
+        # Start unit testing of not automaticaly subscribed node
+        if node == self.test_subscribe_node:
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_subscribe.TestSubscribeNodeCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)            
 
 

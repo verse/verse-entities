@@ -40,9 +40,13 @@ class SubscribeNode(vrsent.VerseNode):
 
     custom_type = TEST_NODE_CUSTOM_TYPE
 
-    rec_nd_crt_callbacks = {}
+    def __init__(self, session, node_id=None, parent=None, user_id=None, custom_type=TEST_NODE_CUSTOM_TYPE):
+        """
+        Constructor of SubscribeNode
+        """
+        super(SubscribeNode, self).__init__(session=session, node_id=node_id, parent=parent, user_id=user_id, custom_type=custom_type)
 
-    def auto_subscribe(self):
+    def _auto_subscribe(self):
     	"""
     	Automatic subscribing is disables. Client has to call node.subscribe() to
     	subscribe to node instanced from this class.
@@ -55,8 +59,7 @@ class SubscribeNode(vrsent.VerseNode):
         Custom callback method called, when this custom_type of VerseNode is
         created by verse server and appropriate command is received.
         """
-        cls.rec_nd_crt_callbacks[node_id] = cls.__name__
-        return super(TestNode, cls)._receive_node_create(session, node_id, parent_id, user_id, custom_type)
+        return super(SubscribeNode, cls)._receive_node_create(session, node_id, parent_id, user_id, custom_type)
 
 
 class TestSubscribeNodeCase(unittest.TestCase):
@@ -79,4 +82,4 @@ class TestSubscribeNodeCase(unittest.TestCase):
         """
         Test that created node is unsubscribed
         """      
-        self.assertEqual(self.node.subscribbed, False)
+        self.assertEqual(self.node.subscribed, False)
