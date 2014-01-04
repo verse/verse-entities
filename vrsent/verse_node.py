@@ -260,7 +260,8 @@ class VerseNode(verse_entity.VerseEntity):
         """
         if self.session.state == 'CONNECTED' and \
                 self.id is not None:
-            self.session.send_node_unsubscribe(self._prio, self.id, self.version, self.crc32)
+            # TODO: Add request for versioning, when verse will support it
+            self.session.send_node_unsubscribe(self._prio, self.id, 0)
             self.subscribed = False
 
     @property
