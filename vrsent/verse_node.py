@@ -253,7 +253,9 @@ class VerseNode(verse_entity.VerseEntity):
         if self.session.state == 'CONNECTED' and \
                 self.id is not None:
             self.session.send_node_unsubscribe(self._prio, self.id, self.version, self.crc32)
-            self.subscribed = False
+        # This value will be false in all situations
+        self.subscribed = False
+        return self.subscribed
 
     @property
     def parent(self):
