@@ -17,7 +17,8 @@
 # ##### END GPL LICENSE BLOCK #####
 
 """
-Module for testing class VerseNode from module versentities
+Module for testing subclassing of VerseNode, VerseTagGroup, VerseTag and
+VerseLayer classes.
 """
 
 
@@ -30,7 +31,7 @@ import vrsent
 import verse as vrs
 
 
-TEST_NODE_CUSTOM_TYPE = 19
+TEST_NODE_CUSTOM_TYPE = 219
 TEST_TG_CUSTOM_TYPE = 34
 TEST_LAYER_CUSTOM_TYPE = 132
 TEST_TAG_CUSTOM_TYPE = 66

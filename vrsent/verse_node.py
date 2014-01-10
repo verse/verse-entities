@@ -37,7 +37,9 @@ def find_node_subclass(cls, custom_type):
         sub_cls_custom_type = getattr(sub_cls_it, 'custom_type', None)
         # Raise error, when developer created subclass without custom_type
         if sub_cls_custom_type == None:
-            raise AttributeError('Subclass of VerseNode: ' + sub_cls_it + ' does not have attribute custom_type')
+            raise AttributeError('Subclass of VerseNode: ' + \
+                str(sub_cls_it) + \
+                ' does not have attribute custom_type')
         elif sub_cls_custom_type == custom_type:
             # When subclass is found, then store it in dictionary of subclasses
             sub_cls = cls._subclasses[custom_type] = verse_entity.last_subclass(sub_cls_it)
@@ -214,9 +216,15 @@ class VerseNode(verse_entity.VerseEntity):
         This method can be used for generating unique custom_type for
         subclasses of VerseNode
         """
-        str_hash = verse_entity.name_to_custom_type(self.__class__.__name__)
         if len(self.session.node_custom_types) >= 65535:
             raise BufferError('Maximal number of VerseNode subclasses reached (65535)')
+        # Compute hash from class name
+        str_hash = verse_entity.name_to_custom_type(self.__class__.__name__)
+        # Custom types in range 0-31 are reserved for special nodes created by
+        # Verse server
+        if str_hash < 32:
+            str_hash *= 1024
+        # Try to find first free unique custom_type
         while self.session.node_custom_types.has_key(str_hash):
             str_hash += 1
         else:
@@ -252,7 +260,8 @@ class VerseNode(verse_entity.VerseEntity):
         """
         if self.session.state == 'CONNECTED' and \
                 self.id is not None:
-            self.session.send_node_unsubscribe(self._prio, self.id, self.version, self.crc32)
+            # TODO: Add request for versioning, when verse will support it
+            self.session.send_node_unsubscribe(self._prio, self.id, 0)
         # This value will be false in all situations
         self.subscribed = False
         return self.subscribed

@@ -28,7 +28,7 @@ else:
 import vrsent
 import verse as vrs
 import time
-import test_node, test_tg, test_tag, test_layer, test_user, test_avatar, test_subclasses
+import test_node, test_tg, test_tag, test_layer, test_user, test_avatar, test_subclasses, test_subscribe
 
 
 class TestSession(vrsent.VerseSession):
@@ -59,6 +59,7 @@ class TestSession(vrsent.VerseSession):
         self.test_scene_node = None
         self.test_destroy_node = None
         self.test_subclass_node = None
+        self.test_subscribe_node = None
         # Scene node
         self.scene_node = None
         self.state = 'CONNECTED'
@@ -87,21 +88,21 @@ class TestSession(vrsent.VerseSession):
                     node_id=3, \
                     parent=self.root_node, \
                     user_id=100,
-                    custom_type=3)
+                    custom_type=32)
 
             # Create test scene node
             self.test_scene_node = vrsent.VerseNode(session=self, \
                 node_id=None, \
                 parent=self.scene_node, \
                 user_id=None,
-                custom_type=16)
+                custom_type=33)
 
             # Create new test node
             self.test_node = vrsent.VerseNode(session=self, \
                 node_id=None, \
                 parent=None, \
                 user_id=None, \
-                custom_type=17)
+                custom_type=34)
             # Test of locking node
             self.test_node.lock()
             # TODO: Test of setting node permission
@@ -111,14 +112,14 @@ class TestSession(vrsent.VerseSession):
                 node_id=None, \
                 parent=self.test_scene_node, \
                 user_id=None, \
-                custom_type=18)
+                custom_type=35)
 
             # Create new nodes for testing of destroying nodes
             self.test_destroy_node = vrsent.VerseNode(session=self, \
                 node_id=None, \
                 parent=None, \
                 user_id=None,
-                custom_type=19)
+                custom_type=36)
             # Destroy node immediately
             self.test_destroy_node.destroy()
 
@@ -129,12 +130,12 @@ class TestSession(vrsent.VerseSession):
             # Create new test tag group
             self.test_node.test_tg = vrsent.VerseTagGroup(node=self.test_node, \
                 tg_id=None, \
-                custom_type=32)
+                custom_type=132)
 
             # Create new test tag group for testing of tag group destroying 
             self.test_node.test_destroy_tg = vrsent.VerseTagGroup(node=self.test_node, \
                 tg_id=None, \
-                custom_type=33)
+                custom_type=133)
             self.test_node.test_destroy_tg.destroy()
 
             # Create new test tag and set it's value
@@ -187,6 +188,9 @@ class TestSession(vrsent.VerseSession):
             # Destroy layer immediately
             self.test_node.test_destroy_layer.destroy()
 
+            # Create node that is not automaticaly subscribed
+            self.test_subscribe_node = test_subscribe.SubscribeNode(session=self)
+
             # Test new Node
             suite = unittest.TestLoader().loadTestsFromTestCase(test_node.TestNewNodeCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
@@ -216,6 +220,11 @@ class TestSession(vrsent.VerseSession):
         # Start unit testing of subclass of node
         if node == self.test_subclass_node:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_subclasses.TestSubclassNodeCase)
+            unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
+
+        # Start unit testing of not automaticaly subscribed node
+        if node == self.test_subscribe_node:
+            suite = unittest.TestLoader().loadTestsFromTestCase(test_subscribe.TestSubscribeNodeCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)            
 
 
