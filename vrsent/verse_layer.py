@@ -49,8 +49,8 @@ class VerseLayerItems(dict):
             self.layer.node.session.send_layer_set_value(self.layer.node.prio, \
                 self.layer.node.id, \
                 self.layer.id, \
-                self.layer.data_type, \
                 key, \
+                self.layer.data_type, \
                 value)
         return super(VerseLayerItems, self).__setitem__(key, value)
 
