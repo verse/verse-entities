@@ -144,6 +144,16 @@ class VerseSession(vrs.Session):
         self._fps = val
         self.send_fps(val)
 
+    @property
+    def avatar(self):
+        """
+        Getter of avatar object representing current avatar of the session
+        """
+        try:
+            return self.avatars[self.avatar_id]
+        except KeyError:
+            return None
+
     # Connection
     def _receive_connect_accept(self, user_id, avatar_id):
         """
