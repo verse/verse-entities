@@ -50,6 +50,7 @@ class VerseLayerItems(dict):
                 self.layer.node.id, \
                 self.layer.id, \
                 key, \
+                self.layer.data_type, \
                 value)
         return super(VerseLayerItems, self).__setitem__(key, value)
 
