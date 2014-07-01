@@ -170,3 +170,9 @@ class TestCreatedLayerCase(unittest.TestCase):
         Test of subscription of created layer
         """      
         self.assertEqual(self.layer.subscribed, True)
+
+    def test_layer_in_node(self):
+        """
+        Test of existence layer in dictionary of node
+        """
+        self.assertTrue(self.layer.id in self.node.layers)
