@@ -133,7 +133,7 @@ class VerseLayer(verse_entity.VerseEntity):
     def __new__(cls, *args, **kwargs):
         """
         Pre-constructor of VerseLayer. It can return class defined
-        by custom_type of received command or corresponding tag group.
+        by custom_type of received command of corresponding layer.
         """
         if len(cls.__subclasses__()) > 0:
             try:
