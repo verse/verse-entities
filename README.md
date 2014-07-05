@@ -1,7 +1,8 @@
 Verse Entities
 ==============
 
-This project contains Python module that simplify implementation of Verse client. This module requires compiled verse module that could be found at github:
+This project contains Python module that simplify implementation of Verse clients.
+This module requires compiled verse module that could be found at github:
 
 https://github.com/verse/verse
 
@@ -17,7 +18,8 @@ Versentities module contains several class of basic Verse entities:
 
 These classes could be used for implementation custom subclasees.
 
-If you want to share some data on Verse server, then simple Verse client could look like this:
+If you want to share some data on Verse server, then simple Verse client
+could look like this:
 
 ```python
 
@@ -43,3 +45,9 @@ def main():
 if __name__ == '__main__':
 	main()
 ```
+
+### License ###
+
+The source code of this Python module is available under GNU GPL 2.0. For details
+look at LICENSE file.
+

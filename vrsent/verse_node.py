@@ -356,6 +356,40 @@ class VerseNode(verse_entity.VerseEntity):
         else:
             return owner
 
+    def can_read(self, user_id):
+        """
+        This method returns True, when user with user_id can can read
+        this node. Otherwise it returns False.
+        """
+        if user_id == self.user_id:
+            return True
+        else:
+            try:
+                perm = self.perms[user_id]
+            except KeyError:
+                try:
+                    perm = self.perms[vrs.OTHER_USERS_UID]
+                except KeyError:
+                    return False
+            return True if perm & vrs.PERM_NODE_READ else False
+
+    def can_write(self, user_id):
+        """
+        This method returns True, when user with user_id can can write
+        to this node. Otherwise it returns False.
+        """
+        if user_id == self.user_id:
+            return True
+        else:
+            try:
+                perm = self.perms[user_id]
+            except KeyError:
+                try:
+                    perm = self.perms[vrs.OTHER_USERS_UID]
+                except KeyError:
+                    return False
+            return True if perm & vrs.PERM_NODE_WRITE else False
+
     @owner.setter
     def owner(self, owner):
         """
