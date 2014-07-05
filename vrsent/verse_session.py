@@ -399,7 +399,7 @@ class VerseSession(vrs.Session):
             super(VerseSession, self)._receive_layer_destroy(node_id, layer_id)
         try:
             node_custom_type = self.nodes[node_id].custom_type
-            custom_type = self.nodes[node_id].layers[layer_id]
+            custom_type = self.nodes[node_id].layers[layer_id].custom_type
         except KeyError:
             cls = verse_layer.VerseLayer
         else:
@@ -416,7 +416,7 @@ class VerseSession(vrs.Session):
             super(VerseSession, self)._receive_layer_set_value(node_id, layer_id, item_id, value)
         try:
             node_custom_type = self.nodes[node_id].custom_type
-            custom_type = self.nodes[node_id].layers[layer_id]
+            custom_type = self.nodes[node_id].layers[layer_id].custom_type
         except KeyError:
             cls = verse_layer.VerseLayer
         else:
@@ -433,7 +433,7 @@ class VerseSession(vrs.Session):
             super(VerseSession, self)._receive_layer_unset_value(node_id, layer_id, item_id)
         try:
             node_custom_type = self.nodes[node_id].custom_type
-            custom_type = self.nodes[node_id].layers[layer_id]
+            custom_type = self.nodes[node_id].layers[layer_id].custom_type
         except KeyError:
             cls = verse_layer.VerseLayer
         else:
