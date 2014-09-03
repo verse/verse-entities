@@ -36,21 +36,21 @@ def find_tag_subclass(cls, node_custom_type, tg_custom_type, custom_type):
         # Try to get attribute custom_type from subclass
         sub_cls_custom_type = getattr(sub_cls_it, 'custom_type', None)
         # Raise error, when developer created subclass without custom_type
-        if sub_cls_custom_type == None:
+        if sub_cls_custom_type is None:
             raise AttributeError('Subclass of VerseTag: ' + 
                                  str(sub_cls_it) + 
                                  ' does not have attribute custom_type')
         # Try to get attribute tg_custom_type from subclass
         sub_cls_tg_custom_type = getattr(sub_cls_it, 'tg_custom_type', None)
         # Raise error, when developer created subclass without tg_custom_type
-        if sub_cls_tg_custom_type == None:
+        if sub_cls_tg_custom_type is None:
             raise AttributeError('Subclass of VerseTag: ' +
                                  str(sub_cls_it) +
                                  ' does not have attribute tg_custom_type')
         # Try to get attribute node_custom_type from subclass
         sub_cls_node_custom_type = getattr(sub_cls_it, 'node_custom_type', None)
         # Raise error, when developer created subclass without node_custom_type
-        if sub_cls_node_custom_type == None:
+        if sub_cls_node_custom_type is None:
             raise AttributeError('Subclass of VerseTag: ' +
                                  str(sub_cls_it) +
                                  ' does not have attribute node_custom_type')

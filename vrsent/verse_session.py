@@ -65,7 +65,7 @@ class VerseSession(vrs.Session):
     node_custom_types = {}
 
     def __init__(self, hostname="localhost", service="12345", \
-            flags=vrs.DGRAM_SEC_DTLS, callback_thread=False,
+            flags=vrs.DGRAM_SEC_DTLS, callback_thread=False, \
             username=None, password=None):
         """
         Constructor of VerseSession
@@ -95,7 +95,7 @@ class VerseSession(vrs.Session):
         self.avatar_id = None
         self.root_node = None
         # Start callback_update thread
-        if callback_thread == True:
+        if callback_thread is True:
             self.cb_thread = CallbackUpdate(self)
             self.cb_thread.start()
 
