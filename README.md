@@ -1,6 +1,8 @@
 Verse Entities
 ==============
 
+[![Code Health](https://landscape.io/github/verse/verse-entities/master/landscape.png)](https://landscape.io/github/verse/verse-entities/master)
+
 This project contains Python module that simplify implementation of Verse clients.
 This module requires compiled verse module that could be found at github:
 
