@@ -45,7 +45,7 @@ class VerseLayerItems(dict):
         """
         Setter of item that tries to send new value to Verse server
         """
-        if self.layer.id is not None and self.layer.send_cmds == True:
+        if self.layer.id is not None and self.layer.send_cmds is True:
             self.layer.node.session.send_layer_set_value(self.layer.node.prio, \
                 self.layer.node.id, \
                 self.layer.id, \
@@ -87,14 +87,14 @@ def find_layer_subclass(cls, node_custom_type, custom_type):
         # Try to get attribute custom_type from subclass
         sub_cls_custom_type = getattr(sub_cls_it, 'custom_type', None)
         # Raise error, when developer created subclass without custom_type
-        if sub_cls_custom_type == None:
+        if sub_cls_custom_type is None:
             raise AttributeError('Subclass of VerseLayer: ' + 
                                  str(sub_cls_it) + 
                                  ' does not have attribute custom_type')
         # Try to get attribute node_custom_type from subclass
         sub_cls_node_custom_type = getattr(sub_cls_it, 'node_custom_type', None)
         # Raise error, when developer created subclass without node_custom_type
-        if sub_cls_node_custom_type == None:
+        if sub_cls_node_custom_type is None:
             raise AttributeError('Subclass of VerseLayer: ' + 
                                  str(sub_cls_it) +
                                  ' does not have attribute node_custom_type')

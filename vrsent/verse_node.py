@@ -36,7 +36,7 @@ def find_node_subclass(cls, custom_type):
         # Try to get attribute custom_type
         sub_cls_custom_type = getattr(sub_cls_it, 'custom_type', None)
         # Raise error, when developer created subclass without custom_type
-        if sub_cls_custom_type == None:
+        if sub_cls_custom_type is None:
             raise AttributeError('Subclass of VerseNode: ' + \
                 str(sub_cls_it) + \
                 ' does not have attribute custom_type')
@@ -125,7 +125,7 @@ class VerseNode(verse_entity.VerseEntity):
 
         # When parent node is set, then it has to be subclass of VerseNode
         if parent is not None:
-            if issubclass(parent.__class__, VerseNode) != True:
+            if issubclass(parent.__class__, VerseNode) is not True:
                 raise TypeError("Node is not subclass of model.VerseNode")
         self._parent_node = parent
 
@@ -434,7 +434,7 @@ class VerseNode(verse_entity.VerseEntity):
 
         # When this node was created by this client, then it is neccessary to send
         # create/set command for node priority, tag_groups and layers
-        if send_pending_data == True:
+        if send_pending_data is True:
 
             # When node priority is different from default node priority
             if node.prio != vrs.DEFAULT_PRIORITY:
