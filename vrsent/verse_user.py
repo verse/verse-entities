@@ -39,11 +39,14 @@ class UserNameTag(verse_tag.VerseTag):
     tg_custom_type = TG_INFO_CT
     node_custom_type = vrs.USER_NODE_CT
 
-    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_STRING8, count=1, custom_type=TAG_USERNAME_CT, value=None):
+    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_STRING8, \
+        count=1, custom_type=TAG_USERNAME_CT, value=None):
         """
         Constructor of UserNameTag
         """
-        super(UserNameTag, self).__init__(tg=tg, tag_id=tag_id, data_type=data_type, count=count, custom_type=custom_type, value=value)
+        super(UserNameTag, self).__init__(tg=tg, tag_id=tag_id, \
+            data_type=data_type, count=count, custom_type=custom_type, \
+            value=value)
 
 
 class VerseUser(verse_node.VerseNode):
@@ -62,8 +65,9 @@ class VerseUser(verse_node.VerseNode):
         super(VerseUser, self).__init__(*args, **kwargs)
 
         # Create tag group and tag due to specification
-        self._tg_info = verse_tag_group.VerseTagGroup(node=self, custom_type=TG_INFO_CT)
-        self._tg_info._tag_name = UserNameTag(tg=self._tg_info)
+        self._tg_info = verse_tag_group.VerseTagGroup(node=self, \
+            custom_type=TG_INFO_CT)
+        self._tg_info.tag_name = UserNameTag(tg=self._tg_info)
 
         # Add this verse user to the dictionary of users
         self.session.users[self.id] = self
@@ -83,7 +87,7 @@ class VerseUser(verse_node.VerseNode):
         The name is property of VerseUser
         """
         try:
-            name = self._tg_info._tag_name.value
+            name = self._tg_info.tag_name.value
         except AttributeError:
             return ""
         else:
