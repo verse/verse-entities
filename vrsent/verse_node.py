@@ -211,25 +211,6 @@ class VerseNode(verse_entity.VerseEntity):
         self.layers.clear()
         self.layer_queue.clear()
 
-    def _name_to_cutom_type(self):
-        """
-        This method can be used for generating unique custom_type for
-        subclasses of VerseNode
-        """
-        if len(self.session.node_custom_types) >= 65535:
-            raise BufferError('Maximal number of VerseNode subclasses reached (65535)')
-        # Compute hash from class name
-        str_hash = verse_entity.name_to_custom_type(self.__class__.__name__)
-        # Custom types in range 0-31 are reserved for special nodes created by
-        # Verse server
-        if str_hash < 32:
-            str_hash *= 1024
-        # Try to find first free unique custom_type
-        while self.session.node_custom_types.has_key(str_hash):
-            str_hash += 1
-        else:
-            self.session.node_custom_types[str_hash] = self.__class__
-
     def _send_create(self):
         """
         This method send node create command to Verse server

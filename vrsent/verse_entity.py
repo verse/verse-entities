@@ -116,22 +116,20 @@ class VerseEntity(object):
         self.state = ENTITY_RESERVED
         self.subscribed = False
         # Try to get custom_type argument
-        custom_type = kwargs.get('custom_type', 0)
-        # When custom_type is not specified, then try to generate one
-        # from name of class
+        custom_type = kwargs.get('custom_type', None)
         if custom_type is None:
-            self.custom_type = self._name_to_custom_type()
+            try:
+                custom_type = args[-1]
+            except IndexError:
+                pass
+        # When custom_type is not specified, then raise error
+        if custom_type is None:
+            raise TypeError('No custom_type specified')
         else:
             if type(custom_type) == int:
                 self.custom_type = custom_type
             else:
                 raise TypeError('Specified custom_type is not int')
-
-    def _name_to_custom_type(self):
-        """
-        Dummy method
-        """
-        return 0
 
     def _send_create(self):
         """
