@@ -258,9 +258,10 @@ class VerseAvatar(verse_node.VerseNode):
         """
         # When this is avatar node, then remove avatar from dictionary of
         # avatars
+        avatar = super(VerseAvatar, cls)._receive_node_destroy(session, node_id)
         if node_id in session.avatars:
-            del session.avatars[node_id]
-        return super(VerseAvatar, cls)._receive_node_destroy(session, node_id)
+            session.avatars.pop(node_id)
+        return avatar
 
     @classmethod
     def _receive_node_perm(cls, session, node_id, user_id, perm):
