@@ -1,9 +1,9 @@
 Unit tests for vrsent module
 ============================
 
-This directory contains unit tests for vrsent module. To be able to run
-these test you have to set up PYTHONPATH system variable. This variable
-has to include path to packege vrsent and binary module verse.so
+This directory contains unit tests for `vrsent` module. To be able to run
+these test you have to set up `PYTHONPATH` system variable. This variable
+has to include path to package `vrsent` and binary module verse.so
 
 ```bash
 export PYTHONPATH=/path/to/verse/module:/path/to/vrsent/module
