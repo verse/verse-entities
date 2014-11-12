@@ -37,14 +37,16 @@ ENTITY_DESTROYED = 6
 
 
 # Set of supported Verse value types
-SUPPORTED_VALUE_TYPES = set((vrs.VALUE_TYPE_UINT8, \
-    vrs.VALUE_TYPE_UINT16, \
-    vrs.VALUE_TYPE_UINT32, \
-    vrs.VALUE_TYPE_UINT64, \
-    vrs.VALUE_TYPE_REAL16, \
-    vrs.VALUE_TYPE_REAL32, \
-    vrs.VALUE_TYPE_REAL64, \
-    vrs.VALUE_TYPE_STRING8))
+SUPPORTED_VALUE_TYPES = set((
+    vrs.VALUE_TYPE_UINT8,
+    vrs.VALUE_TYPE_UINT16,
+    vrs.VALUE_TYPE_UINT32,
+    vrs.VALUE_TYPE_UINT64,
+    vrs.VALUE_TYPE_REAL16,
+    vrs.VALUE_TYPE_REAL32,
+    vrs.VALUE_TYPE_REAL64,
+    vrs.VALUE_TYPE_STRING8
+))
 
 
 # Set of supported data types
@@ -52,9 +54,11 @@ SUPPORTED_DATA_TYPES = set((int, float, str))
 
 
 # Dictionary used for estimation of VerseTag VerseLayer data_type
-DATA_TYPE_DICT = {int: vrs.VALUE_TYPE_UINT64, \
-    float: vrs.VALUE_TYPE_REAL64, \
-    str: vrs.VALUE_TYPE_STRING8}
+DATA_TYPE_DICT = {
+    int: vrs.VALUE_TYPE_UINT64,
+    float: vrs.VALUE_TYPE_REAL64,
+    str: vrs.VALUE_TYPE_STRING8
+}
 
 
 def last_subclass(cls):
@@ -77,8 +81,8 @@ def name_to_custom_type(cls_name):
     max_val = (1 << 64) - 1
     for ch in cls_name:
         num = ord(ch) 
-        str_hash +=  num + (str_hash << 6) + (str_hash << 16 ) - str_hash
-        str_hash = str_hash & max_val
+        str_hash += num + (str_hash << 6) + (str_hash << 16) - str_hash
+        str_hash &= max_val
     return str_hash % 65535
 
 
@@ -190,7 +194,7 @@ class VerseEntity(object):
         else:
             raise VerseStateError(self.state, "destroy")
 
-    def _receive_create(self, *args, **kwargs):
+    def cb_receive_create(self, *args, **kwargs):
         """
         This method is called when client receive callback function about
         it creating on Verse server
@@ -207,7 +211,7 @@ class VerseEntity(object):
         else:
             raise VerseStateError(self.state, "rcv_create")
 
-    def _receive_destroy(self, *args, **kwargs):
+    def cb_receive_destroy(self, *args, **kwargs):
         """
         This method is called when client receive callback function about
         it destroying on Verse server
@@ -216,11 +220,11 @@ class VerseEntity(object):
             self.state = ENTITY_DESTROYED
         elif self.state == ENTITY_DESTROYING:
             self.state = ENTITY_DESTROYED
-            self._clean()
+            self.clean()
         else:
             raise VerseStateError(self.state, "rcv_destroy")
 
-    def _clean(self):
+    def clean(self):
         """
         This method is called, when entity is switched to destroy state
         and it is required to clean all data in this entity

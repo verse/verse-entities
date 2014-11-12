@@ -37,12 +37,13 @@ def find_node_subclass(cls, custom_type):
         sub_cls_custom_type = getattr(sub_cls_it, 'custom_type', None)
         # Raise error, when developer created subclass without custom_type
         if sub_cls_custom_type is None:
-            raise AttributeError('Subclass of VerseNode: ' + \
-                str(sub_cls_it) + \
+            raise AttributeError(
+                'Subclass of VerseNode: ' +
+                str(sub_cls_it) +
                 ' does not have attribute custom_type')
         elif sub_cls_custom_type == custom_type:
             # When subclass is found, then store it in dictionary of subclasses
-            sub_cls = cls._subclasses[custom_type] = verse_entity.last_subclass(sub_cls_it)
+            sub_cls = cls.subclasses[custom_type] = verse_entity.last_subclass(sub_cls_it)
             break
     return sub_cls
 
@@ -54,9 +55,8 @@ def custom_type_subclass(custom_type):
     """
     # Default class is VerseNode and it is returned, when there is not any
     # subclass with this custom_type
-    sub_cls = VerseNode
     try:
-        sub_cls = VerseNode._subclasses[custom_type]
+        sub_cls = VerseNode.subclasses[custom_type]
     except KeyError:
         sub_cls = find_node_subclass(VerseNode, custom_type)
     else:
@@ -72,7 +72,7 @@ class VerseNode(verse_entity.VerseEntity):
 
     # The dictionary of subclasses. When subclass of VerseNode is created,
     # then this subclass has to have unique custom_type
-    _subclasses = {}
+    subclasses = {}
 
     # This is used in subclasses of VerseNode
     custom_type = None
@@ -100,9 +100,8 @@ class VerseNode(verse_entity.VerseEntity):
                     kwargs['custom_type'] = custom_type
                     # Assign generated cutom_type to class member
                     cls.custom_type = custom_type
-            sub_cls = cls
             try:
-                sub_cls = cls._subclasses[custom_type]
+                sub_cls = cls.subclasses[custom_type]
             except KeyError:
                 # When instance of this class has never been created, then try
                 # to find corresponding subclass.
@@ -183,7 +182,7 @@ class VerseNode(verse_entity.VerseEntity):
         # Change state and send commands
         self._destroy()
 
-    def _clean(self):
+    def clean(self):
         """
         This method try to destroy all data in this object
         """
@@ -191,13 +190,13 @@ class VerseNode(verse_entity.VerseEntity):
         # for these nodes
         for child_node in self.child_nodes.values():
             child_node.parent = None
-            child_node._clean()
+            child_node.clean()
         self.child_nodes.clear()
         # Remove reference on this node
         if self.id is not None:
             # Remove this node from dictionary of nodes
             self.session.nodes.pop(self.id)
-            # Remove this node from dictionar of child nodes
+            # Remove this node from dictionary of child nodes
             if self._parent_node is not None:
                 try:
                     self._parent_node.child_nodes.pop(self.id)
@@ -386,9 +385,9 @@ class VerseNode(verse_entity.VerseEntity):
             self.session.send_node_owner(self._prio, self.id, self.user_id)
 
     @classmethod
-    def _receive_node_create(cls, session, node_id, parent_id, user_id, custom_type):
+    def cb_receive_node_create(cls, session, node_id, parent_id, user_id, custom_type):
         """
-        Static method of class that should be called, when coresponding callback
+        Static method of class that should be called, when corresponding callback
         method of class is called. This method moves node from queue to
         the dictionary of nodes and send pending commands.
         """
@@ -425,14 +424,15 @@ class VerseNode(verse_entity.VerseEntity):
             try:
                 node = session.nodes[node_id]
             except KeyError:
-                node = VerseNode(session=session, node_id=node_id, parent=parent_node, user_id=user_id, custom_type=custom_type)
+                node = VerseNode(session=session, node_id=node_id, parent=parent_node,
+                                 user_id=user_id, custom_type=custom_type)
             else:
                 send_pending_data = True
 
         # Change state of node
-        node._receive_create()
+        node.cb_receive_create()
 
-        # When this node was created by this client, then it is neccessary to send
+        # When this node was created by this client, then it is necessary to send
         # create/set command for node priority, tag_groups and layers
         if send_pending_data is True:
 
@@ -457,23 +457,24 @@ class VerseNode(verse_entity.VerseEntity):
                 session.send_taggroup_create(node.prio, node.id, custom_type)
 
             # Send layer_create command for pending layers without parent layer
-            # This module will send automaticaly layer_create command for layers
+            # This module will send automatically layer_create command for layers
             # with parent layers, when layer_create command of their parent layers
             # will be received
             for layer in node.layer_queue.values():
                 if layer.parent_layer is None:
-                    session.send_layer_create(node.prio, \
-                        node.id, \
-                        -1, \
-                        layer.data_type, \
-                        layer.count, \
+                    session.send_layer_create(
+                        node.prio,
+                        node.id,
+                        -1,
+                        layer.data_type,
+                        layer.count,
                         layer.custom_type)
 
         # Return reference at node
         return node
 
     @classmethod
-    def _receive_node_destroy(cls, session, node_id):
+    def cb_receive_node_destroy(cls, session, node_id):
         """
         Static method of class that should be called, when destroy_node
         callback method of Session class is called. This method removes
@@ -485,12 +486,12 @@ class VerseNode(verse_entity.VerseEntity):
         except KeyError:
             return
         # Set entity state and clean data in this node
-        node._receive_destroy()
+        node.cb_receive_destroy()
         # Return reference at this node
         return node
 
     @classmethod
-    def _receive_node_link(cls, session, parent_node_id, child_node_id):
+    def cb_receive_node_link(cls, session, parent_node_id, child_node_id):
         """
         Static method of class that should be called, when node_link
         callback method of Session class is called. This method change
@@ -522,9 +523,9 @@ class VerseNode(verse_entity.VerseEntity):
         return child_node
 
     @classmethod
-    def _receive_node_lock(cls, session, node_id, avatar_id):
+    def cb_receive_node_lock(cls, session, node_id, avatar_id):
         """
-        Static method of class that is called, when client received infomration
+        Static method of class that is called, when client received information
         about locking of the node
         """
         try:
@@ -536,9 +537,9 @@ class VerseNode(verse_entity.VerseEntity):
         return node
 
     @classmethod
-    def _receive_node_unlock(cls, session, node_id, avatar_id):
+    def cb_receive_node_unlock(cls, session, node_id, avatar_id):
         """
-        Static method of class that is called, when client received infomration
+        Static method of class that is called, when client received information
         about unlocking of the node
         """
         try:
@@ -550,9 +551,9 @@ class VerseNode(verse_entity.VerseEntity):
         return node
 
     @classmethod
-    def _receive_node_owner(cls, session, node_id, user_id):
+    def cb_receive_node_owner(cls, session, node_id, user_id):
         """
-        Static method of class that is called, when client received infomration
+        Static method of class that is called, when client received information
         about new owner of the node
         """
         try:
@@ -564,9 +565,9 @@ class VerseNode(verse_entity.VerseEntity):
             return None
 
     @classmethod
-    def _receive_node_perm(cls, session, node_id, user_id, perm):
+    def cb_receive_node_perm(cls, session, node_id, user_id, perm):
         """
-        Static method of class that is called, when client received infomration
+        Static method of class that is called, when client received information
         about permission for specific user
         """
         try:
@@ -579,21 +580,19 @@ class VerseNode(verse_entity.VerseEntity):
         return node
 
     @classmethod
-    def _receive_node_subscribe(cls, session, node_id, version, crc32):
+    def cb_receive_node_subscribe(cls, session, node_id, version, crc32):
         """
         Static method of class that should be called when
         node subscribe command is received from Verse server
         """
-        # TODO: implement this method, then this will be supported by
-        # Verse server
+        # TODO: implement this method, then this will be supported by Verse server
         pass
 
     @classmethod
-    def _receive_node_unsubscribe(cls, session, node_id, version, crc32):
+    def cb_receive_node_unsubscribe(cls, session, node_id, version, crc32):
         """
         Static method of class that should be called when
         node unsubscribe command is received from Verse server
         """
-        # TODO: implement this method, then this will be supported by
-        # Verse server
+        # TODO: implement this method, then this will be supported by Verse server
         pass

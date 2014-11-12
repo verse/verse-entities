@@ -48,7 +48,7 @@ class CallbackUpdate(threading.Thread):
         """
         # Never ending loop that executed callback functions,
         # when commands are received from Verse server
-        while(self.session.state != 'DISCONNECTED'):
+        while self.session.state != 'DISCONNECTED':
             self.session.callback_update()
             time.sleep(1.0 / self.session.fps)
 
@@ -64,8 +64,9 @@ class VerseSession(vrs.Session):
     # The dictionary of VerseNode subclasses (custom_type is used as key)
     node_custom_types = {}
 
-    def __init__(self, hostname="localhost", service="12345", \
-            flags=vrs.DGRAM_SEC_DTLS, callback_thread=False, \
+    def __init__(
+            self, hostname="localhost", service="12345",
+            flags=vrs.DGRAM_SEC_DTLS, callback_thread=False,
             username=None, password=None):
         """
         Constructor of VerseSession
@@ -105,13 +106,13 @@ class VerseSession(vrs.Session):
         """
         pass
 
-    def _receive_user_authenticate(self, username, methods):
+    def cb_receive_user_authenticate(self, username, methods):
         """
         Callback method for user authenticate
         """
         # Call parent method to print debug information
         if self.debug_print is True:
-            super(VerseSession, self)._receive_user_authenticate(username, self.password)
+            super(VerseSession, self).cb_receive_user_authenticate(username, self.password)
         # Default method to get username and password
         if username == "":
             if self.username is None:
@@ -155,14 +156,14 @@ class VerseSession(vrs.Session):
             return None
 
     # Connection
-    def _receive_connect_accept(self, user_id, avatar_id):
+    def cb_receive_connect_accept(self, user_id, avatar_id):
         """
         Custom callback method for connect accept
         """
         # Call parent method to print debug information
         if self.debug_print is True:
-            super(VerseSession, self)._receive_connect_accept(user_id, avatar_id)
-        # Save important informations
+            super(VerseSession, self).cb_receive_connect_accept(user_id, avatar_id)
+        # Save important information
         self.user_id = user_id
         self.avatar_id = avatar_id
         self.state = 'CONNECTED'
@@ -171,15 +172,15 @@ class VerseSession(vrs.Session):
         # Send pending node create commands
         for queue in self.my_node_queues.values():
             for node in queue:
-                self.send_node_create(node._prio, node.custom_type)
+                self.send_node_create(node.prio(), node.custom_type)
 
-    def _receive_connect_terminate(self, error):
+    def cb_receive_connect_terminate(self, error):
         """
         Custom callback method for fake connect terminate command
         """
         # Call method of parent class
         if self.debug_print is True:
-            super(VerseSession, self)._receive_connect_terminate(error)
+            super(VerseSession, self).cb_receive_connect_terminate(error)
         self.state = 'DISCONNECTED'
         # Remove this instance from the list of sessions
         self.__class__.__sessions.pop(self.hostname + ':' + self.service)
@@ -192,94 +193,94 @@ class VerseSession(vrs.Session):
         super(VerseSession, self).send_connect_terminate()
 
     # Nodes
-    def _receive_node_create(self, node_id, parent_id, user_id, custom_type):
+    def cb_receive_node_create(self, node_id, parent_id, user_id, custom_type):
         """
         Custom callback method that is called, when client received
         command node_create
         """
         # Call parent method to print debug information
         if self.debug_print is True:
-            super(VerseSession, self)._receive_node_create(node_id, parent_id, user_id, custom_type)
-        # Call calback method of model
+            super(VerseSession, self).cb_receive_node_create(node_id, parent_id, user_id, custom_type)
+        # Call callback method of model
         cls = verse_node.custom_type_subclass(custom_type)
-        return cls._receive_node_create(self, node_id, parent_id, user_id, custom_type)
+        return cls.cb_receive_node_create(self, node_id, parent_id, user_id, custom_type)
 
-    def _receive_node_destroy(self, node_id):
+    def cb_receive_node_destroy(self, node_id):
         """
         Custom callback method for command node destroy
         """
         # Call parent method to print debug information
         if self.debug_print is True:
-            super(VerseSession, self)._receive_node_destroy(node_id)
+            super(VerseSession, self).cb_receive_node_destroy(node_id)
         # Call callback method of model
         cls = verse_node.custom_type_subclass(self.nodes[node_id].custom_type)
-        return cls._receive_node_destroy(self, node_id)
+        return cls.cb_receive_node_destroy(self, node_id)
 
-    def _receive_node_link(self, parent_node_id, child_node_id):
+    def cb_receive_node_link(self, parent_node_id, child_node_id):
         """
         Custom callback method that is called, when client receive command
         changing link between nodes
         """
         # Call parent method to print debug information
         if self.debug_print is True:
-            super(VerseSession, self)._receive_node_link(parent_node_id, child_node_id)
-        # Call calback method of model and return child node
+            super(VerseSession, self).cb_receive_node_link(parent_node_id, child_node_id)
+        # Call callback method of model and return child node
         cls = verse_node.custom_type_subclass(self.nodes[child_node_id].custom_type)
-        return cls._receive_node_link(self, parent_node_id, child_node_id)
+        return cls.cb_receive_node_link(self, parent_node_id, child_node_id)
 
-    def _receive_node_lock(self, node_id, avatar_id):
+    def cb_receive_node_lock(self, node_id, avatar_id):
         """
         Custom callback method for command node lock
         """
         # Call parent method to print debug information
         if self.debug_print is True:
-            super(VerseSession, self)._receive_node_lock(node_id, avatar_id)
-        # Call callback method of coresponding class and return node
+            super(VerseSession, self).cb_receive_node_lock(node_id, avatar_id)
+        # Call callback method of corresponding class and return node
         cls = verse_node.custom_type_subclass(self.nodes[node_id].custom_type)
-        return cls._receive_node_lock(self, node_id, avatar_id)
+        return cls.cb_receive_node_lock(self, node_id, avatar_id)
 
-    def _receive_node_unlock(self, node_id, avatar_id):
+    def cb_receive_node_unlock(self, node_id, avatar_id):
         """
         Custom callback method for command node unlock
         """
         # Call parent method to print debug information
         if self.debug_print is True:
-            super(VerseSession, self)._receive_node_unlock(node_id, avatar_id)
+            super(VerseSession, self).cb_receive_node_unlock(node_id, avatar_id)
         # Call callback method of coresponding class and return node
         cls = verse_node.custom_type_subclass(self.nodes[node_id].custom_type)
-        return cls._receive_node_unlock(self, node_id, avatar_id)
+        return cls.cb_receive_node_unlock(self, node_id, avatar_id)
 
-    def _receive_node_perm(self, node_id, user_id, perm):
+    def cb_receive_node_perm(self, node_id, user_id, perm):
         """
         Custom callback method for command node perm
         """
         # Call parent method to print debug information
         if self.debug_print is True:
-            super(VerseSession, self)._receive_node_perm(node_id, user_id, perm)
+            super(VerseSession, self).cb_receive_node_perm(node_id, user_id, perm)
         # Call callback method of model
         cls = verse_node.custom_type_subclass(self.nodes[node_id].custom_type)
-        return cls._receive_node_perm(self, node_id, user_id, perm)
+        return cls.cb_receive_node_perm(self, node_id, user_id, perm)
 
-    def _receive_node_owner(self, node_id, user_id):
+    def cb_receive_node_owner(self, node_id, user_id):
         """
         Custom callback method for command node owner
         """
         # Call parent method to print debug information
         if self.debug_print is True:
-            super(VerseSession, self)._receive_node_owner(node_id, user_id)
+            super(VerseSession, self).cb_receive_node_owner(node_id, user_id)
         # Call callback method of corresponding class and return node
         cls = verse_node.custom_type_subclass(self.nodes[node_id].custom_type)
-        return cls._receive_node_owner(self, node_id, user_id)
+        return cls.cb_receive_node_owner(self, node_id, user_id)
 
     # TagGroups
-    def _receive_taggroup_create(self, node_id, taggroup_id, custom_type):
+    def cb_receive_taggroup_create(self, node_id, taggroup_id, custom_type):
         """
         Custom callback method that is called, when client received command
         tag group create
         """
         # Call parent method to print debug information
         if self.debug_print is True:
-            super(VerseSession, self)._receive_taggroup_create(node_id, taggroup_id, custom_type)
+            super(VerseSession, self).cb_receive_taggroup_create(node_id, taggroup_id, custom_type)
         try:
             node_custom_type = self.nodes[node_id].custom_type
         except KeyError:
@@ -287,16 +288,16 @@ class VerseSession(vrs.Session):
         else:
             cls = verse_tag_group.custom_type_subclass(node_custom_type, custom_type)
         # Call callback method of model
-        return cls._receive_tg_create(self, node_id, taggroup_id, custom_type)
+        return cls.cb_receive_tg_create(self, node_id, taggroup_id, custom_type)
 
-    def _receive_taggroup_destroy(self, node_id, taggroup_id):
+    def cb_receive_taggroup_destroy(self, node_id, taggroup_id):
         """
         Custom callback method that is called, when client received command
         tag group destroy
         """
         # Call parent method to print debug information
         if self.debug_print is True:
-            super(VerseSession, self)._receive_taggroup_destroy(node_id, taggroup_id)
+            super(VerseSession, self).cb_receive_taggroup_destroy(node_id, taggroup_id)
         try:
             node_custom_type = self.nodes[node_id].custom_type
             custom_type = self.nodes[node_id].tag_groups[taggroup_id].custom_type
@@ -304,17 +305,17 @@ class VerseSession(vrs.Session):
             cls = verse_tag_group.VerseTagGroup
         else:
             cls = verse_tag_group.custom_type_subclass(node_custom_type, custom_type)
-        # Call calback method of model
-        return cls._receive_tg_destroy(self, node_id, taggroup_id)
+        # Call callback method of model
+        return cls.cb_receive_tg_destroy(self, node_id, taggroup_id)
 
     # Tags
-    def _receive_tag_create(self, node_id, taggroup_id, tag_id, data_type, count, custom_type):
+    def cb_receive_tag_create(self, node_id, taggroup_id, tag_id, data_type, count, custom_type):
         """
         Custom callback method that is called, when client received command tag create
         """
         # Call parent method to print debug information
         if self.debug_print is True:
-            super(VerseSession, self)._receive_tag_create(node_id, taggroup_id, tag_id, data_type, count, custom_type)
+            super(VerseSession, self).cb_receive_tag_create(node_id, taggroup_id, tag_id, data_type, count, custom_type)
         try:
             node_custom_type = self.nodes[node_id].custom_type
             tg_custom_type = self.nodes[node_id].tag_groups[taggroup_id].custom_type
@@ -322,17 +323,17 @@ class VerseSession(vrs.Session):
             cls = verse_tag.VerseTag
         else:
             cls = verse_tag.custom_type_subclass(node_custom_type, tg_custom_type, custom_type)
-        # Call calback method of VerseTag or it's subclass
-        return cls._receive_tag_create(self, node_id, taggroup_id, tag_id, data_type, count, custom_type)
+        # Call callback method of VerseTag or it's subclass
+        return cls.cb_receive_tag_create(self, node_id, taggroup_id, tag_id, data_type, count, custom_type)
 
-    def _receive_tag_destroy(self, node_id, taggroup_id, tag_id):
+    def cb_receive_tag_destroy(self, node_id, taggroup_id, tag_id):
         """
         Custom callback method that is called, when client received command tag destroy
         """
         # Call parent method to print debug information
         if self.debug_print is True:
-            super(VerseSession, self)._receive_tag_destroy(node_id, taggroup_id, tag_id)
-        # Call calback method of model
+            super(VerseSession, self).cb_receive_tag_destroy(node_id, taggroup_id, tag_id)
+        # Call callback method of model
         try:
             node_custom_type = self.nodes[node_id].custom_type
             tg_custom_type = self.nodes[node_id].tag_groups[taggroup_id].custom_type
@@ -341,16 +342,16 @@ class VerseSession(vrs.Session):
             cls = verse_tag.VerseTag
         else:
             cls = verse_tag.custom_type_subclass(node_custom_type, tg_custom_type, tag_custom_type)
-        # Call calback method of VerseTag or it's subclass
-        return cls._receive_tag_destroy(self, node_id, taggroup_id, tag_id)
+        # Call callback method of VerseTag or it's subclass
+        return cls.cb_receive_tag_destroy(self, node_id, taggroup_id, tag_id)
 
-    def _receive_tag_set_values(self, node_id, taggroup_id, tag_id, value):
+    def cb_receive_tag_set_values(self, node_id, taggroup_id, tag_id, value):
         """
-        Custom callback method that is called, when client reveived command tag set value
+        Custom callback method that is called, when client received command tag set value
         """
         # Call method of parent class
         if self.debug_print is True:
-            super(VerseSession, self)._receive_tag_set_values(node_id, taggroup_id, tag_id, value)
+            super(VerseSession, self).cb_receive_tag_set_values(node_id, taggroup_id, tag_id, value)
         try:
             node_custom_type = self.nodes[node_id].custom_type
             tg_custom_type = self.nodes[node_id].tag_groups[taggroup_id].custom_type
@@ -359,21 +360,22 @@ class VerseSession(vrs.Session):
             cls = verse_tag.VerseTag
         else:
             cls = verse_tag.custom_type_subclass(node_custom_type, tg_custom_type, tag_custom_type)
-        # Call calback method of VerseTag or it's subclass
-        return cls._receive_tag_set_values(self, node_id, taggroup_id, tag_id, value)
+        # Call callback method of VerseTag or it's subclass
+        return cls.cb_receive_tag_set_values(self, node_id, taggroup_id, tag_id, value)
 
     # Layer
-    def _receive_layer_create(self, node_id, parent_layer_id, layer_id, data_type, count, custom_type):
+    def cb_receive_layer_create(self, node_id, parent_layer_id, layer_id, data_type, count, custom_type):
         """
         Custom callback method that is called, when client received command layer create
         """
         # Call method of parent class
         if self.debug_print is True:
-            super(VerseSession, self)._receive_layer_create(node_id, \
-                parent_layer_id, \
-                layer_id, \
-                data_type, \
-                count, \
+            super(VerseSession, self).cb_receive_layer_create(
+                node_id,
+                parent_layer_id,
+                layer_id,
+                data_type,
+                count,
                 custom_type)
         try:
             node_custom_type = self.nodes[node_id].custom_type
@@ -382,21 +384,22 @@ class VerseSession(vrs.Session):
         else:
             cls = verse_layer.custom_type_subclass(node_custom_type, custom_type)
         # Call callback method of model
-        return cls._receive_layer_create(self, \
-            node_id, \
-            parent_layer_id, \
-            layer_id, \
-            data_type, \
-            count, \
+        return cls.cb_receive_layer_create(
+            self,
+            node_id,
+            parent_layer_id,
+            layer_id,
+            data_type,
+            count,
             custom_type)
 
-    def _receive_layer_destroy(self, node_id, layer_id):
+    def cb_receive_layer_destroy(self, node_id, layer_id):
         """
         Custom callback method that is called, when client received command layer destroy
         """
         # Call method of parent class
         if self.debug_print is True:
-            super(VerseSession, self)._receive_layer_destroy(node_id, layer_id)
+            super(VerseSession, self).cb_receive_layer_destroy(node_id, layer_id)
         try:
             node_custom_type = self.nodes[node_id].custom_type
             custom_type = self.nodes[node_id].layers[layer_id].custom_type
@@ -405,15 +408,15 @@ class VerseSession(vrs.Session):
         else:
             cls = verse_layer.custom_type_subclass(node_custom_type, custom_type)
         # Call callback method of model
-        return cls._receive_layer_destroy(self, node_id, layer_id)
+        return cls.cb_receive_layer_destroy(self, node_id, layer_id)
 
-    def _receive_layer_set_value(self, node_id, layer_id, item_id, value):
+    def cb_receive_layer_set_value(self, node_id, layer_id, item_id, value):
         """
         Custom callback method that is called, when client received command layer set value
         """
         # Call method of parent class
         if self.debug_print is True:
-            super(VerseSession, self)._receive_layer_set_value(node_id, layer_id, item_id, value)
+            super(VerseSession, self).cb_receive_layer_set_value(node_id, layer_id, item_id, value)
         try:
             node_custom_type = self.nodes[node_id].custom_type
             custom_type = self.nodes[node_id].layers[layer_id].custom_type
@@ -422,15 +425,15 @@ class VerseSession(vrs.Session):
         else:
             cls = verse_layer.custom_type_subclass(node_custom_type, custom_type)
         # Call callback method of model
-        return cls._receive_layer_set_value(self, node_id, layer_id, item_id, value)
+        return cls.cb_receive_layer_set_value(self, node_id, layer_id, item_id, value)
 
-    def _receive_layer_unset_value(self, node_id, layer_id, item_id):
+    def cb_receive_layer_unset_value(self, node_id, layer_id, item_id):
         """
         Custom callback method that is called, when client received command layer unset value
         """
         # Call method of parent class
         if self.debug_print is True:
-            super(VerseSession, self)._receive_layer_unset_value(node_id, layer_id, item_id)
+            super(VerseSession, self).cb_receive_layer_unset_value(node_id, layer_id, item_id)
         try:
             node_custom_type = self.nodes[node_id].custom_type
             custom_type = self.nodes[node_id].layers[layer_id].custom_type
@@ -439,4 +442,4 @@ class VerseSession(vrs.Session):
         else:
             cls = verse_layer.custom_type_subclass(node_custom_type, custom_type)
         # Call callback method of model
-        return cls._receive_layer_unset_value(self, node_id, layer_id, item_id)
+        return cls.cb_receive_layer_unset_value(self, node_id, layer_id, item_id)

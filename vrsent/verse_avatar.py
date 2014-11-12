@@ -41,16 +41,17 @@ class HostnameTag(verse_tag.VerseTag):
     tg_custom_type = TG_INFO_CT
     node_custom_type = vrs.AVATAR_INFO_NODE_CT
 
-    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_STRING8, \
-        count=1, custom_type=TAG_HOSTNAME_CT, value=None):
+    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_STRING8,
+                 count=1, custom_type=TAG_HOSTNAME_CT, value=None):
         """
         Constructor of HostnameTag
         """
-        super(HostnameTag, self).__init__(tg=tg, \
-            tag_id=tag_id, \
-            data_type=data_type, \
-            count=count, \
-            custom_type=custom_type, \
+        super(HostnameTag, self).__init__(
+            tg=tg,
+            tag_id=tag_id,
+            data_type=data_type,
+            count=count,
+            custom_type=custom_type,
             value=value)
 
 
@@ -63,16 +64,17 @@ class LoginTimeTag(verse_tag.VerseTag):
     tg_custom_type = TG_INFO_CT
     node_custom_type = vrs.AVATAR_INFO_NODE_CT
 
-    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_UINT64, \
-        count=1, custom_type=TAG_LOGIN_TIME_CT, value=None):
+    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_UINT64,
+                 count=1, custom_type=TAG_LOGIN_TIME_CT, value=None):
         """
         Constructor of LoginTimeTag
         """
-        super(LoginTimeTag, self).__init__(tg=tg, \
-            tag_id=tag_id, \
-            data_type=data_type, \
-            count=count, \
-            custom_type=custom_type, \
+        super(LoginTimeTag, self).__init__(
+            tg=tg,
+            tag_id=tag_id,
+            data_type=data_type,
+            count=count,
+            custom_type=custom_type,
             value=value)
 
 
@@ -85,16 +87,17 @@ class ClientNameTag(verse_tag.VerseTag):
     tg_custom_type = TG_INFO_CT
     node_custom_type = vrs.AVATAR_INFO_NODE_CT
 
-    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_STRING8, \
-        count=1, custom_type=TAG_CLIENT_NAME_CT, value=None):
+    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_STRING8,
+                 count=1, custom_type=TAG_CLIENT_NAME_CT, value=None):
         """
         Constructor of ClientNameTag
         """
-        super(ClientNameTag, self).__init__(tg=tg, \
-            tag_id=tag_id, \
-            data_type=data_type, \
-            count=count, \
-            custom_type=custom_type, \
+        super(ClientNameTag, self).__init__(
+            tg=tg,
+            tag_id=tag_id,
+            data_type=data_type,
+            count=count,
+            custom_type=custom_type,
             value=value)
 
 
@@ -107,16 +110,17 @@ class ClientVersionTag(verse_tag.VerseTag):
     tg_custom_type = TG_INFO_CT
     node_custom_type = vrs.AVATAR_INFO_NODE_CT
 
-    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_STRING8, \
-        count=1, custom_type=TAG_CLIENT_VERSION_CT, value=None):
+    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_STRING8,
+                 count=1, custom_type=TAG_CLIENT_VERSION_CT, value=None):
         """
         Constructor of ClientVersionTag
         """
-        super(ClientVersionTag, self).__init__(tg=tg, \
-            tag_id=tag_id, \
-            data_type=data_type, \
-            count=count, \
-            custom_type=custom_type, \
+        super(ClientVersionTag, self).__init__(
+            tg=tg,
+            tag_id=tag_id,
+            data_type=data_type,
+            count=count,
+            custom_type=custom_type,
             value=value)
 
 
@@ -134,14 +138,14 @@ class VerseAvatarInfo(verse_node.VerseNode):
         # Call parent init method
         super(VerseAvatarInfo, self).__init__(*args, **kwargs)
         # Add reference to parent (avatar) node
-        self.parent._info_node = self
+        self.parent.info_node = self
         # Create tag group with info information due to specification
-        self._tg_info = verse_tag_group.VerseTagGroup(node=self, custom_type=TG_INFO_CT)
+        self.tg_info = verse_tag_group.VerseTagGroup(node=self, custom_type=TG_INFO_CT)
         # Create tags due to specification
-        self._tg_info._tag_hostname = HostnameTag(tg=self._tg_info)
-        self._tg_info._tag_login_time = LoginTimeTag(tg=self._tg_info)
-        self._tg_info._tag_client_name = ClientNameTag(tg=self._tg_info)
-        self._tg_info._tag_client_version = ClientVersionTag(tg=self._tg_info)
+        self.tg_info.tag_hostname = HostnameTag(tg=self.tg_info)
+        self.tg_info.tag_login_time = LoginTimeTag(tg=self.tg_info)
+        self.tg_info.tag_client_name = ClientNameTag(tg=self.tg_info)
+        self.tg_info.tag_client_version = ClientVersionTag(tg=self.tg_info)
 
 
 class VerseAvatar(verse_node.VerseNode):
@@ -158,7 +162,7 @@ class VerseAvatar(verse_node.VerseNode):
         # Call parent init method
         super(VerseAvatar, self).__init__(*args, **kwargs)
         # Info node and user_id could not be known yet
-        self._info_node = None
+        self.info_node = None
         self._user_id = None
         # Add this avatar to the list of avatars
         self.session.avatars[self.id] = self
@@ -185,7 +189,7 @@ class VerseAvatar(verse_node.VerseNode):
         hostname property
         """
         try:
-            hostname = self._info_node._tg_info._tag_hostname.value
+            hostname = self.info_node.tg_info.tag_hostname.value
         except AttributeError:
             return ""
         else:
@@ -200,7 +204,7 @@ class VerseAvatar(verse_node.VerseNode):
         login time property
         """
         try:
-            login_time = self._info_node._tg_info._tag_login_time.value
+            login_time = self.info_node.tg_info.tag_login_time.value
         except AttributeError:
             return 0
         else:
@@ -215,7 +219,7 @@ class VerseAvatar(verse_node.VerseNode):
         client name property
         """
         try:
-            client_name = self._info_node._tg_info._tag_client_name.value
+            client_name = self.info_node.tg_info.tag_client_name.value
         except AttributeError:
             return ""
         else:
@@ -230,7 +234,7 @@ class VerseAvatar(verse_node.VerseNode):
         client name property
         """
         try:
-            client_version = self._info_node._tg_info._tag_client_version.value
+            client_version = self.info_node.tg_info.tag_client_version.value
         except AttributeError:
             return ""
         else:
@@ -252,19 +256,19 @@ class VerseAvatar(verse_node.VerseNode):
             return user.name
 
     @classmethod
-    def _receive_node_destroy(cls, session, node_id):
+    def cb_receive_node_destroy(cls, session, node_id):
         """
         This method is called, when server destroyed avatar node
         """
         # When this is avatar node, then remove avatar from dictionary of
         # avatars
-        avatar = super(VerseAvatar, cls)._receive_node_destroy(session, node_id)
+        avatar = super(VerseAvatar, cls).cb_receive_node_destroy(session, node_id)
         if node_id in session.avatars:
             session.avatars.pop(node_id)
         return avatar
 
     @classmethod
-    def _receive_node_perm(cls, session, node_id, user_id, perm):
+    def cb_receive_node_perm(cls, session, node_id, user_id, perm):
         """
         This method is called, when client received command node_perm.
         This command specify user assigned to this avatar.
@@ -274,4 +278,4 @@ class VerseAvatar(verse_node.VerseNode):
         if user_id != 100 and user_id != 65535:
             avatar = session.avatars[node_id]
             avatar._user_id = user_id
-        return super(VerseAvatar, cls)._receive_node_perm(session, node_id, user_id, perm)
+        return super(VerseAvatar, cls).cb_receive_node_perm(session, node_id, user_id, perm)

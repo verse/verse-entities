@@ -39,13 +39,17 @@ class UserNameTag(verse_tag.VerseTag):
     tg_custom_type = TG_INFO_CT
     node_custom_type = vrs.USER_NODE_CT
 
-    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_STRING8, \
-        count=1, custom_type=TAG_USERNAME_CT, value=None):
+    def __init__(self, tg, tag_id=None, data_type=vrs.VALUE_TYPE_STRING8,
+                 count=1, custom_type=TAG_USERNAME_CT, value=None):
         """
         Constructor of UserNameTag
         """
-        super(UserNameTag, self).__init__(tg=tg, tag_id=tag_id, \
-            data_type=data_type, count=count, custom_type=custom_type, \
+        super(UserNameTag, self).__init__(
+            tg=tg,
+            tag_id=tag_id,
+            data_type=data_type,
+            count=count,
+            custom_type=custom_type,
             value=value)
 
 
@@ -65,8 +69,10 @@ class VerseUser(verse_node.VerseNode):
         super(VerseUser, self).__init__(*args, **kwargs)
 
         # Create tag group and tag due to specification
-        self._tg_info = verse_tag_group.VerseTagGroup(node=self, \
-            custom_type=TG_INFO_CT)
+        self._tg_info = verse_tag_group.VerseTagGroup(
+            node=self,
+            custom_type=TG_INFO_CT
+        )
         self._tg_info.tag_name = UserNameTag(tg=self._tg_info)
 
         # Add this verse user to the dictionary of users
@@ -97,7 +103,7 @@ class VerseUser(verse_node.VerseNode):
                 return ""
 
     @classmethod
-    def _receive_node_destroy(cls, session, node_id):
+    def cb_receive_node_destroy(cls, session, node_id):
         """
         Static method that is called, when node with user is destroyed and
         this user is no longer valid user.
@@ -105,4 +111,4 @@ class VerseUser(verse_node.VerseNode):
         # Remove verse user from the dictionary of users
         if node_id in session.users:
             del session.users[node_id]
-        return super(VerseUser, cls)._receive_node_destroy(session, node_id)
+        return super(VerseUser, cls).cb_receive_node_destroy(session, node_id)

@@ -59,7 +59,9 @@ def find_tag_subclass(cls, node_custom_type, tg_custom_type, custom_type):
                 sub_cls_node_custom_type == node_custom_type:
             # When subclass with corresponding custom_types is found,
             # then store it in dictionary of subclasses
-            sub_cls = cls._subclasses[(node_custom_type, tg_custom_type, custom_type)] = verse_entity.last_subclass(sub_cls_it)
+            sub_cls = \
+                cls.subclasses[(node_custom_type, tg_custom_type, custom_type)] = \
+                verse_entity.last_subclass(sub_cls_it)
             break
     return sub_cls
 
@@ -69,9 +71,8 @@ def custom_type_subclass(node_custom_type, tg_custom_type, custom_type):
     This method tries to return VerseTag subclass with specified custom type.
     Otherwise it returns VerseTag class.
     """
-    sub_cls = VerseTag
     try:
-        sub_cls = VerseTag._subclasses[(node_custom_type, tg_custom_type, custom_type)]
+        sub_cls = VerseTag.subclasses[(node_custom_type, tg_custom_type, custom_type)]
     except KeyError:
         sub_cls = find_tag_subclass(VerseTag, node_custom_type, tg_custom_type, custom_type)
     else:
@@ -88,7 +89,7 @@ class VerseTag(verse_entity.VerseEntity):
     # (node.custom_type, tg.custom_type, tag.custom_type)
     # When subclass of VerseTag is created, then it has to include class attributes
     # custom_type, tg_custom_type and node_custom_type
-    _subclasses = {}
+    subclasses = {}
 
     def __new__(cls, *args, **kwargs):
         """
@@ -102,11 +103,10 @@ class VerseTag(verse_entity.VerseEntity):
             except KeyError:
                 return super(VerseTag, cls).__new__(cls)
             else:
-                sub_cls = VerseTag
                 node_custom_type = tag_group.node.custom_type
                 tg_custom_type = tag_group.custom_type
                 try:
-                    sub_cls = cls._subclasses[(node_custom_type, tg_custom_type, custom_type)]
+                    sub_cls = cls.subclasses[(node_custom_type, tg_custom_type, custom_type)]
                 except KeyError:
                     # When instance of this class has never been created, then try
                     # to find corresponding subclass.
@@ -179,11 +179,14 @@ class VerseTag(verse_entity.VerseEntity):
                 self.tg.tag_queue[self.custom_type] = self
             # Check uniqueness of custom_type inside the tag group
             if tag is not None:
-                raise TypeError('VerseTag with: ' + str(self.custom_type) + ' already exists in VerseTagGroup: ' + str(tg.id))
+                raise TypeError('VerseTag with: ' +
+                                str(self.custom_type) +
+                                ' already exists in VerseTagGroup: ' +
+                                str(tg.id))
 
     def __str__(self):
         """
-        String representiion of VerseTag
+        String representation of VerseTag
         """
         return 'VerseTag, id: ' + \
             str(self.id) + \
@@ -218,12 +221,14 @@ class VerseTag(verse_entity.VerseEntity):
         self._value = val
         # Send value to Verse server
         if self.id is not None:
-            self.tg.node.session.send_tag_set_values(self.tg.node.prio, \
-                self.tg.node.id, \
-                self.tg.id, \
-                self.id, \
-                self.data_type, \
-                self._value)
+            self.tg.node.session.send_tag_set_values(
+                self.tg.node.prio,
+                self.tg.node.id,
+                self.tg.id,
+                self.id,
+                self.data_type,
+                self._value
+            )
 
     @value.deleter
     def value(self):
@@ -238,24 +243,28 @@ class VerseTag(verse_entity.VerseEntity):
         Send tag create command to Verse server
         """
         if self.tg.id is not None:
-            self.tg.node.session.send_tag_create(self.tg.node.prio, \
-                self.tg.node.id, \
-                self.tg.id, \
-                self.data_type, \
-                self.count, \
-                self.custom_type)
+            self.tg.node.session.send_tag_create(
+                self.tg.node.prio,
+                self.tg.node.id,
+                self.tg.id,
+                self.data_type,
+                self.count,
+                self.custom_type
+            )
 
     def _send_destroy(self):
         """
         Send tag destroy command to Verse server
         """
         if self.id is not None:
-            self.tg.node.session.send_tag_destroy(self.tg.node.prio, \
-                self.tg.node.id, \
-                self.tg.id, \
-                self.id)
+            self.tg.node.session.send_tag_destroy(
+                self.tg.node.prio,
+                self.tg.node.id,
+                self.tg.id,
+                self.id
+            )
 
-    def _clean(self):
+    def clean(self):
         """
         This method try to clean content (value) of this tag
         """
@@ -267,7 +276,7 @@ class VerseTag(verse_entity.VerseEntity):
         del self._value
 
     @classmethod
-    def _receive_tag_create(cls, session, node_id, tg_id, tag_id, data_type, count, custom_type):
+    def cb_receive_tag_create(cls, session, node_id, tg_id, tag_id, data_type, count, custom_type):
         """
         Static method of class that should be called when
         coresponding callback function is called
@@ -293,7 +302,7 @@ class VerseTag(verse_entity.VerseEntity):
             tg.tags[tag_id] = tag
             tag.id = tag_id
         # Update state
-        tag._receive_create()
+        tag.cb_receive_create()
         # Send tag value, when it is tag created by this client
         # When this tag was created by some other Verse client,
         # then Verse server will send value, when received command
@@ -304,7 +313,7 @@ class VerseTag(verse_entity.VerseEntity):
         return tag
 
     @classmethod
-    def _receive_tag_set_values(cls, session, node_id, tg_id, tag_id, value):
+    def cb_receive_tag_set_values(cls, session, node_id, tg_id, tag_id, value):
         """
         Static method of class that should be called when
         coresponding callback function is called
@@ -330,7 +339,7 @@ class VerseTag(verse_entity.VerseEntity):
         return tag
 
     @classmethod
-    def _receive_tag_destroy(cls, session, node_id, tg_id, tag_id):
+    def cb_receive_tag_destroy(cls, session, node_id, tg_id, tag_id):
         """
         Static method of class that should be called when
         destroy callback session method is called
@@ -350,7 +359,7 @@ class VerseTag(verse_entity.VerseEntity):
             tag = tg.tags[tag_id]
         except KeyError:
             return
-        # Change state and call clen method
-        tag._receive_destroy()
+        # Change state and call clean method
+        tag.cb_receive_destroy()
         # Return reference at this destroyed tag
         return tag
