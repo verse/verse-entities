@@ -27,7 +27,6 @@ if sys.version >= '2.7':
 else:
     import unittest2 as unittest
 import vrsent
-import verse as vrs
 
 
 TEST_NODE_CUSTOM_TYPE = 220
@@ -47,11 +46,11 @@ class SubscribeNode(vrsent.VerseNode):
         super(SubscribeNode, self).__init__(session=session, node_id=node_id, parent=parent, user_id=user_id, custom_type=custom_type)
 
     def _auto_subscribe(self):
-    	"""
-    	Automatic subscribing is disables. Client has to call node.subscribe() to
-    	subscribe to node instanced from this class.
-    	"""
-    	return False
+        """
+        Automatic subscribing is disables. Client has to call node.subscribe() to
+        subscribe to node instanced from this class.
+        """
+        return False
 
     @classmethod
     def _receive_node_create(cls, session, node_id, parent_id, user_id, custom_type):
@@ -59,7 +58,7 @@ class SubscribeNode(vrsent.VerseNode):
         Custom callback method called, when this custom_type of VerseNode is
         created by verse server and appropriate command is received.
         """
-        return super(SubscribeNode, cls)._receive_node_create(session, node_id, parent_id, user_id, custom_type)
+        return super(SubscribeNode, cls).cb_receive_node_create(session, node_id, parent_id, user_id, custom_type)
 
 
 class TestSubscribeNodeCase(unittest.TestCase):

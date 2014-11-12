@@ -17,7 +17,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 """
-Module for testing class VerseNode from module versentities
+Module for testing class VerseNode from module verse entities (vrsent)
 """
 
 import sys

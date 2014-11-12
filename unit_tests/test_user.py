@@ -27,7 +27,7 @@ if sys.version >= '2.7':
 else:
     import unittest2 as unittest
 import vrsent
-import verse as vrs
+
 
 class TestUserCase(unittest.TestCase):
     """
@@ -42,7 +42,6 @@ class TestUserCase(unittest.TestCase):
         print('Verse Users:')
         for user in vrsent.session.users.values():
             print(user)
-        
 
     def test_user_count(self):
         """
@@ -50,7 +49,6 @@ class TestUserCase(unittest.TestCase):
         Super users, Other users and current user
         """      
         self.assertGreaterEqual(len(vrsent.session.users), 3)
-
 
     def test_user_name(self):
         """

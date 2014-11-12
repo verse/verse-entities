@@ -17,7 +17,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 """
-Module for testing class VerseTagGroup from module versentities
+Module for testing class VerseTagGroup from module vrsent (verse entities)
 """
 
 import sys
