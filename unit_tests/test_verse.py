@@ -485,19 +485,22 @@ def main(hostname, service, debug, username, password):
         counter += 1
         # Send connect terminate after 5 seconds
         if counter == 50:
-            # Test VerseUsers
-            user_suite = unittest.TestLoader().loadTestsFromTestCase(test_user.TestUserCase)
-            unittest.TextTestRunner(verbosity=vrsent.session.verbosity).run(user_suite)
-            # Test VerseAvatars
-            avatar_suite = unittest.TestLoader().loadTestsFromTestCase(test_avatar.TestAvatarCase)
-            unittest.TextTestRunner(verbosity=vrsent.session.verbosity).run(avatar_suite)
-            # Print summary of test cases
-            print('Test Cases Summary:')
-            # Check if all test cases were performed
-            for test_case in unittest.TestCase.__subclasses__():
-                if hasattr(test_case, 'tested') is True and test_case.tested is False:
-                    print(test_case, 'were not performed')
-            vrsent.session.send_connect_terminate()
+            if vrsent.session.state == 'CONNECTED':
+                # Test VerseUsers
+                user_suite = unittest.TestLoader().loadTestsFromTestCase(test_user.TestUserCase)
+                unittest.TextTestRunner(verbosity=vrsent.session.verbosity).run(user_suite)
+                # Test VerseAvatars
+                avatar_suite = unittest.TestLoader().loadTestsFromTestCase(test_avatar.TestAvatarCase)
+                unittest.TextTestRunner(verbosity=vrsent.session.verbosity).run(avatar_suite)
+                # Print summary of test cases
+                print('Test Cases Summary:')
+                # Check if all test cases were performed
+                for test_case in unittest.TestCase.__subclasses__():
+                    if hasattr(test_case, 'tested') is True and test_case.tested is False:
+                        print(test_case, 'were not performed')
+                vrsent.session.send_connect_terminate()
+            else:
+                break
 
 
 if __name__ == '__main__':
