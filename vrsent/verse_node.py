@@ -304,6 +304,16 @@ class VerseNode(verse_entity.VerseEntity):
         else:
             return False
 
+    @property
+    def locked_by_me(self):
+        """
+        :return: True, when this node is locked by current client
+        """
+        if self.locker_id == self.session.avatar_id:
+            return True
+        else:
+            return False
+
     def lock(self):
         """
         This method tries to lock this node
