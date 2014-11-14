@@ -116,19 +116,17 @@ class VerseSession(vrs.Session):
         # Default method to get username and password
         if username == "":
             if self.username is None:
-                self.username = username = input('username: ')
+                self.username = username = input('Username: ')
             else:
                 username = self.username
             self.send_user_authenticate(username, vrs.UA_METHOD_NONE, "")
         else:
             if methods.count(vrs.UA_METHOD_PASSWORD) >= 1:
                 if self.password is None:
-                    self.password = password = input('password: ')
-                else:
-                    password = self.password
-                self.send_user_authenticate(username, vrs.UA_METHOD_PASSWORD, password)
+                    self.password = input('Password: ')
+                self.send_user_authenticate(username, vrs.UA_METHOD_PASSWORD, self.password)
             else:
-                print("Unsuported authenticate method")
+                print("Unsupported authenticate method")
 
     @property
     def fps(self):
