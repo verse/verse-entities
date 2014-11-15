@@ -346,12 +346,23 @@ class VerseNode(verse_entity.VerseEntity):
         else:
             return owner
 
-    def can_read(self, user_id):
+    @property
+    def owned_by_me(self):
+        """
+        :param self:
+        :return:
+        """
+        if self.session.user_id == self.user_id:
+            return True
+        else:
+            return False
+
+    def can_read(self, user_id=None):
         """
         This method returns True, when user with user_id can can read
         this node. Otherwise it returns False.
         """
-        if user_id == self.user_id:
+        if user_id is None or user_id == self.user_id:
             return True
         else:
             try:
@@ -363,12 +374,12 @@ class VerseNode(verse_entity.VerseEntity):
                     return False
             return True if perm & vrs.PERM_NODE_READ else False
 
-    def can_write(self, user_id):
+    def can_write(self, user_id=None):
         """
         This method returns True, when user with user_id can can write
         to this node. Otherwise it returns False.
         """
-        if user_id == self.user_id:
+        if user_id is None or user_id == self.user_id:
             return True
         else:
             try:
