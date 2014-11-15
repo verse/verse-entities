@@ -260,7 +260,7 @@ class TestSession(vrsent.VerseSession):
         """
         node = super(TestSession, self).cb_receive_node_perm(node_id, user_id, perm)
         # Start unit testing of node with permission
-        if node == self.test_node and user_id == self.user_id:
+        if node == self.test_node and user_id == vrs.OTHER_USERS_UID:
             suite = unittest.TestLoader().loadTestsFromTestCase(test_node.TestOwnerPermNodeCase)
             unittest.TextTestRunner(verbosity=self.verbosity).run(suite)
 

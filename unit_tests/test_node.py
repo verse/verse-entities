@@ -109,8 +109,28 @@ class TestOwnerPermNodeCase(unittest.TestCase):
         """
         Testing permissions for owner of node
         """
-        self.assertEqual(self.node.perm[vrsent.session.user_id], \
-            vrs.PERM_NODE_READ | vrs.PERM_NODE_WRITE)
+        self.assertEqual(
+            self.node.perms[vrs.OTHER_USERS_UID],
+            vrs.PERM_NODE_READ
+        )
+
+    def test_node_owner(self):
+        """
+        Testing owner of the node
+        """
+        self.assertTrue(self.node.owned_by_me)
+
+    def test_can_read(self):
+        """
+        Testing if current user can read the node
+        """
+        self.assertTrue(self.node.can_read)
+
+    def test_can_write(self):
+        """
+        Testing if current user can write the node
+        """
+        self.assertTrue(self.node.can_write)
 
 
 class TestLinkNodeCase(unittest.TestCase):
