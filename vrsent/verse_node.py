@@ -362,7 +362,9 @@ class VerseNode(verse_entity.VerseEntity):
         This method returns True, when user with user_id can can read
         this node. Otherwise it returns False.
         """
-        if user_id is None or user_id == self.user_id:
+        if user_id is None and self.owned_by_me is True:
+            return True
+        elif user_id == self.user_id:
             return True
         else:
             try:
@@ -379,7 +381,9 @@ class VerseNode(verse_entity.VerseEntity):
         This method returns True, when user with user_id can can write
         to this node. Otherwise it returns False.
         """
-        if user_id is None or user_id == self.user_id:
+        if user_id is None and self.owned_by_me is True:
+            return True
+        elif user_id == self.user_id:
             return True
         else:
             try:
