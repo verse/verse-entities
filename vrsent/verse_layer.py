@@ -340,12 +340,12 @@ class VerseLayer(verse_entity.VerseEntity):
         try:
             node = session.nodes[node_id]
         except KeyError:
-            return
+            return None
         # Try to find the layer
         try:
             layer = node.layers[layer_id]
         except KeyError:
-            return
+            return None
         # Destroy layer and child layers
         layer.cb_receive_destroy()
 
@@ -361,12 +361,12 @@ class VerseLayer(verse_entity.VerseEntity):
         try:
             node = session.nodes[node_id]
         except KeyError:
-            return
+            return None
         # Try to find the layer
         try:
             layer = node.layers[layer_id]
         except KeyError:
-            return
+            return None
         # Set item value, but do not send command to verse server
         layer.send_cmds = False
         layer.items[item_id] = value
@@ -377,24 +377,25 @@ class VerseLayer(verse_entity.VerseEntity):
     @classmethod
     def cb_receive_layer_unset_value(cls, session, node_id, layer_id, item_id):
         """
-        Static method of class that set value of item in layer
+        Static method of class that unset value of item in layer
         """
 
         # Try to find node
         try:
             node = session.nodes[node_id]
         except KeyError:
-            return
+            return None
         # Try to find the layer
         try:
             layer = node.layers[layer_id]
         except KeyError:
-            return
+            return None
         # UnSet item value
         try:
             layer.items.pop(item_id)
         except KeyError:
-            return
+            # When item was not found, then return layer
+            pass
 
         return layer
 
