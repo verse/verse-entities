@@ -112,7 +112,7 @@ class VerseSession(vrs.Session):
         """
         # Call parent method to print debug information
         if self.debug_print is True:
-            super(VerseSession, self).cb_receive_user_authenticate(username, self.password)
+            super(VerseSession, self).cb_receive_user_authenticate(username, methods)
         # Default method to get username and password
         if username == "":
             if self.username is None:
