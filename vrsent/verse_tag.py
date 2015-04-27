@@ -279,7 +279,7 @@ class VerseTag(verse_entity.VerseEntity):
     def cb_receive_tag_create(cls, session, node_id, tg_id, tag_id, data_type, count, custom_type):
         """
         Static method of class that should be called when
-        coresponding callback function is called
+        corresponding callback function is called
         """
         # Try to find node
         try:
@@ -316,7 +316,7 @@ class VerseTag(verse_entity.VerseEntity):
     def cb_receive_tag_set_values(cls, session, node_id, tg_id, tag_id, value):
         """
         Static method of class that should be called when
-        coresponding callback function is called
+        corresponding callback function is called
         """
         # Try to find node
         try:
