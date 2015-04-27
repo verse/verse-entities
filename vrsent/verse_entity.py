@@ -17,7 +17,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 """
-This module includes class VerseEntitty that is used as parent class
+This module includes class VerseEntity that is used as parent class
 of other verse entities (node, tag group, tag and layer). This module
 also includes class VerseStateError that is raised, when verse entity
 wants to do unauthorized state switch.
@@ -27,6 +27,7 @@ wants to do unauthorized state switch.
 import verse as vrs
 
 
+# Allowed states of entities (nodes, tag groups, etc.)
 ENTITY_RESERVED = 0
 ENTITY_CREATING = 1
 ENTITY_CREATED = 2
@@ -36,8 +37,20 @@ ENTITY_DESTROYING = 5
 ENTITY_DESTROYED = 6
 
 
+# Names of entities used for debug prints
+STATE_NAMES = {
+    ENTITY_RESERVED: "RESERVED",
+    ENTITY_CREATING: "CREATING",
+    ENTITY_CREATED: "CREATED",
+    ENTITY_ASSUMED: "ASSUMED",
+    ENTITY_WANT_DESTROY: "WANT_DESTROY",
+    ENTITY_DESTROYING: "DESTROYING",
+    ENTITY_DESTROYED: "DESTROYED"
+}
+
+
 # Set of supported Verse value types
-SUPPORTED_VALUE_TYPES = set((
+SUPPORTED_VALUE_TYPES = {
     vrs.VALUE_TYPE_UINT8,
     vrs.VALUE_TYPE_UINT16,
     vrs.VALUE_TYPE_UINT32,
@@ -46,11 +59,11 @@ SUPPORTED_VALUE_TYPES = set((
     vrs.VALUE_TYPE_REAL32,
     vrs.VALUE_TYPE_REAL64,
     vrs.VALUE_TYPE_STRING8
-))
+}
 
 
 # Set of supported data types
-SUPPORTED_DATA_TYPES = set((int, float, str))
+SUPPORTED_DATA_TYPES = {int, float, str}
 
 
 # Dictionary used for estimation of VerseTag VerseLayer data_type
@@ -91,18 +104,18 @@ class VerseStateError(Exception):
     Exception for invalid state changes
     """
 
-    def __init__(self, state, transition):
+    def __init__(self, state, function):
         """
         Constructor of exception
         """
         self.state = state
-        self.transition = transition
+        self.function = function
 
     def __str__(self):
         """
         Method for printing content of exception
         """
-        return str(self.state) + '!' + str(self.transition)
+        return 'Entity has state: ' + str(self.state) + ' in function: ' + str(self.function)
 
 
 class VerseEntity(object):
@@ -180,7 +193,7 @@ class VerseEntity(object):
                 if self._auto_subscribe() is True:
                     self.subscribe()
         else:
-            raise VerseStateError(self.state, "create")
+            raise VerseStateError(STATE_NAMES[self.state], "_create()", [], {})
 
     def _destroy(self):
         """
@@ -192,9 +205,9 @@ class VerseEntity(object):
         elif self.state == ENTITY_CREATING:
             self.state = ENTITY_WANT_DESTROY
         else:
-            raise VerseStateError(self.state, "destroy")
+            raise VerseStateError(STATE_NAMES[self.state], "_destroy()", [], {})
 
-    def cb_receive_create(self, *args, **kwargs):
+    def cb_receive_create(self):
         """
         This method is called when client receive callback function about
         it creating on Verse server
@@ -209,9 +222,9 @@ class VerseEntity(object):
             self._send_destroy()
             self.state = ENTITY_DESTROYING
         else:
-            raise VerseStateError(self.state, "rcv_create")
+            raise VerseStateError(STATE_NAMES[self.state], "cb_receive_create()")
 
-    def cb_receive_destroy(self, *args, **kwargs):
+    def cb_receive_destroy(self):
         """
         This method is called when client receive callback function about
         it destroying on Verse server
@@ -222,7 +235,7 @@ class VerseEntity(object):
             self.state = ENTITY_DESTROYED
             self.clean()
         else:
-            raise VerseStateError(self.state, "rcv_destroy")
+            raise VerseStateError(STATE_NAMES[self.state], "cb_receive_destroy()")
 
     def clean(self):
         """
